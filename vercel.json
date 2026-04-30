@@ -1,0 +1,8 @@
+{
+  "buildCommand": "pnpm --filter @workspace/dropmylink run build",
+  "outputDirectory": "artifacts/dropmylink/dist",
+  "installCommand": "pnpm install",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
