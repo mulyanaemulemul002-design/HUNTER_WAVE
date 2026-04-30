@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
   ExternalLink, Copy, Check, ChevronDown, ChevronUp,
@@ -14,20 +14,50 @@ const ADMIN_PIN   = "050208";
 const DONATE_ADDRESS  = "0xfb0792130e2218fa7bef32eb5a023366f8b5d644";
 const FEEDBACK_TG     = "https://t.me/otgdontcry";
 
-// ─── STORAGE ──────────────────────────────────────────────────
-const K = {
-  airdrops: "dml_airdrops_v4",
-  ads:      "dml_ads_v4",
-  news:     "dml_news_v4",
-  qinfo:    "dml_qinfo_v4",
-};
+// ─── STORAGE (IndexedDB — handles large images, no quota issues) ───
+const DB_NAME    = "dropmylink_v1";
+const STORE_NAME = "content";
 
-function load(key, def) {
-  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; }
-  catch { return def; }
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = (e) => { e.target.result.createObjectStore(STORE_NAME); };
+    req.onsuccess  = (e) => resolve(e.target.result);
+    req.onerror    = (e) => reject(e.target.error);
+  });
 }
-function save(key, data) {
-  try { localStorage.setItem(key, JSON.stringify(data)); } catch {}
+
+async function idbGet(key, def) {
+  try {
+    const db  = await openDB();
+    return new Promise((resolve) => {
+      const tx  = db.transaction(STORE_NAME, "readonly");
+      const req = tx.objectStore(STORE_NAME).get(key);
+      req.onsuccess = () => resolve(req.result ?? def);
+      req.onerror   = () => resolve(def);
+    });
+  } catch { return def; }
+}
+
+async function idbSet(key, value) {
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      tx.objectStore(STORE_NAME).put(value, key);
+      tx.oncomplete = () => resolve();
+      tx.onerror    = () => reject(tx.error);
+    });
+  } catch {}
+}
+
+async function idbGetAll() {
+  return Promise.all([
+    idbGet("airdrops", null),
+    idbGet("ads",      null),
+    idbGet("news",     null),
+    idbGet("qinfo",    null),
+  ]);
 }
 
 // ─── DEFAULT DATA ─────────────────────────────────────────────
@@ -249,8 +279,9 @@ function AdminLogin({ onClose, onSuccess }) {
 }
 
 // ─── ADMIN PANEL SHELL ────────────────────────────────────────
-function AdminPanel({ airdrops, ads, news, qinfo, onUpdate, onClose }) {
-  const [tab, setTab] = useState("airdrop");
+function AdminPanel({ airdrops, ads, news, qinfo, onUpdate, onExport, onImport, onClose }) {
+  const [tab, setTab]       = useState("airdrop");
+  const importRef           = useRef(null);
   return (
     <div className="fixed inset-0 z-[150] flex flex-col bg-[#02020f] overflow-hidden">
       <div className="flex items-center gap-3 px-5 py-4 border-b border-blue-500/20">
@@ -262,6 +293,21 @@ function AdminPanel({ airdrops, ads, news, qinfo, onUpdate, onClose }) {
           <X className="w-4 h-4 text-white/60" />
         </button>
       </div>
+
+      {/* Export / Import bar */}
+      <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/[0.06] bg-blue-500/[0.03]">
+        <span className="text-[10px] text-white/30 flex-1">Backup &amp; Restore data</span>
+        <button onClick={onExport}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 text-blue-400 text-[10px] font-bold hover:bg-blue-500/20 transition-all">
+          ⬇ Export JSON
+        </button>
+        <button onClick={()=>importRef.current?.click()}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.05] ring-1 ring-white/10 text-white/50 text-[10px] font-bold hover:bg-white/10 transition-all">
+          ⬆ Import JSON
+        </button>
+        <input ref={importRef} type="file" accept=".json" onChange={onImport} className="hidden" />
+      </div>
+
       <div className="flex gap-1 px-5 py-3 border-b border-white/[0.06] overflow-x-auto" style={{scrollbarWidth:"none"}}>
         {[{id:"airdrop",label:"🪂 Airdrop"},{id:"ads",label:"📢 Iklan"},{id:"news",label:"📰 Berita"},{id:"qinfo",label:"⚡ Info Cepat"}].map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)}
@@ -875,14 +921,27 @@ function BottomNav({ active, onSelect }) {
 
 // ─── MAIN APP ─────────────────────────────────────────────────
 export default function App() {
-  const [tab, setTab]         = useState("home");
-  const [airdrops, setAirdrops] = useState(()=>load(K.airdrops, DEF_AIRDROPS));
-  const [ads, setAds]         = useState(()=>load(K.ads, DEF_ADS));
-  const [news, setNews]       = useState(()=>load(K.news, DEF_NEWS));
-  const [qinfo, setQinfo]     = useState(()=>load(K.qinfo, DEF_QINFO));
-  const [isAdmin, setIsAdmin] = useState(()=>sessionStorage.getItem("dml_admin_ok")==="1");
+  const [tab, setTab]           = useState("home");
+  const [airdrops, setAirdrops] = useState(DEF_AIRDROPS);
+  const [ads, setAds]           = useState(DEF_ADS);
+  const [news, setNews]         = useState(DEF_NEWS);
+  const [qinfo, setQinfo]       = useState(DEF_QINFO);
+  const [loaded, setLoaded]     = useState(false);
+  const [isAdmin, setIsAdmin]   = useState(()=>sessionStorage.getItem("dml_admin_ok")==="1");
   const [showLogin, setShowLogin] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
+  const [savedMsg, setSavedMsg]   = useState("");
+
+  // Load all data from IndexedDB on mount
+  useEffect(() => {
+    idbGetAll().then(([a, ad, n, q]) => {
+      if (a)  setAirdrops(a);
+      if (ad) setAds(ad);
+      if (n)  setNews(n);
+      if (q)  setQinfo(q);
+      setLoaded(true);
+    });
+  }, []);
 
   // 5-tap logo to open admin
   const tapCount = useRef(0);
@@ -900,11 +959,45 @@ export default function App() {
 
   function handleAdminSuccess() { setIsAdmin(true); setShowLogin(false); setShowPanel(true); }
 
-  function handleUpdate(type, data) {
-    if (type==="airdrops") { setAirdrops(data); save(K.airdrops, data); }
-    if (type==="ads")      { setAds(data);      save(K.ads, data); }
-    if (type==="news")     { setNews(data);      save(K.news, data); }
-    if (type==="qinfo")    { setQinfo(data);     save(K.qinfo, data); }
+  function showSaved(msg = "✓ Tersimpan") {
+    setSavedMsg(msg);
+    setTimeout(() => setSavedMsg(""), 2500);
+  }
+
+  async function handleUpdate(type, data) {
+    if (type==="airdrops") { setAirdrops(data); await idbSet("airdrops", data); }
+    if (type==="ads")      { setAds(data);      await idbSet("ads", data); }
+    if (type==="news")     { setNews(data);      await idbSet("news", data); }
+    if (type==="qinfo")    { setQinfo(data);     await idbSet("qinfo", data); }
+    showSaved();
+  }
+
+  // Export all data as JSON file
+  function handleExport() {
+    const blob = new Blob([JSON.stringify({ airdrops, ads, news, qinfo }, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `dropmylink-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+  }
+
+  // Import data from JSON file
+  function handleImport(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const d = JSON.parse(ev.target.result);
+        if (d.airdrops) { setAirdrops(d.airdrops); await idbSet("airdrops", d.airdrops); }
+        if (d.ads)      { setAds(d.ads);            await idbSet("ads", d.ads); }
+        if (d.news)     { setNews(d.news);           await idbSet("news", d.news); }
+        if (d.qinfo)    { setQinfo(d.qinfo);         await idbSet("qinfo", d.qinfo); }
+        showSaved("✓ Data berhasil diimpor!");
+      } catch { showSaved("✗ File tidak valid"); }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
   }
 
   function handleLogout() { sessionStorage.removeItem("dml_admin_ok"); setIsAdmin(false); setShowPanel(false); }
@@ -942,6 +1035,23 @@ export default function App() {
         </div>
       </div>
 
+      {/* Loading overlay */}
+      {!loaded && (
+        <div className="fixed inset-0 z-[300] bg-black flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <img src="/logo.jpg" alt="logo" className="w-12 h-12 rounded-2xl object-cover ring-1 ring-blue-500/40 animate-pulse"/>
+            <p className="text-xs text-blue-400/60">Memuat data...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Save toast */}
+      {savedMsg && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[250] px-4 py-2 rounded-full bg-blue-500/20 ring-1 ring-blue-400/40 backdrop-blur-xl text-blue-300 text-xs font-bold shadow-lg">
+          {savedMsg}
+        </div>
+      )}
+
       {/* Content */}
       <div className="relative z-10 max-w-lg mx-auto">
         {tab==="home"     && <HomeScreen    ads={ads} news={news} qinfo={qinfo} />}
@@ -952,7 +1062,15 @@ export default function App() {
       <BottomNav active={tab} onSelect={setTab} />
 
       {showLogin && <AdminLogin onClose={()=>setShowLogin(false)} onSuccess={handleAdminSuccess} />}
-      {showPanel && <AdminPanel airdrops={airdrops} ads={ads} news={news} qinfo={qinfo} onUpdate={handleUpdate} onClose={()=>setShowPanel(false)} />}
+      {showPanel && (
+        <AdminPanel
+          airdrops={airdrops} ads={ads} news={news} qinfo={qinfo}
+          onUpdate={handleUpdate}
+          onExport={handleExport}
+          onImport={handleImport}
+          onClose={()=>setShowPanel(false)}
+        />
+      )}
 
       {isAdmin && !showPanel && (
         <div className="fixed bottom-24 right-4 z-50">
