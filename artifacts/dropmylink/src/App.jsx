@@ -553,13 +553,13 @@ function DonateFeedbackSection() {
   return (
     <div className="px-5 mt-6 mb-2 flex flex-col gap-3">
       {/* Donate */}
-      <div className="rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-900/10 ring-1 ring-blue-500/20 p-4">
+      <div className="rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
         <div className="flex items-center gap-2 mb-3">
           <Heart className="w-4 h-4 text-blue-400" />
           <p className="text-xs font-bold text-white">Dukung Kami via Crypto</p>
         </div>
         <p className="text-[10px] text-white/40 mb-2">EVM Address (ETH / BSC / Polygon / dll)</p>
-        <div className="flex items-center gap-2 bg-black/40 ring-1 ring-blue-500/15 rounded-xl px-3 py-2.5">
+        <div className="flex items-center gap-2 bg-black/40 border border-white/[0.08] rounded-xl px-3 py-2.5">
           <p className="text-[10px] font-mono text-blue-300/80 flex-1 truncate">{DONATE_ADDRESS}</p>
           <button onClick={copyAddr} className="flex-shrink-0 flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300 transition-colors">
             {copied ? <><Check className="w-3 h-3 text-green-400"/> <span className="text-green-400">Tersalin</span></> : <><Copy className="w-3 h-3"/> Salin</>}
@@ -861,7 +861,7 @@ function AirdropScreen({ airdrops }) {
             {filterOpen?<ChevronUp className="w-3.5 h-3.5"/>:<ChevronDown className="w-3.5 h-3.5"/>}
           </button>
           {filterOpen && (
-            <div className="mt-3 bg-blue-500/[0.06] ring-1 ring-blue-500/20 rounded-2xl p-3 flex flex-wrap gap-2">
+            <div className="mt-3 bg-white/[0.06] backdrop-blur-md border border-white/10 rounded-2xl p-3 flex flex-wrap gap-2">
               {allTags.map(tag=>(
                 <button key={tag} onClick={()=>{setActiveTag(tag);setFilterOpen(false);}}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold ring-1 transition-all ${activeTag===tag?"bg-blue-500/25 ring-blue-400/50 text-blue-300":"bg-white/[0.04] ring-white/10 text-white/50 hover:bg-blue-500/10 hover:text-blue-300"}`}>
@@ -876,7 +876,7 @@ function AirdropScreen({ airdrops }) {
           {filtered.map(item=>{
             const expanded=expandedId===item.id;
             return (
-              <div key={item.id} className={`rounded-2xl ring-1 transition-all duration-300 ${expanded?"bg-blue-500/[0.08] ring-blue-400/25":"bg-white/[0.04] ring-white/10 hover:ring-blue-500/20"}`}>
+              <div key={item.id} className={`rounded-2xl border transition-all duration-300 ${expanded?"bg-blue-500/[0.08] border-blue-400/25":"bg-white/[0.06] backdrop-blur-md border-white/10 hover:border-blue-500/20"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:item.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
@@ -944,7 +944,7 @@ function DiscoverScreen() {
             <p className="text-[11px] text-amber-300/80 leading-relaxed">Lakukan transaksi dengan hati-hati. Platform tidak bertanggung jawab atas risiko P2P deal.</p>
           </div>
           {DEF_P2P.map(l=>(
-            <div key={l.id} className="rounded-2xl bg-blue-500/[0.05] ring-1 ring-blue-500/15 p-4">
+            <div key={l.id} className="rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
               <div className="flex items-center gap-2.5 mb-3">
                 <div className="w-8 h-8 rounded-full bg-blue-500/15 ring-1 ring-blue-500/20 flex items-center justify-center text-sm">👤</div>
                 <div>
@@ -967,7 +967,7 @@ function DiscoverScreen() {
       {section==="calendar" && (
         <div className="px-5 flex flex-col gap-3">
           {DEF_CALENDAR.map(e=>(
-            <div key={e.id} className="rounded-2xl bg-blue-500/[0.05] ring-1 ring-blue-500/15 p-4 flex items-center gap-4">
+            <div key={e.id} className="rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4 flex items-center gap-4">
               <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-blue-500/15 ring-1 ring-blue-500/20 flex flex-col items-center justify-center">
                 <span className="text-[9px] text-blue-400/60 uppercase font-bold">{e.date.split(" ")[0]}</span>
                 <span className="text-xl font-bold text-white leading-none">{e.date.split(" ")[1]}</span>
@@ -984,7 +984,7 @@ function DiscoverScreen() {
       {section==="tips" && (
         <div className="px-5 flex flex-col gap-3">
           {DEF_TIPS.map(tip=>(
-            <div key={tip.id} className="rounded-2xl bg-blue-500/[0.05] ring-1 ring-blue-500/15 p-4">
+            <div key={tip.id} className="rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
               <div className="flex items-start gap-3">
                 <span className="text-2xl leading-none">{tip.icon}</span>
                 <div className="flex-1">
@@ -1103,13 +1103,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
-      {/* Blue beam & orbs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-full bg-gradient-to-b from-blue-500/12 via-blue-500/4 to-transparent"/>
-        <div className="absolute -top-32 left-1/4 w-[400px] h-[400px] rounded-full bg-blue-600/15 blur-[120px]"/>
-        <div className="absolute top-1/2 -right-40 w-[350px] h-[350px] rounded-full bg-blue-700/10 blur-[120px]"/>
-        <div className="absolute -bottom-20 left-1/3 w-[300px] h-[300px] rounded-full bg-blue-500/8 blur-[120px]"/>
-      </div>
 
       {/* Header */}
       <div className="sticky top-0 z-40 bg-black/85 backdrop-blur-xl border-b border-blue-500/[0.12]">
