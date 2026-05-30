@@ -2,7 +2,7 @@ import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { getAirdrops, getAds, getNews, getQinfo } from "./lib/data";
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
-  ExternalLink, Copy, Check, ChevronDown, ChevronUp,
+  ExternalLink, Copy, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
   Calendar, Users, Lightbulb, Zap, Bell, Clock,
   Settings, Plus, Trash2, X, Shield, MessageCircle, Heart,
   Rocket, TrendingUp, BarChart2,
@@ -578,7 +578,7 @@ function DonateFeedbackSection() {
 }
 
 // ─── AUTO-CAROUSEL HOOK ───────────────────────────────────────
-function useCarousel(count, ms = 3000) {
+function useCarousel(count, ms = 10000) {
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     if (count <= 1) return;
@@ -696,6 +696,16 @@ function NewsCarousel({ news }) {
               </div>
             ))}
           </div>
+          {news.length > 1 && <>
+            <button onClick={() => setIdx(i => (i - 1 + news.length) % news.length)}
+              className="absolute left-2 top-[40%] -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm border border-white/15 flex items-center justify-center">
+              <ChevronLeft className="w-4 h-4 text-white/70"/>
+            </button>
+            <button onClick={() => setIdx(i => (i + 1) % news.length)}
+              className="absolute right-2 top-[40%] -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm border border-white/15 flex items-center justify-center">
+              <ChevronRight className="w-4 h-4 text-white/70"/>
+            </button>
+          </>}
         </div>
         <CarouselDots count={news.length} idx={idx} onSelect={setIdx} />
       </div>
@@ -755,6 +765,16 @@ function InfoCepatCarousel({ qinfo }) {
               </div>
             ))}
           </div>
+          {boards.length > 1 && <>
+            <button onClick={() => setIdx(i => (i - 1 + boards.length) % boards.length)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/15 flex items-center justify-center">
+              <ChevronLeft className="w-3.5 h-3.5 text-white/70"/>
+            </button>
+            <button onClick={() => setIdx(i => (i + 1) % boards.length)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/15 flex items-center justify-center">
+              <ChevronRight className="w-3.5 h-3.5 text-white/70"/>
+            </button>
+          </>}
         </div>
       </div>
     </div>
@@ -785,6 +805,16 @@ function InfoTeknisCarousel({ qinfo }) {
               </div>
             ))}
           </div>
+          {boards.length > 1 && <>
+            <button onClick={() => setIdx(i => (i - 1 + boards.length) % boards.length)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/15 flex items-center justify-center">
+              <ChevronLeft className="w-3.5 h-3.5 text-white/70"/>
+            </button>
+            <button onClick={() => setIdx(i => (i + 1) % boards.length)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/15 flex items-center justify-center">
+              <ChevronRight className="w-3.5 h-3.5 text-white/70"/>
+            </button>
+          </>}
         </div>
       </div>
     </div>
@@ -805,7 +835,6 @@ function HomeScreen({ ads, news, qinfo }) {
         <p className="text-xs text-white/30 mt-2">Info airdrop, campaign, dan tips Web3 terkurasi</p>
       </div>
 
-      <AdsCarousel ads={ads} />
       <NewsCarousel news={news} />
       <InfoCepatCarousel qinfo={qinfo} />
       <InfoTeknisCarousel qinfo={qinfo} />
@@ -922,6 +951,7 @@ function AirdropScreen({ airdrops }) {
 // ─── DISCOVER SCREEN ──────────────────────────────────────────
 function DiscoverScreen() {
   const [section, setSection] = useState("p2p");
+  const [expandedTip, setExpandedTip] = useState(null);
   return (
     <div className="pb-32">
       <div className="px-5 pt-6 mb-5">
@@ -982,19 +1012,25 @@ function DiscoverScreen() {
       )}
 
       {section==="tips" && (
-        <div className="px-5 flex flex-col gap-3">
-          {DEF_TIPS.map(tip=>(
-            <div key={tip.id} className="rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl leading-none">{tip.icon}</span>
-                <div className="flex-1">
-                  <h3 className="text-sm font-bold text-white mb-1.5">{tip.title}</h3>
-                  <p className="text-xs text-white/50 leading-relaxed">{tip.content}</p>
-                  <div className="flex gap-1.5 mt-2.5 flex-wrap">{tip.tags.map(tag=><TagChip key={tag} tag={tag}/>)}</div>
-                </div>
+        <div className="px-5 flex flex-col gap-2">
+          {DEF_TIPS.map(tip=>{
+            const open = expandedTip === tip.id;
+            return (
+              <div key={tip.id} className={`rounded-2xl border transition-all duration-300 ${open?"bg-blue-500/[0.08] border-blue-400/25":"bg-white/[0.06] backdrop-blur-md border-white/10"}`}>
+                <button className="w-full flex items-center gap-3 p-4 text-left" onClick={()=>setExpandedTip(open?null:tip.id)}>
+                  <span className="text-xl leading-none flex-shrink-0">{tip.icon}</span>
+                  <p className="text-sm font-semibold text-white flex-1">{tip.title}</p>
+                  {open?<ChevronUp className="w-4 h-4 text-white/30 flex-shrink-0"/>:<ChevronDown className="w-4 h-4 text-white/30 flex-shrink-0"/>}
+                </button>
+                {open && (
+                  <div className="px-4 pb-4 border-t border-white/[0.06]">
+                    <p className="text-xs text-white/50 leading-relaxed mt-3 mb-2.5">{tip.content}</p>
+                    <div className="flex gap-1.5 flex-wrap">{tip.tags.map(tag=><TagChip key={tag} tag={tag}/>)}</div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
