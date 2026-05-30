@@ -4,6 +4,7 @@ import {
   ExternalLink, Copy, Check, ChevronDown, ChevronUp,
   Calendar, Users, Lightbulb, Zap, Bell, Clock,
   Settings, Plus, Trash2, X, Shield, MessageCircle, Heart,
+  Rocket, TrendingUp, BarChart2,
 } from "lucide-react";
 
 // ─── ADMIN CONFIG ─────────────────────────────────────────────
@@ -75,23 +76,25 @@ const DEF_ADS = [
 ];
 
 const DEF_NEWS = [
-  { id:1, title:"OKX Web3 – Platform Terbaik untuk Airdrop Hunter",              category:"Platform", time:"Baru saja", color:"from-blue-700/40 to-blue-900/20", imageUrl:"/okx-news.jpg",   buttonText:"DAFTAR OKX WEB3",     targetUrl:"https://web3.okx.com/join/2006079" },
-  { id:2, title:"Ethereum ETF Inflows Capai Rekor $1.2B Minggu Ini",             category:"Market",   time:"2j lalu",   color:"from-blue-700/40 to-blue-900/20", imageUrl:"",                 buttonText:"BACA SELENGKAPNYA",   targetUrl:"https://coindesk.com" },
-  { id:3, title:"LayerZero ZRO Airdrop: Panduan Lengkap Eligibility",            category:"Airdrop",  time:"4j lalu",   color:"from-blue-600/35 to-blue-800/20", imageUrl:"",                 buttonText:"LIHAT PANDUAN",       targetUrl:"https://layerzero.network" },
-  { id:4, title:"zkSync Umumkan Kampanye Insentif Q3 2025",                      category:"Layer2",   time:"6j lalu",   color:"from-blue-500/30 to-blue-900/20", imageUrl:"",                 buttonText:"BACA SELENGKAPNYA",   targetUrl:"https://zksync.io" },
-  { id:5, title:"Monad Testnet Buka Registrasi Publik",                          category:"Testnet",  time:"1h lalu",   color:"from-blue-800/40 to-blue-900/20", imageUrl:"",                 buttonText:"DAFTAR SEKARANG",     targetUrl:"https://monad.xyz" },
+  { id:1, title:"OKX Web3 – Platform Terbaik untuk Airdrop Hunter",    description:"Daftar sekarang dan mulai hunting airdrop dari platform Web3 terpercaya.",    category:"Platform", time:"Baru saja", color:"from-blue-700/40 to-blue-900/20", imageUrl:"/okx-news.jpg", targetUrl:"https://web3.okx.com/join/2006079" },
+  { id:2, title:"Ethereum ETF Inflows Capai Rekor $1.2B Minggu Ini",   description:"Arus masuk ETF ETH mencapai angka tertinggi sepanjang sejarah minggu ini.",   category:"Market",   time:"2j lalu",   color:"from-blue-700/40 to-blue-900/20", imageUrl:"",              targetUrl:"https://coindesk.com" },
+  { id:3, title:"LayerZero ZRO Airdrop: Panduan Lengkap Eligibility",  description:"Cek syarat eligibility dan cara mendapatkan alokasi ZRO token airdrop.",      category:"Airdrop",  time:"4j lalu",   color:"from-blue-600/35 to-blue-800/20", imageUrl:"",              targetUrl:"https://layerzero.network" },
+  { id:4, title:"zkSync Umumkan Kampanye Insentif Q3 2025",            description:"Kampanye baru zkSync menawarkan reward untuk pengguna aktif di mainnet.",      category:"Layer2",   time:"6j lalu",   color:"from-blue-500/30 to-blue-900/20", imageUrl:"",              targetUrl:"https://zksync.io" },
+  { id:5, title:"Monad Testnet Buka Registrasi Publik",                description:"Daftar ke testnet Monad sekarang untuk peluang airdrop mainnet ke depan.",     category:"Testnet",  time:"1h lalu",   color:"from-blue-800/40 to-blue-900/20", imageUrl:"",              targetUrl:"https://monad.xyz" },
 ];
 
 const DEF_QINFO = [
-  { id:1, board:"tge",      name:"Monad (MONAD)",       date:"Q3 2025",  status:"Soon",      targetUrl:"https://monad.xyz" },
-  { id:2, board:"tge",      name:"Fuel Network (FUEL)", date:"Jun 2025", status:"Confirmed", targetUrl:"https://fuel.network" },
-  { id:3, board:"tge",      name:"Initia (INIT)",       date:"Mei 2025", status:"Confirmed", targetUrl:"https://initia.xyz" },
-  { id:4, board:"snapshot", name:"Arbitrum DAO",        date:"15 Mei",   status:"Active",    targetUrl:"https://snapshot.org" },
-  { id:5, board:"snapshot", name:"Uniswap v4 Fee",      date:"18 Mei",   status:"Upcoming",  targetUrl:"https://snapshot.org" },
-  { id:6, board:"snapshot", name:"Optimism RetroPGF",   date:"22 Mei",   status:"Upcoming",  targetUrl:"https://snapshot.org" },
-  { id:7, board:"new",      name:"Taiko (TKO)",         date:"Announced",status:"New",       targetUrl:"https://taiko.xyz" },
-  { id:8, board:"new",      name:"Scroll (SCR)",        date:"Announced",status:"New",       targetUrl:"https://scroll.io" },
-  { id:9, board:"new",      name:"Linea (LINEA)",       date:"Expected", status:"Rumored",   targetUrl:"https://linea.build" },
+  { id:1,  board:"garapan",    name:"Taiko (TKO)",         date:"Announced", status:"New",       targetUrl:"https://taiko.xyz" },
+  { id:2,  board:"garapan",    name:"Scroll (SCR)",        date:"Announced", status:"New",       targetUrl:"https://scroll.io" },
+  { id:3,  board:"garapan",    name:"Linea (LINEA)",       date:"Expected",  status:"Rumored",   targetUrl:"https://linea.build" },
+  { id:4,  board:"garapan",    name:"ZKsync (ZK)",         date:"Active",    status:"Active",    targetUrl:"https://zksync.io" },
+  { id:5,  board:"tge",        name:"Monad (MONAD)",       date:"Q3 2025",   status:"Soon",      targetUrl:"https://monad.xyz" },
+  { id:6,  board:"tge",        name:"Fuel Network (FUEL)", date:"Jun 2025",  status:"Confirmed", targetUrl:"https://fuel.network" },
+  { id:7,  board:"tge",        name:"Initia (INIT)",       date:"Mei 2025",  status:"Confirmed", targetUrl:"https://initia.xyz" },
+  { id:8,  board:"presale",    name:"Kaito AI (KAITO)",    date:"Jun 2025",  status:"Active",    targetUrl:"https://kaito.ai" },
+  { id:9,  board:"presale",    name:"Nillion (NIL)",       date:"Q3 2025",   status:"Upcoming",  targetUrl:"https://nillion.network" },
+  { id:10, board:"tokenomics", name:"ETH (Ethereum)",      date:"Deflationary",status:"Confirmed",targetUrl:"https://ethereum.org" },
+  { id:11, board:"tokenomics", name:"ARB (Arbitrum)",      date:"1.275B total",status:"Active",  targetUrl:"https://arbitrum.io" },
 ];
 
 const DEF_CALENDAR = [
@@ -143,10 +146,12 @@ const STATUS_STYLE = {
   Upcoming:    "bg-blue-400/15 text-blue-300 ring-blue-400/25",
 };
 
+// section:"cepat" → Info Cepat carousel | section:"teknis" → Info Teknis carousel
 const QINFO_BOARDS = [
-  { id:"tge",      label:"TGE",         icon:Zap,   accent:"text-amber-400", color:"from-amber-500/20 to-amber-900/10", ring:"ring-amber-500/25" },
-  { id:"snapshot", label:"SNAPSHOT",    icon:Clock, accent:"text-blue-400",  color:"from-blue-500/20 to-blue-900/10",  ring:"ring-blue-500/25" },
-  { id:"new",      label:"NEW AIRDROP", icon:Bell,  accent:"text-sky-400",   color:"from-sky-500/20 to-sky-900/10",    ring:"ring-sky-500/25" },
+  { id:"garapan",    label:"Garapan Baru", icon:Rocket,     accent:"text-sky-400",    color:"from-sky-500/20 to-sky-900/10",     ring:"ring-sky-500/25",    section:"cepat"  },
+  { id:"tge",        label:"TGE",          icon:Zap,        accent:"text-amber-400",  color:"from-amber-500/20 to-amber-900/10", ring:"ring-amber-500/25",   section:"teknis" },
+  { id:"presale",    label:"Presale",      icon:TrendingUp, accent:"text-green-400",  color:"from-green-500/20 to-green-900/10", ring:"ring-green-500/25",   section:"teknis" },
+  { id:"tokenomics", label:"Tokenomics",   icon:BarChart2,  accent:"text-blue-300",   color:"from-blue-500/20 to-blue-900/10",  ring:"ring-blue-500/25",    section:"teknis" },
 ];
 
 const STATUS_OPTIONS   = ["Active","Upcoming","Testnet","Mainnet","Distributed"];
@@ -457,13 +462,13 @@ function AdminAdsTab({ data, onUpdate }) {
 
 // ─── ADMIN: NEWS ──────────────────────────────────────────────
 function AdminNewsTab({ data, onUpdate }) {
-  const blank = { title:"", category:"Market", time:"Baru saja", color:NEWS_COLORS[0].value, imageUrl:"", buttonText:"BACA SELENGKAPNYA", targetUrl:"" };
+  const blank = { title:"", description:"", category:"Market", time:"Baru saja", color:NEWS_COLORS[0].value, imageUrl:"", targetUrl:"" };
   const [form, setForm]     = useState(blank);
   const [show, setShow]     = useState(false);
   const [editId, setEditId] = useState(null);
 
   function openAdd()      { setForm(blank); setEditId(null); setShow(true); }
-  function openEdit(item) { setForm(item); setEditId(item.id); setShow(true); }
+  function openEdit(item) { setForm({...blank,...item}); setEditId(item.id); setShow(true); }
   function cancel()       { setShow(false); setEditId(null); }
   function handleSave(e)  { e.preventDefault(); const item={...form,id:editId||Date.now()}; onUpdate(editId?data.map(d=>d.id===editId?item:d):[item,...data]); cancel(); }
 
@@ -477,13 +482,13 @@ function AdminNewsTab({ data, onUpdate }) {
       {show && (
         <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-white/[0.04] ring-1 ring-blue-500/20 flex flex-col gap-3">
           <p className="text-xs font-bold text-blue-400">{editId?"Edit":"Tambah"} Berita</p>
-          <FormInput label="Judul Berita *" placeholder="Headline berita..." value={form.title}    onChange={e=>setForm({...form,title:e.target.value})} required />
-          <FormInput label="Kategori"       placeholder="Market, Airdrop..."  value={form.category} onChange={e=>setForm({...form,category:e.target.value})} />
-          <FormInput label="Waktu"          placeholder="2j lalu, 1h lalu..."  value={form.time}     onChange={e=>setForm({...form,time:e.target.value})} />
-          <FormSelect label="Warna Card" value={form.color} onChange={e=>setForm({...form,color:e.target.value})} options={NEWS_COLORS} />
-          <ImageUpload label="Foto Thumbnail (opsional)" value={form.imageUrl} onChange={v=>setForm({...form,imageUrl:v})} />
-          <FormInput label="Label Tombol"  placeholder="BACA SELENGKAPNYA"     value={form.buttonText} onChange={e=>setForm({...form,buttonText:e.target.value})} />
-          <FormInput label="URL Target *"  placeholder="https://link-berita.com" value={form.targetUrl}  onChange={e=>setForm({...form,targetUrl:e.target.value})} required />
+          <FormInput label="Judul Berita *"       placeholder="Headline berita..."         value={form.title}       onChange={e=>setForm({...form,title:e.target.value})} required />
+          <FormInput label="Deskripsi Singkat"    placeholder="Ringkasan 1-2 kalimat..."   value={form.description} onChange={e=>setForm({...form,description:e.target.value})} />
+          <FormInput label="Kategori"             placeholder="Market, Airdrop..."          value={form.category}    onChange={e=>setForm({...form,category:e.target.value})} />
+          <FormInput label="Waktu"                placeholder="2j lalu, 1h lalu..."         value={form.time}        onChange={e=>setForm({...form,time:e.target.value})} />
+          <FormSelect label="Warna Fallback Card" value={form.color} onChange={e=>setForm({...form,color:e.target.value})} options={NEWS_COLORS} />
+          <ImageUpload label="Foto (rasio 4:5 ideal)" value={form.imageUrl} onChange={v=>setForm({...form,imageUrl:v})} />
+          <FormInput label="URL Target *"         placeholder="https://link-berita.com"    value={form.targetUrl}   onChange={e=>setForm({...form,targetUrl:e.target.value})} required />
           <div className="flex gap-2 mt-1"><Btn type="submit" className="flex-1">Simpan</Btn><Btn variant="ghost" onClick={cancel}>Batal</Btn></div>
         </form>
       )}
@@ -491,11 +496,11 @@ function AdminNewsTab({ data, onUpdate }) {
       <div className="flex flex-col gap-2">
         {data.map(item=>(
           <div key={item.id} className={`p-3 rounded-2xl bg-gradient-to-r ${item.color} ring-1 ring-white/10 flex items-start gap-2`}>
-            {item.imageUrl && <img src={item.imageUrl} className="w-12 h-12 rounded-xl object-cover flex-shrink-0"/>}
+            {item.imageUrl && <img src={item.imageUrl} className="w-12 h-16 rounded-xl object-cover flex-shrink-0" style={{aspectRatio:"4/5"}}/>}
             <div className="flex-1 min-w-0">
               <p className="text-[10px] text-white/40">{item.category} · {item.time}</p>
               <p className="text-xs font-semibold text-white line-clamp-2">{item.title}</p>
-              <p className="text-[10px] text-white/30 mt-0.5">"{item.buttonText}"</p>
+              {item.description && <p className="text-[10px] text-white/30 mt-0.5 line-clamp-1">{item.description}</p>}
             </div>
             <div className="flex gap-1.5 flex-shrink-0">
               <button onClick={()=>openEdit(item)} className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-white/50 text-xs">✏</button>
@@ -510,7 +515,7 @@ function AdminNewsTab({ data, onUpdate }) {
 
 // ─── ADMIN: QUICK INFO ────────────────────────────────────────
 function AdminQinfoTab({ data, onUpdate }) {
-  const blank = { board:"tge", name:"", date:"", status:"Soon", targetUrl:"" };
+  const blank = { board:"garapan", name:"", date:"", status:"New", targetUrl:"" };
   const [form, setForm]     = useState(blank);
   const [show, setShow]     = useState(false);
   const [editId, setEditId] = useState(null);
@@ -530,7 +535,7 @@ function AdminQinfoTab({ data, onUpdate }) {
       {show && (
         <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-white/[0.04] ring-1 ring-blue-500/20 flex flex-col gap-3">
           <p className="text-xs font-bold text-blue-400">{editId?"Edit":"Tambah"} Info Cepat</p>
-          <FormSelect label="Papan" value={form.board} onChange={e=>setForm({...form,board:e.target.value})} options={["tge","snapshot","new"]} />
+          <FormSelect label="Papan" value={form.board} onChange={e=>setForm({...form,board:e.target.value})} options={[{value:"garapan",label:"🚀 Garapan Baru"},{value:"tge",label:"⚡ TGE"},{value:"presale",label:"📈 Presale"},{value:"tokenomics",label:"📊 Tokenomics"}]} />
           <FormInput label="Nama Proyek *"      placeholder="Monad (MONAD)"         value={form.name}      onChange={e=>setForm({...form,name:e.target.value})} required />
           <FormInput label="Tanggal / Periode"  placeholder="Q3 2025, 15 Mei..."    value={form.date}      onChange={e=>setForm({...form,date:e.target.value})} />
           <FormSelect label="Status" value={form.status} onChange={e=>setForm({...form,status:e.target.value})} options={QINFO_STATUS} />
@@ -601,9 +606,222 @@ function DonateFeedbackSection() {
   );
 }
 
+// ─── AUTO-CAROUSEL HOOK ───────────────────────────────────────
+function useCarousel(count, ms = 3000) {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    if (count <= 1) return;
+    const t = setInterval(() => setIdx(i => (i + 1) % count), ms);
+    return () => clearInterval(t);
+  }, [count, ms]);
+  return [idx, setIdx];
+}
+
+// ─── CAROUSEL DOTS ────────────────────────────────────────────
+function CarouselDots({ count, idx, onSelect }) {
+  if (count <= 1) return null;
+  return (
+    <div className="flex justify-center gap-1.5 mt-2.5">
+      {Array.from({ length: count }).map((_, i) => (
+        <button key={i} onClick={() => onSelect(i)}
+          className={`rounded-full transition-all duration-300 ${i === idx ? "w-4 h-1.5 bg-blue-400" : "w-1.5 h-1.5 bg-white/20 hover:bg-white/30"}`} />
+      ))}
+    </div>
+  );
+}
+
+// ─── STATUS BADGE ─────────────────────────────────────────────
+function StatusBadge({ status }) {
+  const cls =
+    status === "New"       ? "bg-sky-500/30 text-sky-300" :
+    status === "Active"    ? "bg-green-500/30 text-green-300" :
+    status === "Confirmed" ? "bg-blue-400/30 text-blue-200" :
+    status === "Rumored"   ? "bg-gray-500/30 text-gray-300" :
+    status === "Upcoming"  ? "bg-purple-500/30 text-purple-300" :
+                             "bg-amber-500/30 text-amber-300";
+  return <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${cls}`}>{status}</span>;
+}
+
+// ─── ADS CAROUSEL (16:9 horizontal auto-scroll) ───────────────
+function AdsCarousel({ ads }) {
+  const active = ads.filter(a => a.active);
+  const [idx, setIdx] = useCarousel(active.length);
+  if (!active.length) return null;
+  return (
+    <div className="px-5 mb-6">
+      <div className="relative w-full aspect-video rounded-2xl overflow-hidden ring-1 ring-blue-500/20">
+        {active.map((a, i) => (
+          <div key={a.id}
+            className={`absolute inset-0 transition-opacity duration-500 ${i === idx ? "opacity-100 z-10" : "opacity-0 z-0"}`}>
+            {a.imageUrl
+              ? <img src={a.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              : <div className="absolute inset-0 bg-gradient-to-br from-blue-900/60 to-black" />
+            }
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center z-10">
+              <p className="text-[9px] text-blue-400/60 uppercase tracking-widest font-bold">Iklan</p>
+              <p className="text-base font-bold text-white leading-snug">{a.title}</p>
+              {a.subtitle && <p className="text-xs text-white/40">{a.subtitle}</p>}
+              {a.buttonText && a.targetUrl && (
+                <button onClick={() => window.open(a.targetUrl, "_blank")}
+                  className="mt-1 px-5 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all shadow-lg shadow-blue-500/30">
+                  {a.buttonText}
+                </button>
+              )}
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent z-20" />
+          </div>
+        ))}
+      </div>
+      <CarouselDots count={active.length} idx={idx} onSelect={setIdx} />
+    </div>
+  );
+}
+
+// ─── NEWS CAROUSEL (4:5 portrait — Instagram style) ───────────
+function NewsCarousel({ news }) {
+  const [idx, setIdx] = useCarousel(news.length);
+  if (!news.length) return null;
+  return (
+    <div className="mb-6">
+      <div className="flex items-center justify-between px-5 mb-3">
+        <h2 className="text-sm font-bold text-white">📰 Berita Terkini</h2>
+        <span className="text-[10px] text-blue-400/50">{idx + 1} / {news.length}</span>
+      </div>
+      <div className="px-5">
+        <div className="relative overflow-hidden rounded-2xl ring-1 ring-blue-500/20">
+          {/* Slide strip */}
+          <div className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${idx * 100}%)` }}>
+            {news.map(item => (
+              <div key={item.id} className="flex-none w-full flex flex-col bg-black">
+                {/* Image — 4:5 portrait ratio */}
+                <div className="relative w-full" style={{ paddingBottom: "125%" }}>
+                  {item.imageUrl
+                    ? <img src={item.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    : <div className={`absolute inset-0 bg-gradient-to-br ${item.color}`} />
+                  }
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <span className="absolute top-3 left-3 text-[9px] font-bold px-2 py-1 rounded-full bg-blue-500/40 text-blue-200 backdrop-blur-sm ring-1 ring-blue-400/20">
+                    {item.category}
+                  </span>
+                </div>
+                {/* Description area */}
+                <div className="px-4 py-3.5 flex flex-col gap-2 bg-[#080c18]">
+                  <p className="text-sm font-semibold text-white leading-snug line-clamp-2">{item.title}</p>
+                  {item.description && (
+                    <p className="text-[11px] text-white/40 leading-relaxed line-clamp-2">{item.description}</p>
+                  )}
+                  <div className="flex items-center justify-between mt-0.5">
+                    <span className="text-[10px] text-white/25">{item.time}</span>
+                    {item.targetUrl && (
+                      <button onClick={() => window.open(item.targetUrl, "_blank")}
+                        className="px-5 py-1.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all shadow-lg shadow-blue-500/30">
+                        LIHAT
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <CarouselDots count={news.length} idx={idx} onSelect={setIdx} />
+      </div>
+    </div>
+  );
+}
+
+// ─── QINFO BOARD CARD (16:9) ──────────────────────────────────
+function QinfoBoardCard({ board, items }) {
+  const Icon = board.icon;
+  return (
+    <div className={`w-full aspect-video rounded-2xl p-4 bg-gradient-to-br ${board.color} ring-1 ${board.ring} flex flex-col gap-3 overflow-hidden`}>
+      <div className={`flex items-center gap-1.5 ${board.accent}`}>
+        <Icon className="w-3.5 h-3.5" />
+        <span className="text-xs font-bold tracking-wider uppercase">{board.label}</span>
+        <span className="ml-auto text-[9px] text-white/25">{items.length} item</span>
+      </div>
+      <div className="flex flex-col gap-1.5 flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+        {items.length === 0 && (
+          <p className="text-[11px] text-white/25 italic">Belum ada data</p>
+        )}
+        {items.map(item => (
+          <div key={item.id}
+            className={`flex items-center justify-between py-0.5 ${item.targetUrl ? "cursor-pointer hover:opacity-80 active:opacity-60" : ""}`}
+            onClick={() => item.targetUrl && window.open(item.targetUrl, "_blank")}>
+            <span className="text-[11px] text-white/80 font-medium truncate mr-2 flex-1">{item.name}</span>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              <span className="text-[9px] text-white/30 hidden sm:block">{item.date}</span>
+              <StatusBadge status={item.status} />
+              {item.targetUrl && <ExternalLink className="w-2.5 h-2.5 text-white/20" />}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── INFO CEPAT CAROUSEL (16:9 — Garapan Baru) ───────────────
+function InfoCepatCarousel({ qinfo }) {
+  const boards = QINFO_BOARDS.filter(b => b.section === "cepat");
+  const [idx, setIdx] = useCarousel(boards.length);
+  if (!boards.length) return null;
+  return (
+    <div className="mb-6">
+      <div className="flex items-center justify-between px-5 mb-3">
+        <h2 className="text-sm font-bold text-white">🚀 Info Cepat</h2>
+        <CarouselDots count={boards.length} idx={idx} onSelect={setIdx} />
+      </div>
+      <div className="px-5">
+        <div className="relative overflow-hidden rounded-2xl">
+          <div className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${idx * 100}%)` }}>
+            {boards.map(board => (
+              <div key={board.id} className="flex-none w-full">
+                <QinfoBoardCard board={board} items={qinfo.filter(q => q.board === board.id)} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── INFO TEKNIS CAROUSEL (16:9 — TGE / Presale / Tokenomics) ─
+function InfoTeknisCarousel({ qinfo }) {
+  const boards = QINFO_BOARDS.filter(b => b.section === "teknis");
+  const [idx, setIdx] = useCarousel(boards.length);
+  if (!boards.length) return null;
+  return (
+    <div className="mb-2">
+      <div className="flex items-center justify-between px-5 mb-3">
+        <h2 className="text-sm font-bold text-white">📊 Info Teknis</h2>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] text-blue-400/50">{boards[idx]?.label}</span>
+          <CarouselDots count={boards.length} idx={idx} onSelect={setIdx} />
+        </div>
+      </div>
+      <div className="px-5">
+        <div className="relative overflow-hidden rounded-2xl">
+          <div className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${idx * 100}%)` }}>
+            {boards.map(board => (
+              <div key={board.id} className="flex-none w-full">
+                <QinfoBoardCard board={board} items={qinfo.filter(q => q.board === board.id)} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── HOME SCREEN ──────────────────────────────────────────────
 function HomeScreen({ ads, news, qinfo }) {
-  const activeAd = ads.find(a=>a.active) || ads[0];
   return (
     <div className="pb-32">
       {/* Hero */}
@@ -616,100 +834,10 @@ function HomeScreen({ ads, news, qinfo }) {
         <p className="text-xs text-white/30 mt-2">Info airdrop, campaign, dan tips Web3 terkurasi</p>
       </div>
 
-      {/* Ad Banner 16:9 */}
-      {activeAd && (
-        <div className="px-5 mb-6">
-          <div className="w-full aspect-video rounded-2xl overflow-hidden ring-1 ring-blue-500/20 relative bg-gradient-to-br from-blue-900/60 to-black flex flex-col items-center justify-center">
-            {activeAd.imageUrl && <img src={activeAd.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-60"/>}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-            <div className="relative z-10 flex flex-col items-center justify-center gap-2 px-6 text-center w-full h-full">
-              <p className="text-[10px] text-blue-400/60 uppercase tracking-widest">Iklan</p>
-              <p className="text-base font-bold text-white">{activeAd.title}</p>
-              {activeAd.subtitle && <p className="text-xs text-white/40">{activeAd.subtitle}</p>}
-              {activeAd.buttonText && activeAd.targetUrl && (
-                <button onClick={()=>window.open(activeAd.targetUrl,"_blank")}
-                  className="mt-1 px-5 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all">
-                  {activeAd.buttonText}
-                </button>
-              )}
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"/>
-          </div>
-        </div>
-      )}
-
-      {/* News */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between px-5 mb-3">
-          <h2 className="text-sm font-bold text-white">📰 Berita Terkini</h2>
-          <span className="text-[10px] text-blue-400/60">Geser →</span>
-        </div>
-        <div className="flex gap-3 pl-5 pr-5 pb-1 overflow-x-auto snap-x snap-mandatory" style={{scrollbarWidth:"none"}}>
-          {news.map(item=>(
-            <div key={item.id}
-              className={`snap-start flex-none w-36 aspect-square rounded-2xl overflow-hidden ring-1 ring-blue-500/15 flex flex-col justify-between cursor-pointer hover:ring-blue-400/30 transition-all active:scale-95 relative`}>
-              {item.imageUrl && <img src={item.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover opacity-50"/>}
-              <div className={`absolute inset-0 bg-gradient-to-br ${item.color}`}/>
-              <div className="relative z-10 p-3 flex flex-col justify-between h-full">
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-500/30 text-blue-300 w-fit backdrop-blur-sm">{item.category}</span>
-                <div>
-                  <p className="text-[11px] font-semibold text-white leading-snug line-clamp-3 mb-1.5 drop-shadow">{item.title}</p>
-                  {item.buttonText && item.targetUrl && (
-                    <button onClick={()=>window.open(item.targetUrl,"_blank")}
-                      className="text-[9px] font-bold text-blue-300 bg-blue-500/25 px-2 py-0.5 rounded-full hover:bg-blue-500/40 transition-all backdrop-blur-sm">
-                      {item.buttonText}
-                    </button>
-                  )}
-                  <p className="text-[9px] text-white/30 mt-1">{item.time}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Quick Info */}
-      <div className="mb-2">
-        <div className="flex items-center justify-between px-5 mb-3">
-          <h2 className="text-sm font-bold text-white">⚡ Info Cepat</h2>
-          <span className="text-[10px] text-blue-400/60">3 papan →</span>
-        </div>
-        <div className="flex gap-3 pl-5 pr-5 pb-1 overflow-x-auto snap-x snap-mandatory" style={{scrollbarWidth:"none"}}>
-          {QINFO_BOARDS.map(board=>{
-            const Icon = board.icon;
-            const items = qinfo.filter(q=>q.board===board.id);
-            return (
-              <div key={board.id}
-                className={`snap-start flex-none w-[78vw] max-w-sm aspect-video rounded-2xl p-4 bg-gradient-to-br ${board.color} ring-1 ${board.ring} flex flex-col justify-between overflow-hidden`}>
-                <div className={`flex items-center gap-1.5 ${board.accent}`}>
-                  <Icon className="w-3.5 h-3.5"/>
-                  <span className="text-xs font-bold tracking-wider">{board.label}</span>
-                </div>
-                <div className="flex flex-col gap-1.5 overflow-y-auto" style={{scrollbarWidth:"none"}}>
-                  {items.map(item=>(
-                    <div key={item.id}
-                      className={`flex items-center justify-between ${item.targetUrl?"cursor-pointer hover:opacity-80":""}`}
-                      onClick={()=>item.targetUrl&&window.open(item.targetUrl,"_blank")}>
-                      <span className="text-[11px] text-white/80 font-medium truncate mr-2">{item.name}</span>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <span className="text-[9px] text-white/30">{item.date}</span>
-                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                          item.status==="New"?"bg-blue-500/30 text-blue-300":
-                          item.status==="Active"?"bg-green-500/30 text-green-300":
-                          item.status==="Confirmed"?"bg-blue-400/30 text-blue-200":
-                          item.status==="Rumored"?"bg-gray-500/30 text-gray-300":
-                          "bg-amber-500/30 text-amber-300"
-                        }`}>{item.status}</span>
-                        {item.targetUrl && <ExternalLink className="w-2.5 h-2.5 text-white/20"/>}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <AdsCarousel ads={ads} />
+      <NewsCarousel news={news} />
+      <InfoCepatCarousel qinfo={qinfo} />
+      <InfoTeknisCarousel qinfo={qinfo} />
 
       <DonateFeedbackSection />
     </div>
