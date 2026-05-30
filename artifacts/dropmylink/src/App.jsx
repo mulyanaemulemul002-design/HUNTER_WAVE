@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
-import { getAirdrops, getAds, getNews, getQinfo } from "./lib/data";
+import { getAirdrops, getAds, getNews, getQinfo, getTools } from "./lib/data";
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
   ExternalLink, Copy, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
@@ -59,6 +59,7 @@ async function idbGetAll() {
     idbGet("ads",      null),
     idbGet("news",     null),
     idbGet("qinfo",    null),
+    idbGet("tools",    null),
   ]);
 }
 
@@ -67,6 +68,7 @@ const DEF_AIRDROPS = getAirdrops();
 const DEF_ADS      = getAds();
 const DEF_NEWS     = getNews();
 const DEF_QINFO    = getQinfo();
+const DEF_TOOLS    = getTools();
 
 const DEF_CALENDAR = [
   { id:1, date:"Mei 10", title:"LayerZero Snapshot",       type:"Snapshot", color:"bg-blue-500/20 text-blue-300" },
@@ -77,12 +79,6 @@ const DEF_CALENDAR = [
   { id:6, date:"Mei 25", title:"Fuel Network Mainnet",     type:"Launch",   color:"bg-rose-500/20 text-rose-300" },
 ];
 
-const DEF_TIPS = [
-  { id:1, icon:"🔥", title:"Farming L2 Secara Efektif",  content:"Bridge minimal 0.1 ETH, lakukan 10+ transaksi berbeda tiap bulan, gunakan dApp native seperti DEX dan lending protocol di jaringan target.", tags:["Layer2","Beginner"] },
-  { id:2, icon:"💼", title:"Multi-Wallet Strategy",      content:"Gunakan 3-5 wallet berbeda. Pastikan tiap wallet punya aktivitas independen dan tidak saling transfer langsung.", tags:["Strategy","Advanced"] },
-  { id:3, icon:"⛽", title:"Hemat Gas Fee ETH",          content:"Transaksi di jam sepi (02:00–06:00 WIB) untuk gas lebih murah. Cek etherscan.io/gastracker sebelum transaksi.", tags:["Tips","Saving"] },
-  { id:4, icon:"✅", title:"Cek Eligibility dengan Aman",content:"Selalu cek hanya lewat official website. Jangan klik link dari DM. Gunakan wallet yang sama saat farming.", tags:["Security","Beginner"] },
-];
 
 const DEF_P2P = [
   { id:1, user:"crypto_whale", selling:"1.000 ARB",  price:"0,95 USDT",  min:"100 ARB",  method:"Bank Transfer", verified:true },
@@ -254,8 +250,60 @@ function AdminLogin({ onClose, onSuccess }) {
   );
 }
 
+// ─── ADMIN: PLATFORM & TOOLS ──────────────────────────────────
+const TOOL_CATEGORIES = ["Quest Platform","Wallet","Dashboard","Explorer","Exchange","Launchpad","Bridge","Lainnya"];
+function AdminToolsTab({ data, onUpdate }) {
+  const blank = { icon:"", title:"", url:"", customImage:"", category:"Quest Platform", description:"", targetUrl:"" };
+  const [form, setForm] = useState(blank);
+  const [editId, setEditId] = useState(null);
+  function cancel() { setForm(blank); setEditId(null); }
+  function startEdit(item) { setForm({...item}); setEditId(item.id); }
+  function handleSave(e) {
+    e.preventDefault();
+    const item = { ...form, id: editId || Date.now() };
+    onUpdate(editId ? data.map(d => d.id === editId ? item : d) : [item, ...data]);
+    cancel();
+  }
+  return (
+    <div>
+      <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-white/[0.04] ring-1 ring-blue-500/20 flex flex-col gap-3">
+        <div className="flex gap-2">
+          <FormInput label="Emoji" placeholder="🌌" value={form.icon} onChange={e=>setForm({...form,icon:e.target.value})} />
+          <div className="flex-1"><FormInput label="Nama Platform *" placeholder="Galxe" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} required /></div>
+        </div>
+        <FormInput label="Domain *" placeholder="galxe.com" value={form.url} onChange={e=>setForm({...form,url:e.target.value})} required />
+        <ImageUpload label="Logo Custom (opsional)" value={form.customImage} onChange={v=>setForm({...form,customImage:v})} />
+        <FormSelect label="Kategori" value={form.category} onChange={e=>setForm({...form,category:e.target.value})} options={TOOL_CATEGORIES} />
+        <div>
+          <label className="block text-[10px] text-white/40 mb-1">Deskripsi</label>
+          <textarea value={form.description} onChange={e=>setForm({...form,description:e.target.value})} rows={2} placeholder="Deskripsi singkat platform..."
+            className="w-full bg-white/[0.03] rounded-xl px-3 py-2.5 text-xs text-white/80 ring-1 ring-white/10 resize-none outline-none focus:ring-blue-500/40 placeholder:text-white/20" />
+        </div>
+        <FormInput label="URL Target (link buka)" placeholder="https://galxe.com" value={form.targetUrl} onChange={e=>setForm({...form,targetUrl:e.target.value})} />
+        <div className="flex gap-2">
+          <button type="submit" className="flex-1 py-2.5 rounded-xl bg-blue-500 text-white text-xs font-bold hover:bg-blue-400 transition-all">{editId?"Simpan Perubahan":"+ Tambah Platform"}</button>
+          {editId && <button type="button" onClick={cancel} className="px-4 py-2.5 rounded-xl bg-white/[0.05] ring-1 ring-white/10 text-white/50 text-xs hover:bg-white/10 transition-all">Batal</button>}
+        </div>
+      </form>
+      {data.map(item=>(
+        <div key={item.id} className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] ring-1 ring-white/10 mb-2">
+          <div className="w-8 h-8 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
+            {item.icon?<span className="text-sm">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage} size={20}/>}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-white truncate">{item.title}</p>
+            <p className="text-[10px] text-white/30">{item.category}</p>
+          </div>
+          <button onClick={()=>startEdit(item)} className="p-1.5 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 text-blue-400 hover:bg-blue-500/20 transition-all"><Settings className="w-3 h-3"/></button>
+          <button onClick={()=>onUpdate(data.filter(d=>d.id!==item.id))} className="p-1.5 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 text-red-400 hover:bg-red-500/20 transition-all"><Trash2 className="w-3 h-3"/></button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── ADMIN PANEL SHELL ────────────────────────────────────────
-function AdminPanel({ airdrops, ads, news, qinfo, onUpdate, onExport, onImport, onClose }) {
+function AdminPanel({ airdrops, ads, news, qinfo, tools, onUpdate, onExport, onImport, onClose }) {
   const [tab, setTab]       = useState("airdrop");
   const importRef           = useRef(null);
   return (
@@ -285,7 +333,7 @@ function AdminPanel({ airdrops, ads, news, qinfo, onUpdate, onExport, onImport, 
       </div>
 
       <div className="flex gap-1 px-5 py-3 border-b border-white/[0.06] overflow-x-auto" style={{scrollbarWidth:"none"}}>
-        {[{id:"airdrop",label:"🪂 Airdrop"},{id:"ads",label:"📢 Iklan"},{id:"news",label:"📰 Berita"},{id:"qinfo",label:"⚡ Info Cepat"}].map(t=>(
+        {[{id:"airdrop",label:"🪂 Airdrop"},{id:"ads",label:"📢 Iklan"},{id:"news",label:"📰 Berita"},{id:"qinfo",label:"⚡ Info Cepat"},{id:"tools",label:"🛠 Platform"}].map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)}
             className={`flex-none px-4 py-2 rounded-xl text-xs font-semibold transition-all ${tab===t.id?"bg-blue-500/20 ring-1 ring-blue-500/40 text-blue-300":"text-white/40 hover:text-white/60"}`}>
             {t.label}
@@ -297,6 +345,7 @@ function AdminPanel({ airdrops, ads, news, qinfo, onUpdate, onExport, onImport, 
         {tab==="ads"     && <AdminAdsTab     data={ads}      onUpdate={d=>onUpdate("ads",d)} />}
         {tab==="news"    && <AdminNewsTab    data={news}     onUpdate={d=>onUpdate("news",d)} />}
         {tab==="qinfo"   && <AdminQinfoTab   data={qinfo}    onUpdate={d=>onUpdate("qinfo",d)} />}
+        {tab==="tools"   && <AdminToolsTab   data={tools}    onUpdate={d=>onUpdate("tools",d)} />}
       </div>
     </div>
   );
@@ -949,17 +998,17 @@ function AirdropScreen({ airdrops }) {
 }
 
 // ─── DISCOVER SCREEN ──────────────────────────────────────────
-function DiscoverScreen() {
+function DiscoverScreen({ tools }) {
   const [section, setSection] = useState("p2p");
-  const [expandedTip, setExpandedTip] = useState(null);
+  const [expandedItem, setExpandedItem] = useState(null);
   return (
     <div className="pb-32">
       <div className="px-5 pt-6 mb-5">
         <h1 className="text-lg font-bold text-white">🧭 Discover</h1>
-        <p className="text-xs text-white/30 mt-0.5">P2P, Kalender, dan Tips Web3</p>
+        <p className="text-xs text-white/30 mt-0.5">P2P, Kalender, dan Platform Tools</p>
       </div>
       <div className="flex gap-2 px-5 mb-5 overflow-x-auto" style={{scrollbarWidth:"none"}}>
-        {[{id:"p2p",label:"P2P Seller",icon:Users},{id:"calendar",label:"Kalender",icon:Calendar},{id:"tips",label:"Tips & Trik",icon:Lightbulb}].map(({id,label,icon:Icon})=>(
+        {[{id:"p2p",label:"P2P Seller",icon:Users},{id:"calendar",label:"Kalender",icon:Calendar},{id:"tools",label:"Platform & Tools",icon:Lightbulb}].map(({id,label,icon:Icon})=>(
           <button key={id} onClick={()=>setSection(id)}
             className={`flex-none flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold ring-1 transition-all ${section===id?"bg-blue-500 text-white ring-blue-500":"bg-blue-500/[0.08] ring-blue-500/20 text-white/50 hover:text-blue-300"}`}>
             <Icon className="w-3.5 h-3.5"/>{label}
@@ -1011,21 +1060,31 @@ function DiscoverScreen() {
         </div>
       )}
 
-      {section==="tips" && (
+      {section==="tools" && (
         <div className="px-5 flex flex-col gap-2">
-          {DEF_TIPS.map(tip=>{
-            const open = expandedTip === tip.id;
+          {tools.map(tool=>{
+            const open = expandedItem === tool.id;
             return (
-              <div key={tip.id} className={`rounded-2xl border transition-all duration-300 ${open?"bg-blue-500/[0.08] border-blue-400/25":"bg-white/[0.06] backdrop-blur-md border-white/10"}`}>
-                <button className="w-full flex items-center gap-3 p-4 text-left" onClick={()=>setExpandedTip(open?null:tip.id)}>
-                  <span className="text-xl leading-none flex-shrink-0">{tip.icon}</span>
-                  <p className="text-sm font-semibold text-white flex-1">{tip.title}</p>
+              <div key={tool.id} className={`rounded-2xl border transition-all duration-300 ${open?"bg-blue-500/[0.08] border-blue-400/25":"bg-white/[0.06] backdrop-blur-md border-white/10"}`}>
+                <button className="w-full flex items-center gap-3 p-4 text-left" onClick={()=>setExpandedItem(open?null:tool.id)}>
+                  <div className="w-9 h-9 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    {tool.icon?<span className="text-lg leading-none">{tool.icon}</span>:<Favicon url={tool.url} customImage={tool.customImage}/>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-white leading-tight">{tool.title}</p>
+                    {tool.category && <p className="text-[10px] text-blue-400/60 mt-0.5">{tool.category}</p>}
+                  </div>
                   {open?<ChevronUp className="w-4 h-4 text-white/30 flex-shrink-0"/>:<ChevronDown className="w-4 h-4 text-white/30 flex-shrink-0"/>}
                 </button>
                 {open && (
                   <div className="px-4 pb-4 border-t border-white/[0.06]">
-                    <p className="text-xs text-white/50 leading-relaxed mt-3 mb-2.5">{tip.content}</p>
-                    <div className="flex gap-1.5 flex-wrap">{tip.tags.map(tag=><TagChip key={tag} tag={tag}/>)}</div>
+                    <p className="text-xs text-white/50 leading-relaxed mt-3 mb-3">{tool.description}</p>
+                    {tool.targetUrl && (
+                      <button onClick={()=>window.open(tool.targetUrl,"_blank")}
+                        className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all shadow-lg shadow-blue-500/30">
+                        <ExternalLink className="w-3.5 h-3.5"/> Buka Platform
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -1061,6 +1120,7 @@ export default function App() {
   const [ads, setAds]           = useState(DEF_ADS);
   const [news, setNews]         = useState(DEF_NEWS);
   const [qinfo, setQinfo]       = useState(DEF_QINFO);
+  const [tools, setTools]       = useState(DEF_TOOLS);
   const [loaded, setLoaded]     = useState(false);
   const [isAdmin, setIsAdmin]   = useState(()=>sessionStorage.getItem("dml_admin_ok")==="1");
   const [showLogin, setShowLogin] = useState(false);
@@ -1069,11 +1129,12 @@ export default function App() {
 
   // Load all data from IndexedDB on mount
   useEffect(() => {
-    idbGetAll().then(([a, ad, n, q]) => {
+    idbGetAll().then(([a, ad, n, q, t]) => {
       if (a)  setAirdrops(a);
       if (ad) setAds(ad);
       if (n)  setNews(n);
       if (q)  setQinfo(q);
+      if (t)  setTools(t);
       setLoaded(true);
     });
   }, []);
@@ -1104,12 +1165,13 @@ export default function App() {
     if (type==="ads")      { setAds(data);      await idbSet("ads", data); }
     if (type==="news")     { setNews(data);      await idbSet("news", data); }
     if (type==="qinfo")    { setQinfo(data);     await idbSet("qinfo", data); }
+    if (type==="tools")    { setTools(data);     await idbSet("tools", data); }
     showSaved();
   }
 
   // Export all data as JSON file
   function handleExport() {
-    const blob = new Blob([JSON.stringify({ airdrops, ads, news, qinfo }, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ airdrops, ads, news, qinfo, tools }, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `dropmylink-backup-${new Date().toISOString().slice(0,10)}.json`;
@@ -1128,6 +1190,7 @@ export default function App() {
         if (d.ads)      { setAds(d.ads);            await idbSet("ads", d.ads); }
         if (d.news)     { setNews(d.news);           await idbSet("news", d.news); }
         if (d.qinfo)    { setQinfo(d.qinfo);         await idbSet("qinfo", d.qinfo); }
+        if (d.tools)    { setTools(d.tools);         await idbSet("tools", d.tools); }
         showSaved("✓ Data berhasil diimpor!");
       } catch { showSaved("✗ File tidak valid"); }
     };
@@ -1184,7 +1247,7 @@ export default function App() {
       <div className="relative z-10 max-w-lg mx-auto">
         {tab==="home"     && <HomeScreen    ads={ads} news={news} qinfo={qinfo} />}
         {tab==="airdrops" && <AirdropScreen airdrops={airdrops} />}
-        {tab==="discover" && <DiscoverScreen />}
+        {tab==="discover" && <DiscoverScreen tools={tools} />}
       </div>
 
       <BottomNav active={tab} onSelect={setTab} />
@@ -1192,7 +1255,7 @@ export default function App() {
       {showLogin && <AdminLogin onClose={()=>setShowLogin(false)} onSuccess={handleAdminSuccess} />}
       {showPanel && (
         <AdminPanel
-          airdrops={airdrops} ads={ads} news={news} qinfo={qinfo}
+          airdrops={airdrops} ads={ads} news={news} qinfo={qinfo} tools={tools}
           onUpdate={handleUpdate}
           onExport={handleExport}
           onImport={handleImport}

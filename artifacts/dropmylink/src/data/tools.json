@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "icon": "🌌",
+    "title": "Galxe",
+    "url": "galxe.com",
+    "customImage": "",
+    "category": "Quest Platform",
+    "description": "Platform quest & campaign Web3 terbesar. Selesaikan task on-chain/off-chain untuk earn points, NFT, dan token. Banyak proyek besar pakai Galxe untuk distribusi airdrop.",
+    "targetUrl": "https://galxe.com"
+  },
+  {
+    "id": 2,
+    "icon": "⚡",
+    "title": "Zealy",
+    "url": "zealy.io",
+    "customImage": "",
+    "category": "Quest Platform",
+    "description": "Platform community quest untuk proyek Web3. Ikuti sprint, selesaikan misi sosial & on-chain, naik leaderboard untuk dapat reward eksklusif dari proyek.",
+    "targetUrl": "https://zealy.io"
+  },
+  {
+    "id": 3,
+    "icon": "👛",
+    "title": "Bitget Wallet",
+    "url": "bitget.com",
+    "customImage": "",
+    "category": "Wallet",
+    "description": "Multi-chain Web3 wallet dengan built-in DEX, NFT marketplace, dan DApp browser. Sering ada reward eksklusif untuk pengguna aktif Bitget Wallet.",
+    "targetUrl": "https://web3.bitget.com"
+  },
+  {
+    "id": 4,
+    "icon": "🌅",
+    "title": "Onchain GM",
+    "url": "onchaingm.io",
+    "customImage": "",
+    "category": "Dashboard",
+    "description": "Tool untuk cek aktivitas on-chain harian. Kirim GM on-chain setiap hari untuk build streak dan meningkatkan eligibility airdrop berbasis aktivitas.",
+    "targetUrl": "https://onchaingm.io"
+  }
+]

@@ -4,6 +4,7 @@ import rawAirdrops  from "../data/airdrops.json";
 import rawAds       from "../data/ads.json";
 import rawNews      from "../data/news.json";
 import rawQinfo     from "../data/qinfo.json";
+import rawTools     from "../data/tools.json";
 
 // ─── SCHEMAS ──────────────────────────────────────────────────
 
@@ -52,16 +53,26 @@ export const QinfoSchema = z.object({
   targetUrl: z.string().default(""),
 });
 
+export const ToolSchema = z.object({
+  id:          z.number(),
+  icon:        z.string().default(""),
+  title:       z.string().min(1),
+  url:         z.string().min(1),
+  customImage: z.string().default(""),
+  category:    z.string().default(""),
+  description: z.string().default(""),
+  targetUrl:   z.string().default(""),
+});
+
 // ─── INFERRED TYPES ───────────────────────────────────────────
 
 export type Airdrop = z.infer<typeof AirdropSchema>;
 export type Ad      = z.infer<typeof AdSchema>;
 export type News    = z.infer<typeof NewsSchema>;
 export type Qinfo   = z.infer<typeof QinfoSchema>;
+export type Tool    = z.infer<typeof ToolSchema>;
 
 // ─── LOADERS ──────────────────────────────────────────────────
-// Each function parses the JSON file with its schema.
-// If validation fails, a clear error is thrown (never silent failures).
 
 export function getAirdrops(): Airdrop[] {
   const result = z.array(AirdropSchema).safeParse(rawAirdrops);
@@ -95,6 +106,15 @@ export function getQinfo(): Qinfo[] {
   if (!result.success) {
     console.error("[data] qinfo.json invalid:", result.error.flatten());
     throw new Error("qinfo.json validation failed — check console for details.");
+  }
+  return result.data;
+}
+
+export function getTools(): Tool[] {
+  const result = z.array(ToolSchema).safeParse(rawTools);
+  if (!result.success) {
+    console.error("[data] tools.json invalid:", result.error.flatten());
+    throw new Error("tools.json validation failed — check console for details.");
   }
   return result.data;
 }
