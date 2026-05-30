@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "title": "Banner Iklan 16:9",
+    "subtitle": "Hubungi admin untuk memasang iklan",
+    "imageUrl": "",
+    "imageRatio": "16:9",
+    "buttonText": "HUBUNGI KAMI",
+    "targetUrl": "https://t.me/otgdontcry",
+    "active": true
+  }
+]

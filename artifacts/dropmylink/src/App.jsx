@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { getAirdrops, getAds, getNews, getQinfo } from "./lib/data";
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
   ExternalLink, Copy, Check, ChevronDown, ChevronUp,
@@ -61,41 +62,11 @@ async function idbGetAll() {
   ]);
 }
 
-// ─── DEFAULT DATA ─────────────────────────────────────────────
-const DEF_AIRDROPS = [
-  { id:1, icon:"", title:"LayerZero",   url:"layerzero.network", customImage:"", tags:["Cross-chain","DeFi"],    description:"Omnichain interoperability protocol menghubungkan 30+ blockchain. Eligible via bridging & penggunaan dApp.", status:"Active",  reward:"ZRO Token",   difficulty:"Medium" },
-  { id:2, icon:"", title:"zkSync Era",  url:"zksync.io",          customImage:"", tags:["ZK","Layer2"],           description:"ZK-EVM L2 by Matter Labs. Farm via bridge, swap di dApp, dan mint NFT di mainnet.",                  status:"Active",  reward:"ZK Token",    difficulty:"Easy"   },
-  { id:3, icon:"", title:"Scroll",      url:"scroll.io",          customImage:"", tags:["ZK","Layer2"],           description:"ZK-EVM equivalent L2. Bridge dan gunakan dApp di Scroll mainnet untuk eligibility.",               status:"Active",  reward:"SCR Token",   difficulty:"Easy"   },
-  { id:4, icon:"", title:"Monad",       url:"monad.xyz",          customImage:"", tags:["Layer1","DeFi"],         description:"High-performance EVM-compatible L1. 10,000 TPS dengan parallel execution.",                        status:"Testnet", reward:"MONAD Token", difficulty:"Hard"   },
-  { id:5, icon:"", title:"Berachain",   url:"berachain.com",      customImage:"", tags:["Layer1","DeFi"],         description:"EVM-identical L1 dengan Proof of Liquidity. Provide likuiditas untuk farming BERA.",               status:"Active",  reward:"BERA Token",  difficulty:"Medium" },
-  { id:6, icon:"", title:"Initia",      url:"initia.xyz",         customImage:"", tags:["Layer1","DeFi"],         description:"Interwoven L1 dengan native L2 ecosystem. Farm via testnet dan aktivitas Discord.",                status:"Testnet", reward:"INIT Token",  difficulty:"Easy"   },
-];
-
-const DEF_ADS = [
-  { id:1, title:"Banner Iklan 16:9", subtitle:"Hubungi admin untuk memasang iklan", imageUrl:"", buttonText:"HUBUNGI KAMI", targetUrl:"https://t.me/otgdontcry", active:true },
-];
-
-const DEF_NEWS = [
-  { id:1, title:"OKX Web3 – Platform Terbaik untuk Airdrop Hunter",    description:"Daftar sekarang dan mulai hunting airdrop dari platform Web3 terpercaya.",    category:"Platform", time:"Baru saja", color:"from-blue-700/40 to-blue-900/20", imageUrl:"/okx-news.jpg", targetUrl:"https://web3.okx.com/join/2006079" },
-  { id:2, title:"Ethereum ETF Inflows Capai Rekor $1.2B Minggu Ini",   description:"Arus masuk ETF ETH mencapai angka tertinggi sepanjang sejarah minggu ini.",   category:"Market",   time:"2j lalu",   color:"from-blue-700/40 to-blue-900/20", imageUrl:"",              targetUrl:"https://coindesk.com" },
-  { id:3, title:"LayerZero ZRO Airdrop: Panduan Lengkap Eligibility",  description:"Cek syarat eligibility dan cara mendapatkan alokasi ZRO token airdrop.",      category:"Airdrop",  time:"4j lalu",   color:"from-blue-600/35 to-blue-800/20", imageUrl:"",              targetUrl:"https://layerzero.network" },
-  { id:4, title:"zkSync Umumkan Kampanye Insentif Q3 2025",            description:"Kampanye baru zkSync menawarkan reward untuk pengguna aktif di mainnet.",      category:"Layer2",   time:"6j lalu",   color:"from-blue-500/30 to-blue-900/20", imageUrl:"",              targetUrl:"https://zksync.io" },
-  { id:5, title:"Monad Testnet Buka Registrasi Publik",                description:"Daftar ke testnet Monad sekarang untuk peluang airdrop mainnet ke depan.",     category:"Testnet",  time:"1h lalu",   color:"from-blue-800/40 to-blue-900/20", imageUrl:"",              targetUrl:"https://monad.xyz" },
-];
-
-const DEF_QINFO = [
-  { id:1,  board:"garapan",    name:"Taiko (TKO)",         date:"Announced", status:"New",       targetUrl:"https://taiko.xyz" },
-  { id:2,  board:"garapan",    name:"Scroll (SCR)",        date:"Announced", status:"New",       targetUrl:"https://scroll.io" },
-  { id:3,  board:"garapan",    name:"Linea (LINEA)",       date:"Expected",  status:"Rumored",   targetUrl:"https://linea.build" },
-  { id:4,  board:"garapan",    name:"ZKsync (ZK)",         date:"Active",    status:"Active",    targetUrl:"https://zksync.io" },
-  { id:5,  board:"tge",        name:"Monad (MONAD)",       date:"Q3 2025",   status:"Soon",      targetUrl:"https://monad.xyz" },
-  { id:6,  board:"tge",        name:"Fuel Network (FUEL)", date:"Jun 2025",  status:"Confirmed", targetUrl:"https://fuel.network" },
-  { id:7,  board:"tge",        name:"Initia (INIT)",       date:"Mei 2025",  status:"Confirmed", targetUrl:"https://initia.xyz" },
-  { id:8,  board:"presale",    name:"Kaito AI (KAITO)",    date:"Jun 2025",  status:"Active",    targetUrl:"https://kaito.ai" },
-  { id:9,  board:"presale",    name:"Nillion (NIL)",       date:"Q3 2025",   status:"Upcoming",  targetUrl:"https://nillion.network" },
-  { id:10, board:"tokenomics", name:"ETH (Ethereum)",      date:"Deflationary",status:"Confirmed",targetUrl:"https://ethereum.org" },
-  { id:11, board:"tokenomics", name:"ARB (Arbitrum)",      date:"1.275B total",status:"Active",  targetUrl:"https://arbitrum.io" },
-];
+// ─── DEFAULT DATA (loaded & validated from src/data/*.json via Zod) ──
+const DEF_AIRDROPS = getAirdrops();
+const DEF_ADS      = getAds();
+const DEF_NEWS     = getNews();
+const DEF_QINFO    = getQinfo();
 
 const DEF_CALENDAR = [
   { id:1, date:"Mei 10", title:"LayerZero Snapshot",       type:"Snapshot", color:"bg-blue-500/20 text-blue-300" },

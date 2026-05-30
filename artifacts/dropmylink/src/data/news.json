@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "title": "OKX Web3 – Platform Terbaik untuk Airdrop Hunter",
+    "description": "Daftar sekarang dan mulai hunting airdrop dari platform Web3 terpercaya.",
+    "category": "Platform",
+    "time": "Baru saja",
+    "color": "from-blue-700/40 to-blue-900/20",
+    "imageUrl": "/okx-news.jpg",
+    "imageRatio": "4:5",
+    "targetUrl": "https://web3.okx.com/join/2006079"
+  },
+  {
+    "id": 2,
+    "title": "Ethereum ETF Inflows Capai Rekor $1.2B Minggu Ini",
+    "description": "Arus masuk ETF ETH mencapai angka tertinggi sepanjang sejarah minggu ini.",
+    "category": "Market",
+    "time": "2j lalu",
+    "color": "from-blue-700/40 to-blue-900/20",
+    "imageUrl": "",
+    "imageRatio": "4:5",
+    "targetUrl": "https://coindesk.com"
+  },
+  {
+    "id": 3,
+    "title": "LayerZero ZRO Airdrop: Panduan Lengkap Eligibility",
+    "description": "Cek syarat eligibility dan cara mendapatkan alokasi ZRO token airdrop.",
+    "category": "Airdrop",
+    "time": "4j lalu",
+    "color": "from-blue-600/35 to-blue-800/20",
+    "imageUrl": "",
+    "imageRatio": "4:5",
+    "targetUrl": "https://layerzero.network"
+  },
+  {
+    "id": 4,
+    "title": "zkSync Umumkan Kampanye Insentif Q3 2025",
+    "description": "Kampanye baru zkSync menawarkan reward untuk pengguna aktif di mainnet.",
+    "category": "Layer2",
+    "time": "6j lalu",
+    "color": "from-blue-500/30 to-blue-900/20",
+    "imageUrl": "",
+    "imageRatio": "4:5",
+    "targetUrl": "https://zksync.io"
+  },
+  {
+    "id": 5,
+    "title": "Monad Testnet Buka Registrasi Publik",
+    "description": "Daftar ke testnet Monad sekarang untuk peluang airdrop mainnet ke depan.",
+    "category": "Testnet",
+    "time": "1h lalu",
+    "color": "from-blue-800/40 to-blue-900/20",
+    "imageUrl": "",
+    "imageRatio": "4:5",
+    "targetUrl": "https://monad.xyz"
+  }
+]

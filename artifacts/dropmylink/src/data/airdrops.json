@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "icon": "",
+    "title": "LayerZero",
+    "url": "layerzero.network",
+    "customImage": "",
+    "tags": ["Cross-chain", "DeFi"],
+    "description": "Omnichain interoperability protocol menghubungkan 30+ blockchain. Eligible via bridging & penggunaan dApp.",
+    "status": "Active",
+    "reward": "ZRO Token",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 2,
+    "icon": "",
+    "title": "zkSync Era",
+    "url": "zksync.io",
+    "customImage": "",
+    "tags": ["ZK", "Layer2"],
+    "description": "ZK-EVM L2 by Matter Labs. Farm via bridge, swap di dApp, dan mint NFT di mainnet.",
+    "status": "Active",
+    "reward": "ZK Token",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 3,
+    "icon": "",
+    "title": "Scroll",
+    "url": "scroll.io",
+    "customImage": "",
+    "tags": ["ZK", "Layer2"],
+    "description": "ZK-EVM equivalent L2. Bridge dan gunakan dApp di Scroll mainnet untuk eligibility.",
+    "status": "Active",
+    "reward": "SCR Token",
+    "difficulty": "Easy"
+  },
+  {
+    "id": 4,
+    "icon": "",
+    "title": "Monad",
+    "url": "monad.xyz",
+    "customImage": "",
+    "tags": ["Layer1", "DeFi"],
+    "description": "High-performance EVM-compatible L1. 10,000 TPS dengan parallel execution.",
+    "status": "Testnet",
+    "reward": "MONAD Token",
+    "difficulty": "Hard"
+  },
+  {
+    "id": 5,
+    "icon": "",
+    "title": "Berachain",
+    "url": "berachain.com",
+    "customImage": "",
+    "tags": ["Layer1", "DeFi"],
+    "description": "EVM-identical L1 dengan Proof of Liquidity. Provide likuiditas untuk farming BERA.",
+    "status": "Active",
+    "reward": "BERA Token",
+    "difficulty": "Medium"
+  },
+  {
+    "id": 6,
+    "icon": "",
+    "title": "Initia",
+    "url": "initia.xyz",
+    "customImage": "",
+    "tags": ["Layer1", "DeFi"],
+    "description": "Interwoven L1 dengan native L2 ecosystem. Farm via testnet dan aktivitas Discord.",
+    "status": "Testnet",
+    "reward": "INIT Token",
+    "difficulty": "Easy"
+  }
+]
