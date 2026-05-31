@@ -685,28 +685,30 @@ function DonateFeedbackSection() {
     setTimeout(()=>setCopied(false), 2000);
   }
   return (
-    <div className="px-5 mt-6 mb-2 flex flex-col gap-3">
-      {/* Donate */}
-      <div className="rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Heart className="w-4 h-4 text-blue-400" />
-          <p className="text-xs font-bold text-white">Dukung Kami via Crypto</p>
+    <div className="px-5 mt-6 mb-2">
+      <div className="rounded-2xl border border-white/[0.07] p-4 flex flex-col gap-3">
+        {/* Donate */}
+        <div className="flex items-center gap-2">
+          <Heart className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
+          <p className="text-[10px] text-white/30">Dukung via crypto (EVM)</p>
         </div>
-        <p className="text-[10px] text-white/40 mb-2">EVM Address (ETH / BSC / Polygon / dll)</p>
-        <div className="flex items-center gap-2 bg-black/40 border border-white/[0.08] rounded-xl px-3 py-2.5">
-          <p className="text-[10px] font-mono text-blue-300/80 flex-1 truncate">{DONATE_ADDRESS}</p>
-          <button onClick={copyAddr} className="flex-shrink-0 flex items-center gap-1 text-[10px] text-blue-400 hover:text-blue-300 transition-colors">
+        <div className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.06] rounded-xl px-3 py-2">
+          <p className="text-[10px] font-mono text-white/30 flex-1 truncate">{DONATE_ADDRESS}</p>
+          <button onClick={copyAddr} className="flex-shrink-0 flex items-center gap-1 text-[10px] text-white/30 hover:text-blue-400 transition-colors">
             {copied ? <><Check className="w-3 h-3 text-green-400"/> <span className="text-green-400">Tersalin</span></> : <><Copy className="w-3 h-3"/> Salin</>}
           </button>
         </div>
-      </div>
 
-      {/* Feedback */}
-      <button onClick={()=>window.open(FEEDBACK_TG,"_blank")}
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-blue-500/10 ring-1 ring-blue-500/20 hover:bg-blue-500/20 active:scale-95 transition-all">
-        <MessageCircle className="w-4 h-4 text-blue-400" />
-        <span className="text-sm font-bold text-blue-400">Kirim Feedback via Telegram</span>
-      </button>
+        {/* Divider */}
+        <div className="border-t border-white/[0.06]"/>
+
+        {/* Feedback */}
+        <button onClick={()=>window.open(FEEDBACK_TG,"_blank")}
+          className="flex items-center gap-2 text-left hover:opacity-80 active:scale-95 transition-all">
+          <MessageCircle className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
+          <span className="text-[10px] text-white/30">Kirim feedback dan masukan, hubungi founder <span className="text-blue-400/60">@otgdontcry</span></span>
+        </button>
+      </div>
     </div>
   );
 }
