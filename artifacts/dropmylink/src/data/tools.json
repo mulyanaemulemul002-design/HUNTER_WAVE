@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "icon": "🌌",
+    "icon": "",
     "title": "Galxe",
     "url": "galxe.com",
     "customImage": "",
@@ -11,7 +11,7 @@
   },
   {
     "id": 2,
-    "icon": "⚡",
+    "icon": "",
     "title": "Zealy",
     "url": "zealy.io",
     "customImage": "",
@@ -21,9 +21,9 @@
   },
   {
     "id": 3,
-    "icon": "👛",
+    "icon": "",
     "title": "Bitget Wallet",
-    "url": "bitget.com",
+    "url": "web3.bitget.com",
     "customImage": "",
     "category": "Wallet",
     "description": "Multi-chain Web3 wallet dengan built-in DEX, NFT marketplace, dan DApp browser. Sering ada reward eksklusif untuk pengguna aktif Bitget Wallet.",
@@ -31,7 +31,7 @@
   },
   {
     "id": 4,
-    "icon": "🌅",
+    "icon": "",
     "title": "Onchain GM",
     "url": "onchaingm.io",
     "customImage": "",

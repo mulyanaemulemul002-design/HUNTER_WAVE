@@ -1146,30 +1146,35 @@ function DiscoverScreen({ tools }) {
       )}
 
       {section==="tools" && (
-        <div className="px-5 flex flex-col gap-2">
+        <div className="px-5 flex flex-col gap-3">
           {tools.map(tool=>{
             const open = expandedItem === tool.id;
             return (
-              <div key={tool.id} className={`rounded-2xl border transition-all duration-300 ${open?"bg-blue-500/[0.08] border-blue-400/25":"bg-white/[0.06] backdrop-blur-md border-white/10"}`}>
-                <button className="w-full flex items-center gap-3 p-4 text-left" onClick={()=>setExpandedItem(open?null:tool.id)}>
-                  <div className="w-9 h-9 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                    {tool.icon?<span className="text-lg leading-none">{tool.icon}</span>:<Favicon url={tool.url} customImage={tool.customImage}/>}
+              <div key={tool.id} className={`rounded-2xl border transition-all duration-300 ${open?"bg-blue-500/[0.08] border-blue-400/25":"bg-white/[0.06] backdrop-blur-md border-white/10 hover:border-blue-500/20"}`}>
+                <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedItem(open?null:tool.id)}>
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
+                    <Favicon url={tool.url} customImage={tool.customImage}/>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white leading-tight">{tool.title}</p>
-                    {tool.category && <p className="text-[10px] text-blue-400/60 mt-0.5">{tool.category}</p>}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-semibold text-white">{tool.title}</span>
+                      {tool.category && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 bg-blue-500/15 text-blue-300 ring-blue-500/25">{tool.category}</span>}
+                    </div>
+                    <p className="text-[11px] text-blue-400/40 font-mono mt-0.5 truncate">{tool.url}</p>
                   </div>
-                  {open?<ChevronUp className="w-4 h-4 text-white/30 flex-shrink-0"/>:<ChevronDown className="w-4 h-4 text-white/30 flex-shrink-0"/>}
-                </button>
+                  <ChevronDown className={`w-4 h-4 text-blue-400/40 flex-shrink-0 transition-transform duration-300 ${open?"rotate-180":""}`}/>
+                </div>
                 {open && (
-                  <div className="px-4 pb-4 border-t border-white/[0.06]">
-                    <p className="text-xs text-white/50 leading-relaxed mt-3 mb-3">{tool.description}</p>
-                    {tool.targetUrl && (
-                      <button onClick={()=>window.open(tool.targetUrl,"_blank")}
-                        className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all shadow-lg shadow-blue-500/30">
-                        <ExternalLink className="w-3.5 h-3.5"/> Buka Platform
-                      </button>
-                    )}
+                  <div className="px-4 pb-4 pt-3 border-t border-blue-500/[0.12]">
+                    {tool.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{tool.description}</p>}
+                    <div className="flex gap-2">
+                      {tool.targetUrl && (
+                        <button onClick={()=>window.open(tool.targetUrl,"_blank")}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all">
+                          <ExternalLink className="w-3.5 h-3.5"/> Buka Platform
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
