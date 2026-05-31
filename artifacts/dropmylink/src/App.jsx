@@ -990,9 +990,9 @@ function IconTikTok({ className = "w-4 h-4" }) {
 // ─── INTRO SCREEN ─────────────────────────────────────────────
 function IntroScreen() {
   const SOCIAL = [
-    { label:"X",         Icon:IconX,         url:"https://x.com/otgboys",                                          color:"text-white/70",  bg:"bg-white/[0.06]",    ring:"ring-white/10" },
-    { label:"Instagram", Icon:IconInstagram, url:"https://www.instagram.com/airdrophunterwaveid?igsh=MTU5bmI5cXRtNmF3", color:"text-pink-300/80", bg:"bg-pink-500/[0.08]",  ring:"ring-pink-500/15" },
-    { label:"TikTok",    Icon:IconTikTok,    url:"https://www.tiktok.com/@airdrophunterwaveid?_r=1&_t=ZS-96oeh8Xs9zB",  color:"text-cyan-300/80", bg:"bg-cyan-500/[0.08]",  ring:"ring-cyan-500/15" },
+    { label:"X",         Icon:IconX,         url:"https://x.com/otgboys" },
+    { label:"Instagram", Icon:IconInstagram, url:"https://www.instagram.com/airdrophunterwaveid?igsh=MTU5bmI5cXRtNmF3" },
+    { label:"TikTok",    Icon:IconTikTok,    url:"https://www.tiktok.com/@airdrophunterwaveid?_r=1&_t=ZS-96oeh8Xs9zB" },
   ];
 
   return (
@@ -1043,11 +1043,11 @@ function IntroScreen() {
         <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
           <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Follow Kami</p>
           <div className="flex gap-2.5">
-            {SOCIAL.map(({ label, Icon, url, color, bg, ring }) => (
+            {SOCIAL.map(({ label, Icon, url }) => (
               <button key={label} onClick={()=>window.open(url,"_blank")}
-                className={`flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl ring-1 active:scale-95 transition-all ${bg} ${ring}`}>
-                <Icon className={`w-5 h-5 ${color}`}/>
-                <span className={`text-[9px] font-bold ${color}`}>{label}</span>
+                className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.08] hover:ring-white/[0.14] active:scale-95 transition-all">
+                <Icon className="w-5 h-5 text-white/55"/>
+                <span className="text-[9px] font-bold text-white/45">{label}</span>
               </button>
             ))}
           </div>
@@ -1071,15 +1071,15 @@ function IntroScreen() {
 
       {/* DYOR Disclaimer */}
       <div className="px-5 mb-4">
-        <div className="rounded-2xl bg-amber-500/[0.07] border border-amber-500/20 p-4">
+        <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
           <div className="flex items-center gap-2 mb-2.5">
-            <div className="w-7 h-7 rounded-lg bg-amber-500/15 ring-1 ring-amber-500/25 flex items-center justify-center flex-shrink-0">
-              <AlertTriangle className="w-3.5 h-3.5 text-amber-400"/>
+            <div className="w-7 h-7 rounded-lg bg-white/[0.06] ring-1 ring-white/[0.10] flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-3.5 h-3.5 text-orange-400/70"/>
             </div>
-            <p className="text-xs font-bold text-amber-300">DYOR — Do Your Own Research</p>
+            <p className="text-xs font-bold text-white/80">DYOR — Do Your Own Research</p>
           </div>
-          <p className="text-[11px] text-amber-200/40 leading-relaxed">
-            Informasi yang tersaji di platform ini <span className="text-amber-300/70">bukan merupakan saran investasi</span>. Pasar kripto sangat volatil dan mengandung risiko tinggi. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial apa pun. Platform tidak bertanggung jawab atas kerugian yang timbul.
+          <p className="text-[11px] text-white/35 leading-relaxed">
+            Informasi yang tersaji di platform ini <span className="text-orange-400/60">bukan merupakan saran investasi</span>. Pasar kripto sangat volatil dan mengandung risiko tinggi. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial apa pun. Platform tidak bertanggung jawab atas kerugian yang timbul.
           </p>
         </div>
       </div>
