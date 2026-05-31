@@ -148,7 +148,7 @@ function FormInput({ label, ...props }) {
   return (
     <div>
       {label && <p className="text-[11px] text-white/40 mb-1 font-medium">{label}</p>}
-      <input {...props} className="w-full bg-white/[0.06] ring-1 ring-white/15 rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:ring-blue-500/50 transition-all" />
+      <input {...props} className="w-full bg-[#1E1E1E] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/20 outline-none focus:border-blue-500/50 transition-all" />
     </div>
   );
 }
@@ -158,7 +158,7 @@ function FormSelect({ label, value, onChange, options }) {
     <div>
       {label && <p className="text-[11px] text-white/40 mb-1 font-medium">{label}</p>}
       <select value={value} onChange={onChange}
-        className="w-full bg-white/[0.06] ring-1 ring-white/15 rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:ring-blue-500/50 transition-all appearance-none">
+        className="w-full bg-[#1E1E1E] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white outline-none focus:border-blue-500/50 transition-all appearance-none">
         {options.map(o => <option key={typeof o==="string"?o:o.value} value={typeof o==="string"?o:o.value} className="bg-gray-900">{typeof o==="string"?o:o.label}</option>)}
       </select>
     </div>
@@ -201,7 +201,7 @@ function ImageUpload({ label, value, onChange }) {
 function Btn({ onClick, children, variant = "primary", className = "", type = "button" }) {
   const s = {
     primary: "bg-blue-500 hover:bg-blue-400 text-white font-bold",
-    ghost:   "bg-white/[0.06] ring-1 ring-white/15 text-white/70 hover:bg-white/10",
+    ghost:   "bg-[#1E1E1E] border border-white/[0.08] text-white/60 hover:bg-white/[0.06]",
     danger:  "bg-red-500/15 ring-1 ring-red-500/30 text-red-400 hover:bg-red-500/25",
   };
   return (
@@ -226,7 +226,7 @@ function AdminLogin({ onClose, onSuccess }) {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center px-5">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
-      <div className="relative w-full max-w-sm rounded-3xl bg-[#050510] ring-1 ring-blue-500/30 p-6 shadow-2xl shadow-blue-900/30">
+      <div className="relative w-full max-w-sm rounded-3xl bg-[#1E1E1E] border border-blue-500/25 p-6 shadow-2xl shadow-black/60">
         <div className="flex items-center gap-2.5 mb-5">
           <div className="w-9 h-9 rounded-xl bg-blue-500/15 ring-1 ring-blue-500/30 flex items-center justify-center">
             <Shield className="w-4 h-4 text-blue-400" />
@@ -266,7 +266,7 @@ function AdminToolsTab({ data, onUpdate }) {
   }
   return (
     <div>
-      <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-white/[0.04] ring-1 ring-blue-500/20 flex flex-col gap-3">
+      <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20 flex flex-col gap-3">
         <div className="flex gap-2">
           <FormInput label="Emoji" placeholder="🌌" value={form.icon} onChange={e=>setForm({...form,icon:e.target.value})} />
           <div className="flex-1"><FormInput label="Nama Platform *" placeholder="Galxe" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} required /></div>
@@ -277,7 +277,7 @@ function AdminToolsTab({ data, onUpdate }) {
         <div>
           <label className="block text-[10px] text-white/40 mb-1">Deskripsi</label>
           <textarea value={form.description} onChange={e=>setForm({...form,description:e.target.value})} rows={2} placeholder="Deskripsi singkat platform..."
-            className="w-full bg-white/[0.03] rounded-xl px-3 py-2.5 text-xs text-white/80 ring-1 ring-white/10 resize-none outline-none focus:ring-blue-500/40 placeholder:text-white/20" />
+            className="w-full bg-[#1E1E1E] border border-white/[0.08] rounded-xl px-3 py-2.5 text-xs text-white/80 resize-none outline-none focus:border-blue-500/40 placeholder:text-white/20" />
         </div>
         <FormInput label="URL Target (link buka)" placeholder="https://galxe.com" value={form.targetUrl} onChange={e=>setForm({...form,targetUrl:e.target.value})} />
         <div className="flex gap-2">
@@ -286,7 +286,7 @@ function AdminToolsTab({ data, onUpdate }) {
         </div>
       </form>
       {data.map(item=>(
-        <div key={item.id} className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] ring-1 ring-white/10 mb-2">
+        <div key={item.id} className="flex items-center gap-3 p-3 rounded-2xl bg-[#161616] border border-white/[0.06] mb-2">
           <div className="w-8 h-8 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
             {item.icon?<span className="text-sm">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage} size={20}/>}
           </div>
@@ -340,7 +340,7 @@ function AdminExportBox({ data, filename }) {
   }
 
   return (
-    <div className="mt-5 p-4 rounded-2xl bg-blue-500/[0.06] ring-1 ring-blue-500/20">
+    <div className="mt-5 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20">
       <div className="flex items-center justify-between mb-2">
         <div>
           <p className="text-xs font-bold text-blue-300">📋 Export Data Baru</p>
@@ -388,26 +388,26 @@ function AdminPanel({ airdrops, ads, news, qinfo, tools, onUpdate, onExport, onI
   const [tab, setTab]       = useState("airdrop");
   const importRef           = useRef(null);
   return (
-    <div className="fixed inset-0 z-[150] flex flex-col bg-[#02020f] overflow-hidden">
-      <div className="flex items-center gap-3 px-5 py-4 border-b border-blue-500/20">
+    <div className="fixed inset-0 z-[150] flex flex-col bg-[#0A0A0A] overflow-hidden">
+      <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
         <div className="w-8 h-8 rounded-xl bg-blue-500/15 ring-1 ring-blue-500/30 flex items-center justify-center">
           <Settings className="w-4 h-4 text-blue-400" />
         </div>
         <span className="text-sm font-bold text-white flex-1">Panel Admin</span>
-        <button onClick={onClose} className="w-8 h-8 rounded-xl bg-white/[0.05] ring-1 ring-white/10 flex items-center justify-center hover:bg-white/10">
+        <button onClick={onClose} className="w-8 h-8 rounded-xl bg-[#1E1E1E] border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.08]">
           <X className="w-4 h-4 text-white/60" />
         </button>
       </div>
 
       {/* Export / Import bar */}
-      <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/[0.06] bg-blue-500/[0.03]">
+      <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/[0.06]">
         <span className="text-[10px] text-white/30 flex-1">Backup &amp; Restore data</span>
         <button onClick={onExport}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 text-blue-400 text-[10px] font-bold hover:bg-blue-500/20 transition-all">
           ⬇ Export JSON
         </button>
         <button onClick={()=>importRef.current?.click()}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.05] ring-1 ring-white/10 text-white/50 text-[10px] font-bold hover:bg-white/10 transition-all">
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1E1E1E] border border-white/[0.08] text-white/50 text-[10px] font-bold hover:bg-white/[0.08] transition-all">
           ⬆ Import JSON
         </button>
         <input ref={importRef} type="file" accept=".json" onChange={onImport} className="hidden" />
@@ -458,7 +458,7 @@ function AdminAirdropTab({ data, onUpdate }) {
       </div>
 
       {show && (
-        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-white/[0.04] ring-1 ring-blue-500/20 flex flex-col gap-3">
+        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20 flex flex-col gap-3">
           <p className="text-xs font-bold text-blue-400">{editId?"Edit":"Tambah"} Airdrop</p>
           <div className="flex gap-2">
             <FormInput label="Emoji" placeholder="🚀" value={form.icon} onChange={e=>setForm({...form,icon:e.target.value})} />
@@ -470,7 +470,7 @@ function AdminAirdropTab({ data, onUpdate }) {
           <div>
             <p className="text-[11px] text-white/40 mb-1 font-medium">Deskripsi</p>
             <textarea value={form.description} onChange={e=>setForm({...form,description:e.target.value})} rows={2} placeholder="Penjelasan singkat cara farming..."
-              className="w-full bg-white/[0.06] ring-1 ring-white/15 rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:ring-blue-500/50 resize-none" />
+              className="w-full bg-[#1E1E1E] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/20 outline-none focus:border-blue-500/50 resize-none" />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <FormSelect label="Status"    value={form.status}     onChange={e=>setForm({...form,status:e.target.value})}     options={STATUS_OPTIONS} />
@@ -483,7 +483,7 @@ function AdminAirdropTab({ data, onUpdate }) {
 
       <div className="flex flex-col gap-2">
         {data.map(item=>(
-          <div key={item.id} className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] ring-1 ring-white/10">
+          <div key={item.id} className="flex items-center gap-3 p-3 rounded-2xl bg-[#161616] border border-white/[0.06]">
             <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
               {item.icon ? <span className="text-lg">{item.icon}</span> : <Favicon url={item.url} customImage={item.customImage} size={22} />}
             </div>
@@ -523,7 +523,7 @@ function AdminAdsTab({ data, onUpdate }) {
       </div>
 
       {show && (
-        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-white/[0.04] ring-1 ring-blue-500/20 flex flex-col gap-3">
+        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20 flex flex-col gap-3">
           <p className="text-xs font-bold text-blue-400">{editId?"Edit":"Tambah"} Iklan</p>
           <FormInput label="Judul Banner *"  placeholder="Iklan Terbaru" value={form.title}    onChange={e=>setForm({...form,title:e.target.value})} required />
           <FormInput label="Subjudul"        placeholder="Teks kecil"    value={form.subtitle} onChange={e=>setForm({...form,subtitle:e.target.value})} />
@@ -540,7 +540,7 @@ function AdminAdsTab({ data, onUpdate }) {
 
       <div className="flex flex-col gap-2">
         {data.map(item=>(
-          <div key={item.id} className="p-3 rounded-2xl bg-white/[0.04] ring-1 ring-white/10">
+          <div key={item.id} className="p-3 rounded-2xl bg-[#161616] border border-white/[0.06]">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 {item.imageUrl && <img src={item.imageUrl} className="w-10 h-10 rounded-lg object-cover flex-shrink-0"/>}
@@ -583,7 +583,7 @@ function AdminNewsTab({ data, onUpdate }) {
       </div>
 
       {show && (
-        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-white/[0.04] ring-1 ring-blue-500/20 flex flex-col gap-3">
+        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20 flex flex-col gap-3">
           <p className="text-xs font-bold text-blue-400">{editId?"Edit":"Tambah"} Berita</p>
           <FormInput label="Judul Berita *"       placeholder="Headline berita..."         value={form.title}       onChange={e=>setForm({...form,title:e.target.value})} required />
           <FormInput label="Deskripsi Singkat"    placeholder="Ringkasan 1-2 kalimat..."   value={form.description} onChange={e=>setForm({...form,description:e.target.value})} />
@@ -637,7 +637,7 @@ function AdminQinfoTab({ data, onUpdate }) {
       </div>
 
       {show && (
-        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-white/[0.04] ring-1 ring-blue-500/20 flex flex-col gap-3">
+        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20 flex flex-col gap-3">
           <p className="text-xs font-bold text-blue-400">{editId?"Edit":"Tambah"} Info Cepat</p>
           <FormSelect label="Papan" value={form.board} onChange={e=>setForm({...form,board:e.target.value})} options={[{value:"garapan",label:"🚀 Garapan Baru"},{value:"tge",label:"⚡ TGE"},{value:"presale",label:"📈 Presale"},{value:"tokenomics",label:"📊 Tokenomics"}]} />
           <FormInput label="Nama Proyek *"      placeholder="Monad (MONAD)"         value={form.name}      onChange={e=>setForm({...form,name:e.target.value})} required />
@@ -656,7 +656,7 @@ function AdminQinfoTab({ data, onUpdate }) {
             <div key={board.id}>
               <p className={`text-[10px] font-bold mb-1.5 ${board.accent}`}>{board.label}</p>
               {items.map(item=>(
-                <div key={item.id} className="flex items-center gap-2 p-2.5 mb-1.5 rounded-xl bg-white/[0.04] ring-1 ring-white/10">
+                <div key={item.id} className="flex items-center gap-2 p-2.5 mb-1.5 rounded-xl bg-[#161616] border border-white/[0.06]">
                   <div className="flex-1">
                     <p className="text-xs font-semibold text-white">{item.name}</p>
                     <p className="text-[10px] text-white/30">{item.date} · {item.status}</p>
@@ -686,13 +686,13 @@ function DonateFeedbackSection() {
   }
   return (
     <div className="px-5 mt-6 mb-2">
-      <div className="rounded-2xl border border-white/[0.07] p-4 flex flex-col gap-3">
+      <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4 flex flex-col gap-3">
         {/* Donate */}
         <div className="flex items-center gap-2">
           <Heart className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
           <p className="text-[10px] text-white/30">Dukung via crypto (EVM)</p>
         </div>
-        <div className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.06] rounded-xl px-3 py-2">
+        <div className="flex items-center gap-2 bg-black/30 border border-white/[0.06] rounded-xl px-3 py-2">
           <p className="text-[10px] font-mono text-white/30 flex-1 truncate">{DONATE_ADDRESS}</p>
           <button onClick={copyAddr} className="flex-shrink-0 flex items-center gap-1 text-[10px] text-white/30 hover:text-blue-400 transition-colors">
             {copied ? <><Check className="w-3 h-3 text-green-400"/> <span className="text-green-400">Tersalin</span></> : <><Copy className="w-3 h-3"/> Salin</>}
@@ -756,7 +756,7 @@ function AdsCarousel({ ads }) {
   if (!active.length) return null;
   return (
     <div className="px-5 mb-6">
-      <div className="relative w-full aspect-video rounded-2xl overflow-hidden ring-1 ring-blue-500/20">
+      <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/[0.08]">
         {active.map((a, i) => (
           <div key={a.id}
             className={`absolute inset-0 transition-opacity duration-500 ${i === idx ? "opacity-100 z-10" : "opacity-0 z-0"}`}>
@@ -796,7 +796,7 @@ function NewsCarousel({ news }) {
         <span className="text-[10px] text-blue-400/50">{idx + 1} / {news.length}</span>
       </div>
       <div className="px-5">
-        <div className="relative overflow-hidden rounded-2xl ring-1 ring-blue-500/20">
+        <div className="relative overflow-hidden rounded-2xl border border-white/[0.08]">
           {/* Slide strip */}
           <div className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${idx * 100}%)` }}>
@@ -814,7 +814,7 @@ function NewsCarousel({ news }) {
                   </span>
                 </div>
                 {/* Description area */}
-                <div className="px-4 py-3.5 flex flex-col gap-2 bg-[#080c18]">
+                <div className="px-4 py-3.5 flex flex-col gap-2 bg-[#1E1E1E]">
                   <p className="text-sm font-semibold text-white leading-snug line-clamp-2">{item.title}</p>
                   {item.description && (
                     <p className="text-[11px] text-white/40 leading-relaxed line-clamp-2">{item.description}</p>
@@ -853,7 +853,7 @@ function NewsCarousel({ news }) {
 function QinfoBoardCard({ board, items }) {
   const Icon = board.icon;
   return (
-    <div className={`w-full aspect-video rounded-2xl p-4 bg-gradient-to-br ${board.color} ring-1 ${board.ring} flex flex-col gap-3 overflow-hidden`}>
+    <div className="w-full aspect-video rounded-2xl p-4 bg-[#1E1E1E] border border-white/[0.06] flex flex-col gap-3 overflow-hidden">
       <div className={`flex items-center gap-1.5 ${board.accent}`}>
         <Icon className="w-3.5 h-3.5" />
         <span className="text-xs font-bold tracking-wider uppercase">{board.label}</span>
@@ -1026,10 +1026,10 @@ function AirdropScreen({ airdrops }) {
             {filterOpen?<ChevronUp className="w-3.5 h-3.5"/>:<ChevronDown className="w-3.5 h-3.5"/>}
           </button>
           {filterOpen && (
-            <div className="mt-3 bg-white/[0.06] backdrop-blur-md border border-white/10 rounded-2xl p-3 flex flex-wrap gap-2">
+            <div className="mt-3 bg-[#1E1E1E] border border-white/[0.06] rounded-2xl p-3 flex flex-wrap gap-2">
               {allTags.map(tag=>(
                 <button key={tag} onClick={()=>{setActiveTag(tag);setFilterOpen(false);}}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold ring-1 transition-all ${activeTag===tag?"bg-blue-500/25 ring-blue-400/50 text-blue-300":"bg-white/[0.04] ring-white/10 text-white/50 hover:bg-blue-500/10 hover:text-blue-300"}`}>
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${activeTag===tag?"bg-blue-500 border-blue-500 text-white":"bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/80"}`}>
                   {tag}
                 </button>
               ))}
@@ -1041,7 +1041,7 @@ function AirdropScreen({ airdrops }) {
           {filtered.map(item=>{
             const expanded=expandedId===item.id;
             return (
-              <div key={item.id} className={`rounded-2xl border transition-all duration-300 ${expanded?"bg-blue-500/[0.08] border-blue-400/25":"bg-white/[0.06] backdrop-blur-md border-white/10 hover:border-blue-500/20"}`}>
+              <div key={item.id} className={`rounded-2xl border transition-all duration-300 ${expanded?"bg-[#1E1E1E] border-blue-500/40":"bg-[#1E1E1E] border-white/[0.06] hover:border-white/[0.14]"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:item.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
@@ -1110,7 +1110,7 @@ function DiscoverScreen({ tools }) {
             <p className="text-[11px] text-amber-300/80 leading-relaxed">Lakukan transaksi dengan hati-hati. Platform tidak bertanggung jawab atas risiko P2P deal.</p>
           </div>
           {DEF_P2P.map(l=>(
-            <div key={l.id} className="rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4">
+            <div key={l.id} className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
               <div className="flex items-center gap-2.5 mb-3">
                 <div className="w-8 h-8 rounded-full bg-blue-500/15 ring-1 ring-blue-500/20 flex items-center justify-center text-sm">👤</div>
                 <div>
@@ -1133,7 +1133,7 @@ function DiscoverScreen({ tools }) {
       {section==="calendar" && (
         <div className="px-5 flex flex-col gap-3">
           {DEF_CALENDAR.map(e=>(
-            <div key={e.id} className="rounded-2xl bg-white/[0.06] backdrop-blur-md border border-white/10 p-4 flex items-center gap-4">
+            <div key={e.id} className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4 flex items-center gap-4">
               <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-blue-500/15 ring-1 ring-blue-500/20 flex flex-col items-center justify-center">
                 <span className="text-[9px] text-blue-400/60 uppercase font-bold">{e.date.split(" ")[0]}</span>
                 <span className="text-xl font-bold text-white leading-none">{e.date.split(" ")[1]}</span>
@@ -1152,7 +1152,7 @@ function DiscoverScreen({ tools }) {
           {tools.map(tool=>{
             const open = expandedItem === tool.id;
             return (
-              <div key={tool.id} className={`rounded-2xl border transition-all duration-300 ${open?"bg-blue-500/[0.08] border-blue-400/25":"bg-white/[0.06] backdrop-blur-md border-white/10 hover:border-blue-500/20"}`}>
+              <div key={tool.id} className={`rounded-2xl border transition-all duration-300 ${open?"bg-[#1E1E1E] border-blue-500/40":"bg-[#1E1E1E] border-white/[0.06] hover:border-white/[0.14]"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedItem(open?null:tool.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     <Favicon url={tool.url} customImage={tool.customImage}/>
@@ -1191,11 +1191,11 @@ function DiscoverScreen({ tools }) {
 // ─── BOTTOM NAV ───────────────────────────────────────────────
 function BottomNav({ active, onSelect }) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-6">
-      <div className="flex items-center gap-1 px-3 py-2 rounded-full bg-black/80 backdrop-blur-2xl ring-1 ring-blue-500/20 shadow-2xl shadow-blue-900/30">
+    <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-5">
+      <div className="flex items-center gap-1 px-2 py-1.5 rounded-2xl bg-[#1E1E1E] border border-white/[0.08] shadow-2xl shadow-black/60">
         {[{id:"home",label:"Home",icon:Home},{id:"airdrops",label:"Airdrop",icon:LayoutGrid},{id:"discover",label:"Discover",icon:Compass}].map(({id,label,icon:Icon})=>(
           <button key={id} onClick={()=>onSelect(id)}
-            className={`flex flex-col items-center gap-0.5 px-6 py-2 rounded-full transition-all duration-200 ${active===id?"bg-blue-500/20 text-blue-400":"text-white/30 hover:text-white/50"}`}>
+            className={`flex flex-col items-center gap-0.5 px-7 py-2 rounded-xl transition-all duration-200 ${active===id?"bg-blue-500 text-white":"text-white/30 hover:text-white/60 hover:bg-white/[0.04]"}`}>
             <Icon className="w-5 h-5"/>
             <span className="text-[9px] font-bold">{label}</span>
           </button>
@@ -1293,14 +1293,14 @@ export default function App() {
   function handleLogout() { sessionStorage.removeItem("dml_admin_ok"); setIsAdmin(false); setShowPanel(false); }
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-x-hidden">
 
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-black/85 backdrop-blur-xl border-b border-blue-500/[0.12]">
+      <div className="sticky top-0 z-40 bg-[#0A0A0A] border-b border-white/[0.06]">
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer select-none" onClick={handleLogoTap}>
             <img src="/logo.jpg" alt="logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-blue-500/30"/>
-            <span className="text-sm font-bold text-white">DROP<span className="text-blue-500/60">MYLINK</span></span>
+            <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
           </div>
           <div className="flex items-center gap-2">
             {isAdmin && (
@@ -1330,7 +1330,7 @@ export default function App() {
 
       {/* Save toast */}
       {savedMsg && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[250] px-4 py-2 rounded-full bg-blue-500/20 ring-1 ring-blue-400/40 backdrop-blur-xl text-blue-300 text-xs font-bold shadow-lg">
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[250] px-4 py-2 rounded-full bg-[#1E1E1E] border border-blue-500/30 text-blue-300 text-xs font-bold shadow-lg shadow-black/40">
           {savedMsg}
         </div>
       )}
