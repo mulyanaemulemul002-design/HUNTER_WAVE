@@ -5,7 +5,7 @@ import {
   ExternalLink, Copy, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
   Calendar, Users, Lightbulb, Zap, Bell, Clock,
   Settings, Plus, Trash2, X, Shield, MessageCircle, Heart,
-  Rocket, TrendingUp, BarChart2,
+  Rocket, TrendingUp, BarChart2, Download,
 } from "lucide-react";
 
 // ─── ADMIN CONFIG ─────────────────────────────────────────────
@@ -298,6 +298,87 @@ function AdminToolsTab({ data, onUpdate }) {
           <button onClick={()=>onUpdate(data.filter(d=>d.id!==item.id))} className="p-1.5 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 text-red-400 hover:bg-red-500/20 transition-all"><Trash2 className="w-3 h-3"/></button>
         </div>
       ))}
+      <AdminExportBox data={data} filename="tools.json" />
+    </div>
+  );
+}
+
+// ─── ADMIN EXPORT BOX ─────────────────────────────────────────
+// Hanya ekspor item yang ditambahkan admin (ID = Date.now() > 1_000_000_000)
+// Item bawaan repo punya ID kecil (1, 2, 3, ...)
+function AdminExportBox({ data, filename }) {
+  const [copied, setCopied] = useState(false);
+  const newItems = data.filter(item => typeof item.id === "number" && item.id > 1_000_000_000);
+
+  function getJson() { return JSON.stringify(newItems, null, 2); }
+
+  function handleCopy() {
+    navigator.clipboard.writeText(getJson()).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }).catch(() => {
+      // Fallback untuk browser yang blokir clipboard di non-HTTPS
+      const ta = document.createElement("textarea");
+      ta.value = getJson();
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  }
+
+  function handleDownload() {
+    const blob = new Blob([getJson()], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  return (
+    <div className="mt-5 p-4 rounded-2xl bg-blue-500/[0.06] ring-1 ring-blue-500/20">
+      <div className="flex items-center justify-between mb-2">
+        <div>
+          <p className="text-xs font-bold text-blue-300">📋 Export Data Baru</p>
+          <p className="text-[10px] text-white/30 mt-0.5">
+            {newItems.length === 0
+              ? "Belum ada data baru — tambah item dulu"
+              : `${newItems.length} item baru (belum ada di repo)`}
+          </p>
+        </div>
+        {newItems.length > 0 && (
+          <span className="text-[10px] font-mono bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full">
+            {filename}
+          </span>
+        )}
+      </div>
+
+      {newItems.length > 0 && (
+        <>
+          <div className="mb-3 p-2.5 rounded-xl bg-black/40 ring-1 ring-white/[0.06] max-h-28 overflow-y-auto" style={{scrollbarWidth:"none"}}>
+            <pre className="text-[9px] text-green-400/70 font-mono leading-relaxed whitespace-pre-wrap break-all">
+              {getJson()}
+            </pre>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={handleCopy}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${copied ? "bg-green-500/20 ring-1 ring-green-500/30 text-green-400" : "bg-blue-500/20 ring-1 ring-blue-500/30 text-blue-300 hover:bg-blue-500/30"}`}>
+              {copied ? <><Check className="w-3.5 h-3.5"/> Tersalin!</> : <><Copy className="w-3.5 h-3.5"/> Copy JSON</>}
+            </button>
+            <button onClick={handleDownload}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/[0.05] ring-1 ring-white/10 text-white/50 text-xs font-bold hover:bg-white/10 hover:text-white/80 active:scale-95 transition-all">
+              <Download className="w-3.5 h-3.5"/> Download
+            </button>
+          </div>
+          <p className="text-[9px] text-white/20 mt-2 text-center leading-relaxed">
+            Paste ke dalam array <span className="font-mono text-white/30">{filename}</span> di repo, lalu push → Vercel auto-deploy
+          </p>
+        </>
+      )}
     </div>
   );
 }
@@ -417,6 +498,7 @@ function AdminAirdropTab({ data, onUpdate }) {
           </div>
         ))}
       </div>
+      <AdminExportBox data={data} filename="airdrops.json" />
     </div>
   );
 }
@@ -476,6 +558,7 @@ function AdminAdsTab({ data, onUpdate }) {
           </div>
         ))}
       </div>
+      <AdminExportBox data={data} filename="ads.json" />
     </div>
   );
 }
@@ -529,6 +612,7 @@ function AdminNewsTab({ data, onUpdate }) {
           </div>
         ))}
       </div>
+      <AdminExportBox data={data} filename="news.json" />
     </div>
   );
 }
@@ -587,6 +671,7 @@ function AdminQinfoTab({ data, onUpdate }) {
           );
         })}
       </div>
+      <AdminExportBox data={data} filename="qinfo.json" />
     </div>
   );
 }
