@@ -703,7 +703,7 @@ function DonateFeedbackSection() {
         <div className="border-t border-white/[0.06]"/>
 
         {/* Feedback */}
-        <button onClick={()=>window.open(FEEDBACK_TG,"_blank")}
+        <button onClick={()=>window.open(FEEDBACK_TG,"_blank","noopener,noreferrer")}
           className="flex items-center gap-2 text-left hover:opacity-80 active:scale-95 transition-all">
           <MessageCircle className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
           <span className="text-[10px] text-white/30">Kirim feedback dan masukan, hubungi founder <span className="text-blue-400/60">@otgdontcry</span></span>
@@ -770,7 +770,7 @@ function AdsCarousel({ ads }) {
               <p className="text-base font-bold text-white leading-snug">{a.title}</p>
               {a.subtitle && <p className="text-xs text-white/40">{a.subtitle}</p>}
               {a.buttonText && a.targetUrl && (
-                <button onClick={() => window.open(a.targetUrl, "_blank")}
+                <button onClick={() => window.open(a.targetUrl,"_blank","noopener,noreferrer")}
                   className="mt-1 px-5 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all shadow-lg shadow-blue-500/30">
                   {a.buttonText}
                 </button>
@@ -822,7 +822,7 @@ function NewsCarousel({ news }) {
                   <div className="flex items-center justify-between mt-0.5">
                     <span className="text-[10px] text-white/25">{item.time}</span>
                     {item.targetUrl && (
-                      <button onClick={() => window.open(item.targetUrl, "_blank")}
+                      <button onClick={() => window.open(item.targetUrl,"_blank","noopener,noreferrer")}
                         className="px-5 py-1.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all shadow-lg shadow-blue-500/30">
                         LIHAT
                       </button>
@@ -866,7 +866,7 @@ function QinfoBoardCard({ board, items }) {
         {items.map(item => (
           <div key={item.id}
             className={`flex items-center justify-between py-0.5 ${item.targetUrl ? "cursor-pointer hover:opacity-80 active:opacity-60" : ""}`}
-            onClick={() => item.targetUrl && window.open(item.targetUrl, "_blank")}>
+            onClick={() => item.targetUrl && window.open(item.targetUrl,"_blank","noopener,noreferrer")}>
             <span className="text-[11px] text-white/80 font-medium truncate mr-2 flex-1">{item.name}</span>
             <div className="flex items-center gap-1.5 flex-shrink-0">
               <span className="text-[9px] text-white/30 hidden sm:block">{item.date}</span>
@@ -1071,7 +1071,7 @@ function IntroScreen() {
 
           {/* Telegram join pill */}
           <button
-            onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank")}
+            onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
             className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-lg shadow-blue-500/25">
             <IconTelegram className="w-4 h-4 text-white"/>
             <span className="text-xs font-bold text-white">Bergabung di Telegram</span>
@@ -1085,7 +1085,7 @@ function IntroScreen() {
           <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Follow Kami</p>
           <div className="flex gap-2.5">
             {SOCIAL.map(({ label, Icon, url }) => (
-              <button key={label} onClick={()=>window.open(url,"_blank")}
+              <button key={label} onClick={()=>window.open(url,"_blank","noopener,noreferrer")}
                 className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.08] hover:ring-white/[0.14] active:scale-95 transition-all">
                 <Icon className="w-5 h-5 text-white/55"/>
                 <span className="text-[9px] font-bold text-white/45">{label}</span>
@@ -1224,7 +1224,7 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
                         {item.difficulty && <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 ${item.difficulty==="Easy"?"bg-green-500/15 text-green-400 ring-green-500/25":item.difficulty==="Hard"?"bg-red-500/15 text-red-400 ring-red-500/25":"bg-yellow-500/15 text-yellow-400 ring-yellow-500/25"}`}>{item.difficulty}</span>}
                       </div>
                       <div className="flex gap-2">
-                        <button onClick={()=>window.open(`https://${item.url}`,"_blank")}
+                        <button onClick={()=>window.open(`https://${item.url}`,"_blank","noopener,noreferrer")}
                           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all">
                           <ExternalLink className="w-3.5 h-3.5"/> Buka Website
                         </button>
@@ -1334,7 +1334,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
                       {item.difficulty && <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 ${item.difficulty==="Easy"?"bg-green-500/15 text-green-400 ring-green-500/25":item.difficulty==="Hard"?"bg-red-500/15 text-red-400 ring-red-500/25":"bg-yellow-500/15 text-yellow-400 ring-yellow-500/25"}`}>{item.difficulty}</span>}
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={()=>window.open(`https://${item.url}`,"_blank")}
+                      <button onClick={()=>window.open(`https://${item.url}`,"_blank","noopener,noreferrer")}
                         className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all">
                         <ExternalLink className="w-3.5 h-3.5"/> Buka Website
                       </button>
@@ -1441,7 +1441,7 @@ function DiscoverScreen({ tools }) {
                     {tool.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{tool.description}</p>}
                     <div className="flex gap-2">
                       {tool.targetUrl && (
-                        <button onClick={()=>window.open(tool.targetUrl,"_blank")}
+                        <button onClick={()=>window.open(tool.targetUrl,"_blank","noopener,noreferrer")}
                           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all">
                           <ExternalLink className="w-3.5 h-3.5"/> Buka Platform
                         </button>
