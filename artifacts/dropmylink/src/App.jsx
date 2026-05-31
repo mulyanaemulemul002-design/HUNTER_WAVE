@@ -5,7 +5,7 @@ import {
   ExternalLink, Copy, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
   Calendar, Users, Lightbulb, Zap, Bell, Clock,
   Settings, Plus, Trash2, X, Shield, MessageCircle, Heart,
-  Rocket, TrendingUp, BarChart2, Download,
+  Rocket, TrendingUp, BarChart2, Download, Bookmark, AlertTriangle,
 } from "lucide-react";
 
 // ─── ADMIN CONFIG ─────────────────────────────────────────────
@@ -957,25 +957,144 @@ function InfoTeknisCarousel({ qinfo }) {
   );
 }
 
-// ─── HOME SCREEN ──────────────────────────────────────────────
-function HomeScreen({ ads, news, qinfo }) {
+// ─── INTRO SCREEN ─────────────────────────────────────────────
+function IntroScreen() {
   return (
     <div className="pb-32">
       {/* Hero */}
       <div className="px-5 pt-6 mb-6">
         <span className="text-[10px] font-bold text-blue-400 tracking-widest uppercase">Web3 Channel</span>
         <h1 className="text-2xl font-bold text-white leading-tight mt-1">
-          Airdrop & Campaign<br />
-          <span className="text-blue-500/60">Info Hub</span>
+          HUNTER <span className="text-blue-500">WAVE</span>
         </h1>
-        <p className="text-xs text-white/30 mt-2">Info airdrop, campaign, dan tips Web3 terkurasi</p>
+        <p className="text-xs text-white/30 mt-2">Selamat datang di hub info airdrop & campaign Web3 terkurasi</p>
       </div>
 
+      {/* Brand Profile Card */}
+      <div className="px-5 mb-4">
+        <div className="rounded-2xl bg-gradient-to-br from-blue-600/20 to-blue-900/10 border border-blue-500/25 p-5">
+          <div className="flex items-center gap-3.5 mb-4">
+            <img src="/logo.jpg" alt="logo" className="w-14 h-14 rounded-2xl object-cover ring-2 ring-blue-500/40 shadow-lg shadow-blue-500/20"/>
+            <div>
+              <p className="text-base font-bold text-white">HUNTER WAVE</p>
+              <p className="text-[11px] text-blue-400/70 font-semibold tracking-wide">Web3 Airdrop Info Hub</p>
+              <span className="inline-flex items-center gap-1 mt-1 text-[9px] px-2 py-0.5 rounded-full bg-green-500/15 text-green-400 ring-1 ring-green-500/25">
+                <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse"/> AKTIF
+              </span>
+            </div>
+          </div>
+          <p className="text-xs text-white/50 leading-relaxed">
+            Platform kurasi informasi airdrop, campaign, dan tips Web3 untuk komunitas crypto Indonesia. Kami menyajikan info terkini secara mandiri dan tidak berafiliasi dengan proyek mana pun.
+          </p>
+          <div className="mt-3.5 flex gap-2 flex-wrap">
+            {["Airdrop","Campaign","Web3","DeFi","Layer2"].map(t=>(
+              <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20">{t}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Independence Disclaimer */}
+      <div className="px-5 mb-4">
+        <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
+          <div className="flex items-center gap-2 mb-2.5">
+            <div className="w-7 h-7 rounded-lg bg-blue-500/15 ring-1 ring-blue-500/25 flex items-center justify-center flex-shrink-0">
+              <Shield className="w-3.5 h-3.5 text-blue-400"/>
+            </div>
+            <p className="text-xs font-bold text-white">Kemandirian HUNTER WAVE</p>
+          </div>
+          <p className="text-[11px] text-white/40 leading-relaxed">
+            HUNTER WAVE adalah platform <span className="text-blue-400/80">independen</span> yang tidak memiliki afiliasi resmi, sponsor, atau kerja sama berbayar dengan proyek, tim, atau entitas mana pun. Semua konten disajikan murni berdasarkan riset dan kurasi komunitas.
+          </p>
+        </div>
+      </div>
+
+      {/* DYOR Disclaimer */}
+      <div className="px-5 mb-4">
+        <div className="rounded-2xl bg-amber-500/[0.07] border border-amber-500/20 p-4">
+          <div className="flex items-center gap-2 mb-2.5">
+            <div className="w-7 h-7 rounded-lg bg-amber-500/15 ring-1 ring-amber-500/25 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-400"/>
+            </div>
+            <p className="text-xs font-bold text-amber-300">DYOR — Do Your Own Research</p>
+          </div>
+          <p className="text-[11px] text-amber-200/40 leading-relaxed">
+            Informasi yang tersaji di platform ini <span className="text-amber-300/70">bukan merupakan saran investasi</span>. Pasar kripto sangat volatil dan mengandung risiko tinggi. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial apa pun. Platform tidak bertanggung jawab atas kerugian yang timbul.
+          </p>
+        </div>
+      </div>
+
+      <DonateFeedbackSection />
+    </div>
+  );
+}
+
+// ─── INFO TERKINI SCREEN ──────────────────────────────────────
+function InfoTerkiniScreen({ ads, news, qinfo }) {
+  return (
+    <div className="pb-32">
+      <div className="px-5 pt-6 mb-6">
+        <div className="flex items-center gap-2">
+          <Zap className="w-5 h-5 text-blue-400"/>
+          <h1 className="text-lg font-bold text-white">Info Terkini</h1>
+        </div>
+        <p className="text-xs text-white/30 mt-1">Berita, iklan, dan update teknis terbaru</p>
+      </div>
+
+      <AdsCarousel ads={ads} />
       <NewsCarousel news={news} />
       <InfoCepatCarousel qinfo={qinfo} />
       <InfoTeknisCarousel qinfo={qinfo} />
+    </div>
+  );
+}
 
-      <DonateFeedbackSection />
+// ─── BOOKMARK SCREEN ──────────────────────────────────────────
+function BookmarkScreen() {
+  return (
+    <div className="pb-32">
+      <div className="px-5 pt-6 mb-6">
+        <div className="flex items-center gap-2">
+          <Bookmark className="w-5 h-5 text-blue-400"/>
+          <h1 className="text-lg font-bold text-white">Bookmark</h1>
+        </div>
+        <p className="text-xs text-white/30 mt-1">Simpan airdrop & info favoritmu</p>
+      </div>
+
+      {/* Placeholder */}
+      <div className="px-5">
+        <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] border-dashed p-8 flex flex-col items-center gap-3 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center">
+            <Bookmark className="w-6 h-6 text-blue-400/50"/>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white/60">Fitur Bookmark</p>
+            <p className="text-xs text-white/25 mt-1 leading-relaxed">
+              Segera hadir — simpan airdrop & berita favoritmu<br />langsung di perangkat secara lokal
+            </p>
+          </div>
+          <span className="text-[10px] px-3 py-1 rounded-full bg-blue-500/10 text-blue-400/60 ring-1 ring-blue-500/20">
+            Coming Soon
+          </span>
+        </div>
+
+        {/* Feature preview hints */}
+        <div className="mt-4 flex flex-col gap-2.5">
+          {[
+            { icon:"🪂", label:"Simpan daftar airdrop", desc:"Tandai airdrop yang sedang dikerjakan" },
+            { icon:"📰", label:"Simpan berita penting",  desc:"Simpan artikel untuk dibaca nanti" },
+            { icon:"📌", label:"Koleksi link penting",  desc:"Simpan link platform & tools favoritmu" },
+          ].map((f,i)=>(
+            <div key={i} className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#1E1E1E] border border-white/[0.04] opacity-40">
+              <span className="text-xl w-8 text-center">{f.icon}</span>
+              <div>
+                <p className="text-xs font-semibold text-white">{f.label}</p>
+                <p className="text-[10px] text-white/30">{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1190,14 +1309,21 @@ function DiscoverScreen({ tools }) {
 
 // ─── BOTTOM NAV ───────────────────────────────────────────────
 function BottomNav({ active, onSelect }) {
+  const tabs = [
+    { id:"intro",    label:"Intro",       icon:Home },
+    { id:"info",     label:"Info Terkini",icon:Zap },
+    { id:"airdrops", label:"Airdrop",     icon:LayoutGrid },
+    { id:"bookmark", label:"Bookmark",    icon:Bookmark },
+    { id:"discover", label:"Discover",    icon:Compass },
+  ];
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-5">
-      <div className="flex items-center gap-1 px-2 py-1.5 rounded-2xl bg-[#1E1E1E] border border-white/[0.08] shadow-2xl shadow-black/60">
-        {[{id:"home",label:"Home",icon:Home},{id:"airdrops",label:"Airdrop",icon:LayoutGrid},{id:"discover",label:"Discover",icon:Compass}].map(({id,label,icon:Icon})=>(
+    <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-4 px-3">
+      <div className="w-full max-w-lg flex items-center gap-0.5 px-2 py-1.5 rounded-2xl bg-[#1E1E1E] border border-white/[0.08] shadow-2xl shadow-black/60">
+        {tabs.map(({id,label,icon:Icon})=>(
           <button key={id} onClick={()=>onSelect(id)}
-            className={`flex flex-col items-center gap-0.5 px-7 py-2 rounded-xl transition-all duration-200 ${active===id?"bg-blue-500 text-white":"text-white/30 hover:text-white/60 hover:bg-white/[0.04]"}`}>
-            <Icon className="w-5 h-5"/>
-            <span className="text-[9px] font-bold">{label}</span>
+            className={`flex-1 flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl transition-all duration-200 ${active===id?"bg-blue-500 text-white":"text-white/30 hover:text-white/60 hover:bg-white/[0.04]"}`}>
+            <Icon className="w-[18px] h-[18px]"/>
+            <span className="text-[8px] font-bold leading-none">{label}</span>
           </button>
         ))}
       </div>
@@ -1207,7 +1333,7 @@ function BottomNav({ active, onSelect }) {
 
 // ─── MAIN APP ─────────────────────────────────────────────────
 export default function App() {
-  const [tab, setTab]           = useState("home");
+  const [tab, setTab]           = useState("intro");
   const [airdrops, setAirdrops] = useState(DEF_AIRDROPS);
   const [ads, setAds]           = useState(DEF_ADS);
   const [news, setNews]         = useState(DEF_NEWS);
@@ -1337,8 +1463,10 @@ export default function App() {
 
       {/* Content */}
       <div className="relative z-10 max-w-lg mx-auto">
-        {tab==="home"     && <HomeScreen    ads={ads} news={news} qinfo={qinfo} />}
+        {tab==="intro"    && <IntroScreen />}
+        {tab==="info"     && <InfoTerkiniScreen ads={ads} news={news} qinfo={qinfo} />}
         {tab==="airdrops" && <AirdropScreen airdrops={airdrops} />}
+        {tab==="bookmark" && <BookmarkScreen />}
         {tab==="discover" && <DiscoverScreen tools={tools} />}
       </div>
 
