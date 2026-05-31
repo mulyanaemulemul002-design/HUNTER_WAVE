@@ -987,6 +987,44 @@ function IconTikTok({ className = "w-4 h-4" }) {
   );
 }
 
+// ─── TICKER BANNER ────────────────────────────────────────────
+// ✏️ EDIT TEKS TICKER: ubah string di array TICKER_TEXTS di bawah
+const TICKER_TEXTS = [
+  "Selamat datang di HUNTER WAVE",
+  "Pastikan selalu DYOR sebelum berinteraksi dengan smart contract",
+  "Info airdrop terkurasi untuk komunitas crypto Indonesia",
+  "Tidak ada saran investasi — riset mandiri selalu diutamakan",
+];
+
+function TickerBanner() {
+  const separator = " ✦ ";
+  const fullText = TICKER_TEXTS.join(separator) + separator;
+  // Duplikat agar scroll seamless
+  const display = fullText + fullText;
+  return (
+    <>
+      <style>{`
+        @keyframes hw-ticker {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .hw-ticker-track {
+          animation: hw-ticker 28s linear infinite;
+          white-space: nowrap;
+          display: inline-block;
+          will-change: transform;
+        }
+        .hw-ticker-track:hover { animation-play-state: paused; }
+      `}</style>
+      <div className="w-full overflow-hidden bg-[#0A0A0A] border-b border-white/[0.04] py-1.5">
+        <div className="hw-ticker-track text-[10px] text-white/25 tracking-wide font-medium">
+          {display}
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ─── INTRO SCREEN ─────────────────────────────────────────────
 function IntroScreen() {
   const SOCIAL = [
@@ -997,6 +1035,9 @@ function IntroScreen() {
 
   return (
     <div className="pb-32">
+      {/* ── Running Ticker ── */}
+      <TickerBanner />
+
       {/* Hero */}
       <div className="px-5 pt-6 mb-6">
         <span className="text-[10px] font-bold text-blue-400 tracking-widest uppercase">Web3 Channel</span>
