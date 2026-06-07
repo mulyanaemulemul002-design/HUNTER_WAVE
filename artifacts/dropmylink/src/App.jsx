@@ -1149,21 +1149,25 @@ function InfoTerkiniScreen({ ads, news, qinfo }) {
 
 // ─── BOOKMARK SCREEN ──────────────────────────────────────────
 function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
+  const [section, setSection]       = useState("list1");
   const [expandedId, setExpandedId] = useState(null);
   const [copiedId, setCopiedId]     = useState(null);
 
   const GROUPS = [
-    { level:1, label:"Daftar 1", emoji:"⭐",
-      header:"text-yellow-400", badge:"bg-yellow-500/15 ring-yellow-500/20 text-yellow-300",
-      activeBorder:"border-yellow-500/30", btn:"bg-yellow-500/20 ring-yellow-500/40",
+    { id:"list1", level:1, label:"Daftar 1", emoji:"⭐",
+      activePill:"bg-yellow-500 text-white ring-yellow-500",
+      activeBorder:"border-yellow-500/30",
+      btn:"bg-yellow-500/20 ring-yellow-500/40",
       icon:"text-yellow-400 fill-yellow-400" },
-    { level:2, label:"Daftar 2", emoji:"📌",
-      header:"text-blue-400",   badge:"bg-blue-500/15 ring-blue-500/20 text-blue-300",
-      activeBorder:"border-blue-500/30",   btn:"bg-blue-500/20 ring-blue-500/40",
+    { id:"list2", level:2, label:"Daftar 2", emoji:"📌",
+      activePill:"bg-blue-500 text-white ring-blue-500",
+      activeBorder:"border-blue-500/30",
+      btn:"bg-blue-500/20 ring-blue-500/40",
       icon:"text-blue-400 fill-blue-400" },
-    { level:3, label:"Daftar 3", emoji:"🔴",
-      header:"text-red-400",    badge:"bg-red-500/15 ring-red-500/20 text-red-300",
-      activeBorder:"border-red-500/30",    btn:"bg-red-500/20 ring-red-500/40",
+    { id:"list3", level:3, label:"Daftar 3", emoji:"🔴",
+      activePill:"bg-red-500 text-white ring-red-500",
+      activeBorder:"border-red-500/30",
+      btn:"bg-red-500/20 ring-red-500/40",
       icon:"text-red-400 fill-red-400" },
   ];
 
@@ -1173,10 +1177,13 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
     setTimeout(()=>setCopiedId(null), 2000);
   }
 
-  const totalSaved = [...bookmarks.values()].filter(v=>v>0).length;
+  const totalSaved  = [...bookmarks.values()].filter(v=>v>0).length;
+  const activeGroup = GROUPS.find(g => g.id === section);
+  const activeItems = airdrops.filter(a => bookmarks.get(String(a.id)) === activeGroup.level);
 
   return (
     <div className="pb-32">
+      {/* Header */}
       <div className="px-5 pt-6 mb-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -1192,83 +1199,90 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
         <p className="text-xs text-white/30 mt-1">1× ⭐kuning · 2× 📌biru · 3× 🔴merah · 4× hapus</p>
       </div>
 
-      {totalSaved === 0 ? (
-        <div className="px-5">
+      {/* Sub-tabs — sama persis pola Discover */}
+      <div className="flex gap-2 px-5 mb-5 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+        {GROUPS.map(g => {
+          const count = airdrops.filter(a => bookmarks.get(String(a.id)) === g.level).length;
+          return (
+            <button key={g.id} onClick={()=>{setSection(g.id);setExpandedId(null);}}
+              className={`flex-none flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold ring-1 transition-all
+                ${section===g.id ? g.activePill : "bg-blue-500/[0.08] ring-blue-500/20 text-white/50 hover:text-white/80"}`}>
+              <span>{g.emoji}</span>
+              {g.label}
+              {count > 0 && (
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold
+                  ${section===g.id?"bg-white/20 text-white":"bg-white/10 text-white/50"}`}>
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Content per tab */}
+      <div className="px-5">
+        {activeItems.length === 0 ? (
           <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] border-dashed p-10 flex flex-col items-center gap-3 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center">
-              <Bookmark className="w-6 h-6 text-blue-400/40"/>
+            <div className="w-14 h-14 rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.08] flex items-center justify-center">
+              <span className="text-2xl">{activeGroup.emoji}</span>
             </div>
             <div>
-              <p className="text-sm font-semibold text-white/50">Belum ada bookmark</p>
+              <p className="text-sm font-semibold text-white/50">{activeGroup.label} kosong</p>
               <p className="text-xs text-white/25 mt-1 leading-relaxed">
-                Ketuk ikon bookmark pada kartu airdrop<br/>untuk menyimpannya di sini
+                Belum ada airdrop di daftar ini.<br/>Ketuk ikon bookmark di tab Airdrop.
               </p>
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="px-5 flex flex-col gap-6">
-          {GROUPS.map(g => {
-            const items = airdrops.filter(a => bookmarks.get(String(a.id)) === g.level);
-            if (items.length === 0) return null;
-            return (
-              <div key={g.level}>
-                <div className="flex items-center gap-2 mb-2.5">
-                  <span className="text-sm">{g.emoji}</span>
-                  <p className={`text-xs font-bold uppercase tracking-widest ${g.header}`}>{g.label}</p>
-                  <span className={`text-[9px] px-2 py-0.5 rounded-full ring-1 font-bold ml-auto ${g.badge}`}>{items.length}</span>
-                </div>
-                <div className="flex flex-col gap-2.5">
-                  {items.map(item => {
-                    const expanded = expandedId === item.id;
-                    return (
-                      <div key={item.id} className={`rounded-2xl border bg-[#1E1E1E] transition-all duration-300 ${expanded ? g.activeBorder : "border-white/[0.06] hover:border-white/[0.14]"}`}>
-                        <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:item.id)}>
-                          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
-                            {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-sm font-semibold text-white">{item.title}</span>
-                              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${STATUS_STYLE[item.status]||STATUS_STYLE.Active}`}>{item.status}</span>
-                            </div>
-                            <p className="text-[11px] text-blue-400/40 font-mono mt-0.5 truncate">{item.url}</p>
-                          </div>
-                          <button
-                            onClick={e=>{e.stopPropagation();onToggleBookmark(item.id);}}
-                            className={`w-8 h-8 rounded-xl flex items-center justify-center ring-1 transition-all flex-shrink-0 ${g.btn}`}>
-                            <Bookmark className={`w-3.5 h-3.5 ${g.icon}`}/>
-                          </button>
-                        </div>
-                        {expanded && (
-                          <div className="px-4 pb-4 pt-3 border-t border-white/[0.06]">
-                            {item.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{item.description}</p>}
-                            <div className="flex flex-wrap gap-1.5 mb-4">
-                              {(item.tags||[]).map(tag=><TagChip key={tag} tag={tag}/>)}
-                              {item.reward && <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 text-blue-300 bg-blue-500/15 ring-blue-500/25">{item.reward}</span>}
-                              {item.difficulty && <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 ${item.difficulty==="Easy"?"bg-green-500/15 text-green-400 ring-green-500/25":item.difficulty==="Hard"?"bg-red-500/15 text-red-400 ring-red-500/25":"bg-yellow-500/15 text-yellow-400 ring-yellow-500/25"}`}>{item.difficulty}</span>}
-                            </div>
-                            <div className="flex gap-2">
-                              <button onClick={()=>window.open(`https://${item.url}`,"_blank","noopener,noreferrer")}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all">
-                                <ExternalLink className="w-3.5 h-3.5"/> Buka Website
-                              </button>
-                              <button onClick={()=>copyUrl(item)}
-                                className="w-11 h-11 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/20 transition-all">
-                                {copiedId===item.id?<Check className="w-4 h-4 text-green-400"/>:<Copy className="w-4 h-4 text-blue-400/60"/>}
-                              </button>
-                            </div>
-                          </div>
-                        )}
+        ) : (
+          <div className="flex flex-col gap-2.5">
+            {activeItems.map(item => {
+              const expanded = expandedId === item.id;
+              return (
+                <div key={item.id} className={`rounded-2xl border bg-[#1E1E1E] transition-all duration-300 ${expanded ? activeGroup.activeBorder : "border-white/[0.06] hover:border-white/[0.14]"}`}>
+                  <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:item.id)}>
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
+                      {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-semibold text-white">{item.title}</span>
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${STATUS_STYLE[item.status]||STATUS_STYLE.Active}`}>{item.status}</span>
                       </div>
-                    );
-                  })}
+                      <p className="text-[11px] text-blue-400/40 font-mono mt-0.5 truncate">{item.url}</p>
+                    </div>
+                    <button
+                      onClick={e=>{e.stopPropagation();onToggleBookmark(item.id);}}
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center ring-1 transition-all flex-shrink-0 ${activeGroup.btn}`}>
+                      <Bookmark className={`w-3.5 h-3.5 ${activeGroup.icon}`}/>
+                    </button>
+                  </div>
+                  {expanded && (
+                    <div className="px-4 pb-4 pt-3 border-t border-white/[0.06]">
+                      {item.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{item.description}</p>}
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {(item.tags||[]).map(tag=><TagChip key={tag} tag={tag}/>)}
+                        {item.reward && <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 text-blue-300 bg-blue-500/15 ring-blue-500/25">{item.reward}</span>}
+                        {item.difficulty && <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 ${item.difficulty==="Easy"?"bg-green-500/15 text-green-400 ring-green-500/25":item.difficulty==="Hard"?"bg-red-500/15 text-red-400 ring-red-500/25":"bg-yellow-500/15 text-yellow-400 ring-yellow-500/25"}`}>{item.difficulty}</span>}
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={()=>window.open(`https://${item.url}`,"_blank","noopener,noreferrer")}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all">
+                          <ExternalLink className="w-3.5 h-3.5"/> Buka Website
+                        </button>
+                        <button onClick={()=>copyUrl(item)}
+                          className="w-11 h-11 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/20 transition-all">
+                          {copiedId===item.id?<Check className="w-4 h-4 text-green-400"/>:<Copy className="w-4 h-4 text-blue-400/60"/>}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
