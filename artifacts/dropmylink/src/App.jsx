@@ -189,14 +189,28 @@ function ImageUpload({ label, value, onChange }) {
 }
 
 function Btn({ onClick, children, variant = "primary", className = "", type = "button" }) {
+  const [ripples, setRipples] = useState([]);
   const s = {
-    primary: "bg-blue-500 hover:bg-blue-400 text-white font-bold",
+    primary: "bg-blue-500 hover:bg-blue-400 text-white font-bold btn-glow",
     ghost:   "bg-[#1E1E1E] border border-white/[0.08] text-white/60 hover:bg-white/[0.06]",
     danger:  "bg-red-500/15 ring-1 ring-red-500/30 text-red-400 hover:bg-red-500/25",
   };
+  function handleClick(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const id = Date.now() + Math.random();
+    setRipples(r => [...r, { id, x, y }]);
+    setTimeout(() => setRipples(r => r.filter(rp => rp.id !== id)), 600);
+    onClick?.(e);
+  }
   return (
-    <button type={type} onClick={onClick} className={`px-4 py-2.5 rounded-xl text-sm transition-all active:scale-95 ${s[variant]} ${className}`}>
+    <button type={type} onClick={handleClick} className={`relative overflow-hidden px-4 py-2.5 rounded-xl text-sm transition-all active:scale-95 ${s[variant]} ${className}`}>
       {children}
+      {ripples.map(rp => (
+        <span key={rp.id} className={`ripple-dot ${variant==="primary"?"ripple-blue":""}`}
+          style={{ left: rp.x, top: rp.y }} />
+      ))}
     </button>
   );
 }
@@ -1051,7 +1065,7 @@ function IntroScreen() {
           {/* Telegram join pill */}
           <button
             onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
-            className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-lg shadow-blue-500/25">
+            className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-lg shadow-blue-500/25 btn-glow">
             <IconTelegram className="w-4 h-4 text-white"/>
             <span className="text-xs font-bold text-white">Bergabung di Telegram</span>
           </button>
@@ -1358,6 +1372,13 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
   const [copiedId, setCopiedId]     = useState(null);
+  const [burstId, setBurstId]       = useState(null);
+
+  function handleToggleBookmark(id) {
+    onToggleBookmark(id);
+    setBurstId(id);
+    setTimeout(() => setBurstId(null), 450);
+  }
 
   const allTags = useMemo(()=>{
     const t=new Set();
@@ -1413,7 +1434,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
             const expanded = expandedId===item.id;
             const bmLevel = bookmarks.get(String(item.id)) || 0;
             return (
-              <div key={item.id} className={`rounded-2xl border transition-all duration-300 ${expanded?"bg-[#1E1E1E] border-blue-500/40":"bg-[#1E1E1E] border-white/[0.06] hover:border-white/[0.14]"}`}>
+              <div key={item.id} className={`card-shimmer rounded-2xl border transition-all duration-300 ${expanded?"bg-[#1E1E1E] border-blue-500/40":"bg-[#1E1E1E] border-white/[0.06] hover:border-white/[0.14]"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:item.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
@@ -1425,13 +1446,13 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
                     </div>
                   </div>
                   <button
-                    onClick={e=>{e.stopPropagation();onToggleBookmark(item.id);}}
+                    onClick={e=>{e.stopPropagation();handleToggleBookmark(item.id);}}
                     className={`w-8 h-8 rounded-xl flex items-center justify-center ring-1 transition-all flex-shrink-0
                       ${bmLevel===0?"bg-white/[0.04] ring-white/[0.08] hover:bg-white/[0.08]":
                         bmLevel===1?"bg-yellow-500/20 ring-yellow-500/40":
                         bmLevel===2?"bg-blue-500/20 ring-blue-500/40":
                         "bg-red-500/20 ring-red-500/40"}`}>
-                    <Bookmark className={`w-3.5 h-3.5 transition-all
+                    <Bookmark className={`w-3.5 h-3.5 transition-all ${burstId===item.id?"bm-burst":""}
                       ${bmLevel===0?"text-white/25":
                         bmLevel===1?"text-yellow-400 fill-yellow-400":
                         bmLevel===2?"text-blue-400 fill-blue-400":
@@ -1544,7 +1565,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
             const open      = expandedItem === tool.id;
             const saved     = toolBookmarks && toolBookmarks.has(String(tool.id));
             return (
-              <div key={tool.id} className={`rounded-2xl border transition-all duration-300 ${open?"bg-[#1E1E1E] border-blue-500/40":"bg-[#1E1E1E] border-white/[0.06] hover:border-white/[0.14]"}`}>
+              <div key={tool.id} className={`card-shimmer rounded-2xl border transition-all duration-300 ${open?"bg-[#1E1E1E] border-blue-500/40":"bg-[#1E1E1E] border-white/[0.06] hover:border-white/[0.14]"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedItem(open?null:tool.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     <Favicon url={tool.url} customImage={tool.customImage}/>
@@ -1559,7 +1580,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
                     onClick={e=>{e.stopPropagation();onToggleToolBookmark(tool.id);}}
                     className={`w-8 h-8 rounded-xl flex items-center justify-center ring-1 transition-all flex-shrink-0
                       ${saved?"bg-emerald-500/20 ring-emerald-500/40":"bg-white/[0.04] ring-white/[0.08] hover:bg-white/[0.08]"}`}>
-                    <Bookmark className={`w-3.5 h-3.5 transition-all ${saved?"text-emerald-400 fill-emerald-400":"text-white/25"}`}/>
+                    <Bookmark className={`w-3.5 h-3.5 transition-all ${saved?"text-emerald-400 fill-emerald-400 bm-burst":"text-white/25"}`}/>
                   </button>
                   <ChevronDown className={`w-4 h-4 text-blue-400/40 flex-shrink-0 transition-transform duration-300 ${open?"rotate-180":""}`}/>
                 </div>
@@ -1592,6 +1613,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
 
 // ─── BOTTOM NAV ───────────────────────────────────────────────
 function BottomNav({ active, onSelect }) {
+  const [poppedId, setPoppedId] = useState(null);
   const tabs = [
     { id:"intro",    label:"Intro",       icon:Home },
     { id:"info",     label:"Info Terkini",icon:Zap },
@@ -1599,13 +1621,18 @@ function BottomNav({ active, onSelect }) {
     { id:"bookmark", label:"Bookmark",    icon:Bookmark },
     { id:"discover", label:"Discover",    icon:Compass },
   ];
+  function handleSelect(id) {
+    onSelect(id);
+    setPoppedId(id);
+    setTimeout(() => setPoppedId(null), 400);
+  }
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-4 px-3">
       <div className="w-full max-w-lg flex items-center gap-0.5 px-2 py-1.5 rounded-2xl bg-[#1E1E1E] border border-white/[0.08] shadow-2xl shadow-black/60">
         {tabs.map(({id,label,icon:Icon})=>(
-          <button key={id} onClick={()=>onSelect(id)}
+          <button key={id} onClick={()=>handleSelect(id)}
             className={`flex-1 flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl transition-all duration-200 ${active===id?"bg-blue-500 text-white":"text-white/30 hover:text-white/60 hover:bg-white/[0.04]"}`}>
-            <Icon className="w-[18px] h-[18px]"/>
+            <Icon className={`w-[18px] h-[18px] ${poppedId===id ? "nav-pop" : ""}`}/>
             <span className="text-[8px] font-bold leading-none">{label}</span>
           </button>
         ))}
