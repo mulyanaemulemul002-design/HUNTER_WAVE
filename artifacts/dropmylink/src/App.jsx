@@ -1131,9 +1131,17 @@ function InfoTerkiniScreen({ ads, news, qinfo }) {
 
 // ─── BOOKMARK SCREEN ──────────────────────────────────────────
 function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBookmarks, onToggleToolBookmark }) {
-  const [section, setSection]       = useState("list1");
-  const [expandedId, setExpandedId] = useState(null);
-  const [copiedId, setCopiedId]     = useState(null);
+  const [section, setSection]             = useState("list1");
+  const [expandedId, setExpandedId]       = useState(null);
+  const [copiedId, setCopiedId]           = useState(null);
+  const [expandedToolId, setExpandedToolId] = useState(null);
+  const [copiedToolId, setCopiedToolId]   = useState(null);
+
+  function copyToolUrl(tool) {
+    navigator.clipboard.writeText(tool.targetUrl || `https://${tool.url}`).catch(()=>{});
+    setCopiedToolId(tool.id);
+    setTimeout(()=>setCopiedToolId(null), 2000);
+  }
 
   const GROUPS = [
     { id:"list1", level:1, label:"Daftar 1", emoji:"⭐",
@@ -1233,32 +1241,47 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
             </div>
           ) : (
             <div className="flex flex-col gap-2.5">
-              {savedTools.map(tool => (
-                <div key={tool.id} className="rounded-2xl border bg-[#1E1E1E] border-emerald-500/20 p-4 flex items-center gap-3">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
-                    <Favicon url={tool.url} customImage={tool.customImage}/>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-semibold text-white">{tool.title}</span>
-                      {tool.category && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 bg-blue-500/15 text-blue-300 ring-blue-500/25">{tool.category}</span>}
-                    </div>
-                    <p className="text-[11px] text-blue-400/40 font-mono mt-0.5 truncate">{tool.url}</p>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {tool.targetUrl && (
-                      <button onClick={()=>window.open(tool.targetUrl,"_blank","noopener,noreferrer")}
-                        className="w-8 h-8 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/20 transition-all">
-                        <ExternalLink className="w-3.5 h-3.5 text-blue-400"/>
+              {savedTools.map(tool => {
+                const open = expandedToolId === tool.id;
+                return (
+                  <div key={tool.id} className={`rounded-2xl border bg-[#1E1E1E] transition-all duration-300 ${open?"border-emerald-500/40":"border-emerald-500/20 hover:border-emerald-500/35"}`}>
+                    <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedToolId(open?null:tool.id)}>
+                      <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
+                        <Favicon url={tool.url} customImage={tool.customImage}/>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-semibold text-white">{tool.title}</span>
+                          {tool.category && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 bg-blue-500/15 text-blue-300 ring-blue-500/25">{tool.category}</span>}
+                        </div>
+                      </div>
+                      <button onClick={e=>{e.stopPropagation();onToggleToolBookmark(tool.id);}}
+                        className="w-8 h-8 rounded-xl bg-emerald-500/20 ring-1 ring-emerald-500/40 flex items-center justify-center transition-all flex-shrink-0">
+                        <Bookmark className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400"/>
                       </button>
+                      <ChevronDown className={`w-4 h-4 text-emerald-400/50 flex-shrink-0 transition-transform duration-300 ${open?"rotate-180":""}`}/>
+                    </div>
+                    {open && (
+                      <div className="px-4 pb-4 pt-3 border-t border-emerald-500/[0.12]">
+                        <p className="text-[11px] text-blue-400/50 font-mono mb-3 truncate">🔗 {tool.url}</p>
+                        {tool.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{tool.description}</p>}
+                        <div className="flex gap-2">
+                          {tool.targetUrl && (
+                            <button onClick={()=>window.open(tool.targetUrl,"_blank","noopener,noreferrer")}
+                              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all">
+                              <ExternalLink className="w-3.5 h-3.5"/> Buka Platform
+                            </button>
+                          )}
+                          <button onClick={()=>copyToolUrl(tool)}
+                            className="w-11 h-11 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/20 transition-all">
+                            {copiedToolId===tool.id?<Check className="w-4 h-4 text-green-400"/>:<Copy className="w-4 h-4 text-blue-400/60"/>}
+                          </button>
+                        </div>
+                      </div>
                     )}
-                    <button onClick={()=>onToggleToolBookmark(tool.id)}
-                      className="w-8 h-8 rounded-xl bg-emerald-500/20 ring-1 ring-emerald-500/40 flex items-center justify-center transition-all">
-                      <Bookmark className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400"/>
-                    </button>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )
         )}
@@ -1290,7 +1313,6 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
                         <span className="text-sm font-semibold text-white">{item.title}</span>
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${STATUS_STYLE[item.status]||STATUS_STYLE.Active}`}>{item.status}</span>
                       </div>
-                      <p className="text-[11px] text-blue-400/40 font-mono mt-0.5 truncate">{item.url}</p>
                     </div>
                     <button
                       onClick={e=>{e.stopPropagation();onToggleBookmark(item.id);}}
@@ -1300,6 +1322,7 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
                   </div>
                   {expanded && (
                     <div className="px-4 pb-4 pt-3 border-t border-white/[0.06]">
+                      <p className="text-[11px] text-blue-400/50 font-mono mb-3 truncate">🔗 {item.url}</p>
                       {item.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{item.description}</p>}
                       <div className="flex flex-wrap gap-1.5 mb-4">
                         {(item.tags||[]).map(tag=><TagChip key={tag} tag={tag}/>)}
@@ -1400,7 +1423,6 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
                       <span className="text-sm font-semibold text-white">{item.title}</span>
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${STATUS_STYLE[item.status]||STATUS_STYLE.Active}`}>{item.status}</span>
                     </div>
-                    <p className="text-[11px] text-blue-400/40 font-mono mt-0.5 truncate">{item.url}</p>
                   </div>
                   <button
                     onClick={e=>{e.stopPropagation();onToggleBookmark(item.id);}}
@@ -1418,6 +1440,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
                 </div>
                 {expanded && (
                   <div className="px-4 pb-4 pt-3 border-t border-blue-500/[0.12]">
+                    <p className="text-[11px] text-blue-400/50 font-mono mb-3 truncate">🔗 {item.url}</p>
                     {item.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{item.description}</p>}
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {(item.tags||[]).map(tag=><TagChip key={tag} tag={tag}/>)}
@@ -1447,8 +1470,15 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
 
 // ─── DISCOVER SCREEN ──────────────────────────────────────────
 function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookmark }) {
-  const [section, setSection] = useState("p2p");
+  const [section, setSection]       = useState("p2p");
   const [expandedItem, setExpandedItem] = useState(null);
+  const [copiedToolId, setCopiedToolId] = useState(null);
+
+  function copyToolUrl(tool) {
+    navigator.clipboard.writeText(tool.targetUrl || `https://${tool.url}`).catch(()=>{});
+    setCopiedToolId(tool.id);
+    setTimeout(()=>setCopiedToolId(null), 2000);
+  }
   return (
     <div className="pb-32">
       <div className="px-5 pt-6 mb-5">
@@ -1524,7 +1554,6 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
                       <span className="text-sm font-semibold text-white">{tool.title}</span>
                       {tool.category && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 bg-blue-500/15 text-blue-300 ring-blue-500/25">{tool.category}</span>}
                     </div>
-                    <p className="text-[11px] text-blue-400/40 font-mono mt-0.5 truncate">{tool.url}</p>
                   </div>
                   <button
                     onClick={e=>{e.stopPropagation();onToggleToolBookmark(tool.id);}}
@@ -1536,6 +1565,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
                 </div>
                 {open && (
                   <div className="px-4 pb-4 pt-3 border-t border-blue-500/[0.12]">
+                    <p className="text-[11px] text-blue-400/50 font-mono mb-3 truncate">🔗 {tool.url}</p>
                     {tool.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{tool.description}</p>}
                     <div className="flex gap-2">
                       {tool.targetUrl && (
@@ -1544,6 +1574,10 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
                           <ExternalLink className="w-3.5 h-3.5"/> Buka Platform
                         </button>
                       )}
+                      <button onClick={()=>copyToolUrl(tool)}
+                        className="w-11 h-11 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/20 transition-all">
+                        {copiedToolId===tool.id?<Check className="w-4 h-4 text-green-400"/>:<Copy className="w-4 h-4 text-blue-400/60"/>}
+                      </button>
                     </div>
                   </div>
                 )}
