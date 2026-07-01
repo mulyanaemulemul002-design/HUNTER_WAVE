@@ -1158,17 +1158,17 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
   }
 
   const GROUPS = [
-    { id:"list1", level:1, label:"Daftar 1", emoji:"⭐",
+    { id:"list1", level:1, label:"Daftar 1", emoji:"",
       activePill:"bg-yellow-500 text-white ring-yellow-500",
       activeBorder:"border-yellow-500/30",
       btn:"bg-yellow-500/20 ring-yellow-500/40",
       icon:"text-yellow-400 fill-yellow-400" },
-    { id:"list2", level:2, label:"Daftar 2", emoji:"📌",
+    { id:"list2", level:2, label:"Daftar 2", emoji:"",
       activePill:"bg-blue-500 text-white ring-blue-500",
       activeBorder:"border-blue-500/30",
       btn:"bg-blue-500/20 ring-blue-500/40",
       icon:"text-blue-400 fill-blue-400" },
-    { id:"list3", level:3, label:"Daftar 3", emoji:"🔴",
+    { id:"list3", level:3, label:"Daftar 3", emoji:"",
       activePill:"bg-red-500 text-white ring-red-500",
       activeBorder:"border-red-500/30",
       btn:"bg-red-500/20 ring-red-500/40",
@@ -1211,7 +1211,7 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
             </span>
           )}
         </div>
-        <p className="text-xs text-white/30 mt-1">1× ⭐kuning · 2× 📌biru · 3× 🔴merah · 4× hapus</p>
+        <p className="text-xs text-white/30 mt-1">1× kuning · 2× biru · 3× merah · 4× hapus</p>
       </div>
 
       {/* Sub-tabs — sama persis pola Discover */}
