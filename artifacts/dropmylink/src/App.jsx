@@ -6,6 +6,7 @@ import {
   Calendar, Users, Lightbulb, Zap, Bell, Clock,
   Settings, Plus, Trash2, X, Shield, MessageCircle, Heart,
   Rocket, TrendingUp, BarChart2, Download, Bookmark, AlertTriangle,
+  Landmark, Phone, Send,
 } from "lucide-react";
 
 // ─── ADMIN CONFIG ─────────────────────────────────────────────
@@ -1518,24 +1519,79 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
       {section==="p2p" && (
         <div className="px-5 flex flex-col gap-3">
           <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-amber-500/10 ring-1 ring-amber-500/20">
-            <span className="text-base mt-0.5">⚠️</span>
+            <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0"/>
             <p className="text-[11px] text-amber-300/80 leading-relaxed">Lakukan transaksi dengan hati-hati. Platform tidak bertanggung jawab atas risiko P2P deal.</p>
           </div>
           {p2p.map(l=>(
-            <div key={l.id} className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-8 h-8 rounded-full bg-blue-500/15 ring-1 ring-blue-500/20 flex items-center justify-center text-sm">👤</div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-semibold text-white">{l.user}</span>
-                    {l.verified && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 ring-1 ring-blue-500/30">✓ Verified</span>}
+            <div key={l.id} className="card-shimmer rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
+              {/* Header — avatar + nama + verified */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-full bg-blue-500/15 ring-1 ring-blue-500/20 flex items-center justify-center">
+                    <Users className="w-4 h-4 text-blue-400/60"/>
                   </div>
-                  <span className="text-[10px] text-white/30">{l.method}</span>
+                  <div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-xs font-bold text-white">{l.user}</span>
+                      {l.verified && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 ring-1 ring-blue-500/30 font-semibold">✓ Verified</span>
+                      )}
+                    </div>
+                    {/* Payment method badges */}
+                    <div className="flex items-center gap-1 mt-1 flex-wrap">
+                      {(l.methods||[]).map(m => {
+                        if (m === "DANA") return (
+                          <span key={m} className="text-[9px] font-black px-1.5 py-0.5 rounded-md text-white"
+                            style={{backgroundColor:"#0086E6"}}>DANA</span>
+                        );
+                        if (m === "GoPay") return (
+                          <span key={m} className="text-[9px] font-black px-1.5 py-0.5 rounded-md text-white"
+                            style={{backgroundColor:"#00AED6"}}>GoPay</span>
+                        );
+                        if (m === "OVO") return (
+                          <span key={m} className="text-[9px] font-black px-1.5 py-0.5 rounded-md text-white"
+                            style={{backgroundColor:"#4C2A86"}}>OVO</span>
+                        );
+                        if (m === "Bank") return (
+                          <span key={m} className="text-[9px] font-semibold px-1.5 py-0.5 rounded-md bg-white/[0.07] text-white/60 ring-1 ring-white/10 flex items-center gap-0.5 inline-flex">
+                            <Landmark className="w-2.5 h-2.5"/>Bank
+                          </span>
+                        );
+                        return (
+                          <span key={m} className="text-[9px] font-semibold px-1.5 py-0.5 rounded-md bg-white/[0.06] text-white/50 ring-1 ring-white/10">{m}</span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+                {/* Contact buttons */}
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {l.telegram && (
+                    <button onClick={()=>window.open(l.telegram,"_blank","noopener,noreferrer")}
+                      className="w-8 h-8 rounded-xl flex items-center justify-center ring-1 transition-all active:scale-90"
+                      style={{backgroundColor:"rgba(41,182,246,0.12)",ringColor:"rgba(41,182,246,0.25)"}}>
+                      <Send className="w-3.5 h-3.5" style={{color:"#29B6F6"}}/>
+                    </button>
+                  )}
+                  {l.whatsapp && (
+                    <button onClick={()=>window.open(`https://wa.me/${l.whatsapp}`,"_blank","noopener,noreferrer")}
+                      className="w-8 h-8 rounded-xl flex items-center justify-center ring-1 transition-all active:scale-90"
+                      style={{backgroundColor:"rgba(37,211,102,0.12)",ringColor:"rgba(37,211,102,0.25)"}}>
+                      <Phone className="w-3.5 h-3.5" style={{color:"#25D366"}}/>
+                    </button>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center justify-between pt-2 border-t border-blue-500/[0.10]">
-                <div><p className="text-sm font-bold text-white">{l.selling}</p><p className="text-[10px] text-white/30 mt-0.5">Min: {l.min}</p></div>
-                <div className="text-right"><p className="text-sm font-bold text-blue-400">{l.price}</p><p className="text-[10px] text-white/30">per token</p></div>
+              {/* Token info */}
+              <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
+                <div>
+                  <p className="text-sm font-bold text-white">{l.selling}</p>
+                  <p className="text-[10px] text-white/30 mt-0.5">Min: {l.min}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-blue-400">{l.price}</p>
+                  <p className="text-[10px] text-white/30">per token</p>
+                </div>
               </div>
             </div>
           ))}

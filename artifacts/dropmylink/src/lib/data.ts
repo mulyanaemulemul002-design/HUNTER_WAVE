@@ -122,7 +122,9 @@ export const P2PSchema = z.object({
   selling:  z.string().min(1),
   price:    z.string().min(1),
   min:      z.string().default(""),
-  method:   z.string().default(""),
+  methods:  z.array(z.string()).default([]),
+  telegram: z.string().default(""),
+  whatsapp: z.string().default(""),
   verified: z.boolean().default(false),
 });
 

@@ -5,7 +5,9 @@
     "selling": "1.000 ARB",
     "price": "0,95 USDT",
     "min": "100 ARB",
-    "method": "Bank Transfer",
+    "methods": ["Bank"],
+    "telegram": "https://t.me/crypto_whale",
+    "whatsapp": "",
     "verified": true
   },
   {
@@ -14,7 +16,9 @@
     "selling": "500 OP",
     "price": "2,10 USDT",
     "min": "50 OP",
-    "method": "DANA / GoPay",
+    "methods": ["DANA", "GoPay"],
+    "telegram": "https://t.me/defi_trader",
+    "whatsapp": "6281234567890",
     "verified": true
   },
   {
@@ -23,7 +27,9 @@
     "selling": "0,5 ETH",
     "price": "2.950 USDT",
     "min": "0.1 ETH",
-    "method": "Semua Metode",
+    "methods": ["Bank", "DANA", "GoPay", "OVO"],
+    "telegram": "https://t.me/web3_indo",
+    "whatsapp": "",
     "verified": true
   }
 ]
