@@ -9,10 +9,59 @@ import rawP2P       from "../data/p2p.json";
 import rawCalendar  from "../data/calendar.json";
 import rawTicker    from "../data/ticker.json";
 
+// ─── ID VALIDATOR ─────────────────────────────────────────────
+// Digunakan sebagai .superRefine() pada setiap array schema.
+// Memastikan:
+//   1. Setiap id adalah integer positif
+//   2. Tidak ada id duplikat di dalam file yang sama
+//   3. Id urut berurutan mulai dari 1 (1, 2, 3, ...)
+// Validasi ini INDEPENDEN per file — id di airdrops.json tidak
+// bersinggungan sama sekali dengan id di tools.json, dll.
+function validateIds(file: string) {
+  return (items: { id: number }[], ctx: z.RefinementCtx) => {
+    const seen = new Set<number>();
+
+    items.forEach((item, index) => {
+      // 1. Harus integer positif
+      if (!Number.isInteger(item.id) || item.id < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [index, "id"],
+          message: `[${file}] id[${index}] = ${item.id} — harus integer positif (≥ 1).`,
+        });
+        return;
+      }
+
+      // 2. Tidak boleh duplikat
+      if (seen.has(item.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [index, "id"],
+          message: `[${file}] id ${item.id} duplikat — setiap id harus unik di dalam file ini.`,
+        });
+      }
+      seen.add(item.id);
+    });
+
+    // 3. Harus urut berurutan mulai 1
+    const ids = items.map(i => i.id).sort((a, b) => a - b);
+    ids.forEach((id, i) => {
+      const expected = i + 1;
+      if (id !== expected) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `[${file}] id tidak urut — ditemukan id ${id} pada posisi urut ke-${expected}. ` +
+                   `Pastikan id dimulai dari 1 dan tidak ada yang loncat.`,
+        });
+      }
+    });
+  };
+}
+
 // ─── SCHEMAS ──────────────────────────────────────────────────
 
 export const AirdropSchema = z.object({
-  id:          z.number(),
+  id:          z.number().int().positive(),
   icon:        z.string().default(""),
   title:       z.string().min(1),
   url:         z.string().min(1),
@@ -25,7 +74,7 @@ export const AirdropSchema = z.object({
 });
 
 export const AdSchema = z.object({
-  id:         z.number(),
+  id:         z.number().int().positive(),
   title:      z.string().min(1),
   subtitle:   z.string().default(""),
   imageUrl:   z.string().default(""),
@@ -36,7 +85,7 @@ export const AdSchema = z.object({
 });
 
 export const NewsSchema = z.object({
-  id:          z.number(),
+  id:          z.number().int().positive(),
   title:       z.string().min(1),
   description: z.string().default(""),
   category:    z.string().default(""),
@@ -48,7 +97,7 @@ export const NewsSchema = z.object({
 });
 
 export const QinfoSchema = z.object({
-  id:        z.number(),
+  id:        z.number().int().positive(),
   board:     z.enum(["garapan", "tge", "presale", "tokenomics"]),
   name:      z.string().min(1),
   date:      z.string().default(""),
@@ -57,7 +106,7 @@ export const QinfoSchema = z.object({
 });
 
 export const ToolSchema = z.object({
-  id:          z.number(),
+  id:          z.number().int().positive(),
   icon:        z.string().default(""),
   title:       z.string().min(1),
   url:         z.string().min(1),
@@ -68,7 +117,7 @@ export const ToolSchema = z.object({
 });
 
 export const P2PSchema = z.object({
-  id:       z.number(),
+  id:       z.number().int().positive(),
   user:     z.string().min(1),
   selling:  z.string().min(1),
   price:    z.string().min(1),
@@ -78,7 +127,7 @@ export const P2PSchema = z.object({
 });
 
 export const CalendarSchema = z.object({
-  id:    z.number(),
+  id:    z.number().int().positive(),
   date:  z.string().min(1),
   title: z.string().min(1),
   type:  z.string().default(""),
@@ -95,10 +144,20 @@ export type Tool     = z.infer<typeof ToolSchema>;
 export type P2P      = z.infer<typeof P2PSchema>;
 export type Calendar = z.infer<typeof CalendarSchema>;
 
+// ─── ARRAY SCHEMAS (dengan validasi ID independen per file) ───
+
+const AirdropsArray  = z.array(AirdropSchema).superRefine(validateIds("airdrops.json"));
+const AdsArray       = z.array(AdSchema).superRefine(validateIds("ads.json"));
+const NewsArray      = z.array(NewsSchema).superRefine(validateIds("news.json"));
+const QinfoArray     = z.array(QinfoSchema).superRefine(validateIds("qinfo.json"));
+const ToolsArray     = z.array(ToolSchema).superRefine(validateIds("tools.json"));
+const P2PArray       = z.array(P2PSchema).superRefine(validateIds("p2p.json"));
+const CalendarArray  = z.array(CalendarSchema).superRefine(validateIds("calendar.json"));
+
 // ─── LOADERS ──────────────────────────────────────────────────
 
 export function getAirdrops(): Airdrop[] {
-  const result = z.array(AirdropSchema).safeParse(rawAirdrops);
+  const result = AirdropsArray.safeParse(rawAirdrops);
   if (!result.success) {
     console.error("[data] airdrops.json invalid:", result.error.flatten());
     throw new Error("airdrops.json validation failed — check console for details.");
@@ -107,7 +166,7 @@ export function getAirdrops(): Airdrop[] {
 }
 
 export function getAds(): Ad[] {
-  const result = z.array(AdSchema).safeParse(rawAds);
+  const result = AdsArray.safeParse(rawAds);
   if (!result.success) {
     console.error("[data] ads.json invalid:", result.error.flatten());
     throw new Error("ads.json validation failed — check console for details.");
@@ -116,7 +175,7 @@ export function getAds(): Ad[] {
 }
 
 export function getNews(): News[] {
-  const result = z.array(NewsSchema).safeParse(rawNews);
+  const result = NewsArray.safeParse(rawNews);
   if (!result.success) {
     console.error("[data] news.json invalid:", result.error.flatten());
     throw new Error("news.json validation failed — check console for details.");
@@ -125,7 +184,7 @@ export function getNews(): News[] {
 }
 
 export function getQinfo(): Qinfo[] {
-  const result = z.array(QinfoSchema).safeParse(rawQinfo);
+  const result = QinfoArray.safeParse(rawQinfo);
   if (!result.success) {
     console.error("[data] qinfo.json invalid:", result.error.flatten());
     throw new Error("qinfo.json validation failed — check console for details.");
@@ -134,7 +193,7 @@ export function getQinfo(): Qinfo[] {
 }
 
 export function getTools(): Tool[] {
-  const result = z.array(ToolSchema).safeParse(rawTools);
+  const result = ToolsArray.safeParse(rawTools);
   if (!result.success) {
     console.error("[data] tools.json invalid:", result.error.flatten());
     throw new Error("tools.json validation failed — check console for details.");
@@ -143,7 +202,7 @@ export function getTools(): Tool[] {
 }
 
 export function getP2P(): P2P[] {
-  const result = z.array(P2PSchema).safeParse(rawP2P);
+  const result = P2PArray.safeParse(rawP2P);
   if (!result.success) {
     console.error("[data] p2p.json invalid:", result.error.flatten());
     throw new Error("p2p.json validation failed — check console for details.");
@@ -152,7 +211,7 @@ export function getP2P(): P2P[] {
 }
 
 export function getCalendar(): Calendar[] {
-  const result = z.array(CalendarSchema).safeParse(rawCalendar);
+  const result = CalendarArray.safeParse(rawCalendar);
   if (!result.success) {
     console.error("[data] calendar.json invalid:", result.error.flatten());
     throw new Error("calendar.json validation failed — check console for details.");
@@ -161,7 +220,7 @@ export function getCalendar(): Calendar[] {
 }
 
 export function getTicker(): string[] {
-  const result = z.array(z.string()).safeParse(rawTicker);
+  const result = z.array(z.string().min(1)).safeParse(rawTicker);
   if (!result.success) {
     console.error("[data] ticker.json invalid:", result.error.flatten());
     return ["Selamat datang di HUNTER WAVE"];
