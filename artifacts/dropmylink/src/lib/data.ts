@@ -5,6 +5,9 @@ import rawAds       from "../data/ads.json";
 import rawNews      from "../data/news.json";
 import rawQinfo     from "../data/qinfo.json";
 import rawTools     from "../data/tools.json";
+import rawP2P       from "../data/p2p.json";
+import rawCalendar  from "../data/calendar.json";
+import rawTicker    from "../data/ticker.json";
 
 // ─── SCHEMAS ──────────────────────────────────────────────────
 
@@ -64,13 +67,33 @@ export const ToolSchema = z.object({
   targetUrl:   z.string().default(""),
 });
 
+export const P2PSchema = z.object({
+  id:       z.number(),
+  user:     z.string().min(1),
+  selling:  z.string().min(1),
+  price:    z.string().min(1),
+  min:      z.string().default(""),
+  method:   z.string().default(""),
+  verified: z.boolean().default(false),
+});
+
+export const CalendarSchema = z.object({
+  id:    z.number(),
+  date:  z.string().min(1),
+  title: z.string().min(1),
+  type:  z.string().default(""),
+  color: z.string().default("bg-blue-500/20 text-blue-300"),
+});
+
 // ─── INFERRED TYPES ───────────────────────────────────────────
 
-export type Airdrop = z.infer<typeof AirdropSchema>;
-export type Ad      = z.infer<typeof AdSchema>;
-export type News    = z.infer<typeof NewsSchema>;
-export type Qinfo   = z.infer<typeof QinfoSchema>;
-export type Tool    = z.infer<typeof ToolSchema>;
+export type Airdrop  = z.infer<typeof AirdropSchema>;
+export type Ad       = z.infer<typeof AdSchema>;
+export type News     = z.infer<typeof NewsSchema>;
+export type Qinfo    = z.infer<typeof QinfoSchema>;
+export type Tool     = z.infer<typeof ToolSchema>;
+export type P2P      = z.infer<typeof P2PSchema>;
+export type Calendar = z.infer<typeof CalendarSchema>;
 
 // ─── LOADERS ──────────────────────────────────────────────────
 
@@ -115,6 +138,33 @@ export function getTools(): Tool[] {
   if (!result.success) {
     console.error("[data] tools.json invalid:", result.error.flatten());
     throw new Error("tools.json validation failed — check console for details.");
+  }
+  return result.data;
+}
+
+export function getP2P(): P2P[] {
+  const result = z.array(P2PSchema).safeParse(rawP2P);
+  if (!result.success) {
+    console.error("[data] p2p.json invalid:", result.error.flatten());
+    throw new Error("p2p.json validation failed — check console for details.");
+  }
+  return result.data;
+}
+
+export function getCalendar(): Calendar[] {
+  const result = z.array(CalendarSchema).safeParse(rawCalendar);
+  if (!result.success) {
+    console.error("[data] calendar.json invalid:", result.error.flatten());
+    throw new Error("calendar.json validation failed — check console for details.");
+  }
+  return result.data;
+}
+
+export function getTicker(): string[] {
+  const result = z.array(z.string()).safeParse(rawTicker);
+  if (!result.success) {
+    console.error("[data] ticker.json invalid:", result.error.flatten());
+    return ["Selamat datang di HUNTER WAVE"];
   }
   return result.data;
 }

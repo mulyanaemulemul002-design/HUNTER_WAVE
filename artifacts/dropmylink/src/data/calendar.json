@@ -1,0 +1,8 @@
+[
+  { "id": 1, "date": "Mei 10", "title": "LayerZero Snapshot",       "type": "Snapshot", "color": "bg-blue-500/20 text-blue-300" },
+  { "id": 2, "date": "Mei 12", "title": "Initia TGE",               "type": "TGE",      "color": "bg-amber-500/20 text-amber-300" },
+  { "id": 3, "date": "Mei 15", "title": "Arbitrum DAO Vote",        "type": "DAO",      "color": "bg-blue-600/20 text-blue-300" },
+  { "id": 4, "date": "Mei 18", "title": "Monad Testnet Phase 2",    "type": "Testnet",  "color": "bg-emerald-500/20 text-emerald-300" },
+  { "id": 5, "date": "Mei 20", "title": "Scroll SCR Distribution",  "type": "Airdrop",  "color": "bg-blue-400/20 text-blue-300" },
+  { "id": 6, "date": "Mei 25", "title": "Fuel Network Mainnet",     "type": "Launch",   "color": "bg-rose-500/20 text-rose-300" }
+]

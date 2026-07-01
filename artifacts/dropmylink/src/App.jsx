@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
-import { getAirdrops, getAds, getNews, getQinfo, getTools } from "./lib/data";
+import { getAirdrops, getAds, getNews, getQinfo, getTools, getP2P, getCalendar, getTicker } from "./lib/data";
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
   ExternalLink, Copy, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
@@ -60,6 +60,9 @@ async function idbGetAll() {
     idbGet("news",     null),
     idbGet("qinfo",    null),
     idbGet("tools",    null),
+    idbGet("p2p",      null),
+    idbGet("calendar", null),
+    idbGet("ticker",   null),
   ]);
 }
 
@@ -69,22 +72,9 @@ const DEF_ADS      = getAds();
 const DEF_NEWS     = getNews();
 const DEF_QINFO    = getQinfo();
 const DEF_TOOLS    = getTools();
-
-const DEF_CALENDAR = [
-  { id:1, date:"Mei 10", title:"LayerZero Snapshot",       type:"Snapshot", color:"bg-blue-500/20 text-blue-300" },
-  { id:2, date:"Mei 12", title:"Initia TGE",               type:"TGE",      color:"bg-amber-500/20 text-amber-300" },
-  { id:3, date:"Mei 15", title:"Arbitrum DAO Vote",        type:"DAO",      color:"bg-blue-600/20 text-blue-300" },
-  { id:4, date:"Mei 18", title:"Monad Testnet Phase 2",    type:"Testnet",  color:"bg-emerald-500/20 text-emerald-300" },
-  { id:5, date:"Mei 20", title:"Scroll SCR Distribution",  type:"Airdrop",  color:"bg-blue-400/20 text-blue-300" },
-  { id:6, date:"Mei 25", title:"Fuel Network Mainnet",     type:"Launch",   color:"bg-rose-500/20 text-rose-300" },
-];
-
-
-const DEF_P2P = [
-  { id:1, user:"crypto_whale", selling:"1.000 ARB",  price:"0,95 USDT",  min:"100 ARB",  method:"Bank Transfer", verified:true },
-  { id:2, user:"defi_trader",  selling:"500 OP",     price:"2,10 USDT",  min:"50 OP",    method:"DANA / GoPay",  verified:true },
-  { id:3, user:"web3_indo",    selling:"0,5 ETH",    price:"2.950 USDT", min:"0.1 ETH",  method:"Semua Metode",  verified:true },
-];
+const DEF_P2P      = getP2P();
+const DEF_CALENDAR = getCalendar();
+const DEF_TICKER   = getTicker();
 
 // ─── CONSTANTS ────────────────────────────────────────────────
 const TAG_COLORS = {
@@ -988,17 +978,9 @@ function IconTikTok({ className = "w-4 h-4" }) {
 }
 
 // ─── TICKER BANNER ────────────────────────────────────────────
-// ✏️ EDIT TEKS TICKER: ubah string di array TICKER_TEXTS di bawah
-const TICKER_TEXTS = [
-  "Selamat datang di HUNTER WAVE",
-  "Pastikan selalu DYOR sebelum berinteraksi dengan smart contract",
-  "Info airdrop terkurasi untuk komunitas crypto Indonesia",
-  "Tidak ada saran investasi — riset mandiri selalu diutamakan",
-];
-
-function TickerBanner() {
+function TickerBanner({ texts = [] }) {
   const separator = " ✦ ";
-  const fullText = TICKER_TEXTS.join(separator) + separator;
+  const fullText = texts.join(separator) + separator;
   // Duplikat agar scroll seamless
   const display = fullText + fullText;
   return (
@@ -1148,7 +1130,7 @@ function InfoTerkiniScreen({ ads, news, qinfo }) {
 }
 
 // ─── BOOKMARK SCREEN ──────────────────────────────────────────
-function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
+function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBookmarks, onToggleToolBookmark }) {
   const [section, setSection]       = useState("list1");
   const [expandedId, setExpandedId] = useState(null);
   const [copiedId, setCopiedId]     = useState(null);
@@ -1169,6 +1151,11 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
       activeBorder:"border-red-500/30",
       btn:"bg-red-500/20 ring-red-500/40",
       icon:"text-red-400 fill-red-400" },
+    { id:"platform", level:0, label:"Platform", emoji:"🔧",
+      activePill:"bg-emerald-500 text-white ring-emerald-500",
+      activeBorder:"border-emerald-500/30",
+      btn:"bg-emerald-500/20 ring-emerald-500/40",
+      icon:"text-emerald-400 fill-emerald-400" },
   ];
 
   function copyUrl(item) {
@@ -1177,9 +1164,15 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
     setTimeout(()=>setCopiedId(null), 2000);
   }
 
-  const totalSaved  = [...bookmarks.values()].filter(v=>v>0).length;
-  const activeGroup = GROUPS.find(g => g.id === section);
-  const activeItems = airdrops.filter(a => bookmarks.get(String(a.id)) === activeGroup.level);
+  const totalSaved      = [...bookmarks.values()].filter(v=>v>0).length;
+  const totalToolSaved  = toolBookmarks ? toolBookmarks.size : 0;
+  const activeGroup     = GROUPS.find(g => g.id === section);
+  const activeItems     = section === "platform"
+    ? []
+    : airdrops.filter(a => bookmarks.get(String(a.id)) === activeGroup.level);
+  const savedTools      = section === "platform" && tools && toolBookmarks
+    ? tools.filter(t => toolBookmarks.has(String(t.id)))
+    : [];
 
   return (
     <div className="pb-32">
@@ -1190,9 +1183,9 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
             <Bookmark className="w-5 h-5 text-blue-400"/>
             <h1 className="text-lg font-bold text-white">Bookmark</h1>
           </div>
-          {totalSaved > 0 && (
+          {(totalSaved + totalToolSaved) > 0 && (
             <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20 font-bold">
-              {totalSaved} tersimpan
+              {totalSaved + totalToolSaved} tersimpan
             </span>
           )}
         </div>
@@ -1202,7 +1195,9 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
       {/* Sub-tabs — sama persis pola Discover */}
       <div className="flex gap-2 px-5 mb-5 overflow-x-auto" style={{scrollbarWidth:"none"}}>
         {GROUPS.map(g => {
-          const count = airdrops.filter(a => bookmarks.get(String(a.id)) === g.level).length;
+          const count = g.id === "platform"
+            ? (toolBookmarks ? toolBookmarks.size : 0)
+            : airdrops.filter(a => bookmarks.get(String(a.id)) === g.level).length;
           return (
             <button key={g.id} onClick={()=>{setSection(g.id);setExpandedId(null);}}
               className={`flex-none flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold ring-1 transition-all
@@ -1222,7 +1217,53 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
 
       {/* Content per tab */}
       <div className="px-5">
-        {activeItems.length === 0 ? (
+        {/* Platform tab — saved tools */}
+        {section === "platform" && (
+          savedTools.length === 0 ? (
+            <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] border-dashed p-10 flex flex-col items-center gap-3 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.08] flex items-center justify-center">
+                <span className="text-2xl">🔧</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white/50">Platform kosong</p>
+                <p className="text-xs text-white/25 mt-1 leading-relaxed">
+                  Belum ada platform tersimpan.<br/>Ketuk ikon bookmark di Discover → Platform & Tools.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              {savedTools.map(tool => (
+                <div key={tool.id} className="rounded-2xl border bg-[#1E1E1E] border-emerald-500/20 p-4 flex items-center gap-3">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
+                    <Favicon url={tool.url} customImage={tool.customImage}/>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-semibold text-white">{tool.title}</span>
+                      {tool.category && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 bg-blue-500/15 text-blue-300 ring-blue-500/25">{tool.category}</span>}
+                    </div>
+                    <p className="text-[11px] text-blue-400/40 font-mono mt-0.5 truncate">{tool.url}</p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {tool.targetUrl && (
+                      <button onClick={()=>window.open(tool.targetUrl,"_blank","noopener,noreferrer")}
+                        className="w-8 h-8 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/20 transition-all">
+                        <ExternalLink className="w-3.5 h-3.5 text-blue-400"/>
+                      </button>
+                    )}
+                    <button onClick={()=>onToggleToolBookmark(tool.id)}
+                      className="w-8 h-8 rounded-xl bg-emerald-500/20 ring-1 ring-emerald-500/40 flex items-center justify-center transition-all">
+                      <Bookmark className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400"/>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        )}
+        {/* Airdrop daftar tabs */}
+        {section !== "platform" && activeItems.length === 0 ? (
           <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] border-dashed p-10 flex flex-col items-center gap-3 text-center">
             <div className="w-14 h-14 rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.08] flex items-center justify-center">
               <span className="text-2xl">{activeGroup.emoji}</span>
@@ -1234,7 +1275,7 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark }) {
               </p>
             </div>
           </div>
-        ) : (
+        ) : section !== "platform" && (
           <div className="flex flex-col gap-2.5">
             {activeItems.map(item => {
               const expanded = expandedId === item.id;
@@ -1405,7 +1446,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
 }
 
 // ─── DISCOVER SCREEN ──────────────────────────────────────────
-function DiscoverScreen({ tools }) {
+function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookmark }) {
   const [section, setSection] = useState("p2p");
   const [expandedItem, setExpandedItem] = useState(null);
   return (
@@ -1429,7 +1470,7 @@ function DiscoverScreen({ tools }) {
             <span className="text-base mt-0.5">⚠️</span>
             <p className="text-[11px] text-amber-300/80 leading-relaxed">Lakukan transaksi dengan hati-hati. Platform tidak bertanggung jawab atas risiko P2P deal.</p>
           </div>
-          {DEF_P2P.map(l=>(
+          {p2p.map(l=>(
             <div key={l.id} className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
               <div className="flex items-center gap-2.5 mb-3">
                 <div className="w-8 h-8 rounded-full bg-blue-500/15 ring-1 ring-blue-500/20 flex items-center justify-center text-sm">👤</div>
@@ -1452,7 +1493,7 @@ function DiscoverScreen({ tools }) {
 
       {section==="calendar" && (
         <div className="px-5 flex flex-col gap-3">
-          {DEF_CALENDAR.map(e=>(
+          {calendar.map(e=>(
             <div key={e.id} className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4 flex items-center gap-4">
               <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-blue-500/15 ring-1 ring-blue-500/20 flex flex-col items-center justify-center">
                 <span className="text-[9px] text-blue-400/60 uppercase font-bold">{e.date.split(" ")[0]}</span>
@@ -1470,7 +1511,8 @@ function DiscoverScreen({ tools }) {
       {section==="tools" && (
         <div className="px-5 flex flex-col gap-3">
           {tools.map(tool=>{
-            const open = expandedItem === tool.id;
+            const open      = expandedItem === tool.id;
+            const saved     = toolBookmarks && toolBookmarks.has(String(tool.id));
             return (
               <div key={tool.id} className={`rounded-2xl border transition-all duration-300 ${open?"bg-[#1E1E1E] border-blue-500/40":"bg-[#1E1E1E] border-white/[0.06] hover:border-white/[0.14]"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedItem(open?null:tool.id)}>
@@ -1484,6 +1526,12 @@ function DiscoverScreen({ tools }) {
                     </div>
                     <p className="text-[11px] text-blue-400/40 font-mono mt-0.5 truncate">{tool.url}</p>
                   </div>
+                  <button
+                    onClick={e=>{e.stopPropagation();onToggleToolBookmark(tool.id);}}
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center ring-1 transition-all flex-shrink-0
+                      ${saved?"bg-emerald-500/20 ring-emerald-500/40":"bg-white/[0.04] ring-white/[0.08] hover:bg-white/[0.08]"}`}>
+                    <Bookmark className={`w-3.5 h-3.5 transition-all ${saved?"text-emerald-400 fill-emerald-400":"text-white/25"}`}/>
+                  </button>
                   <ChevronDown className={`w-4 h-4 text-blue-400/40 flex-shrink-0 transition-transform duration-300 ${open?"rotate-180":""}`}/>
                 </div>
                 {open && (
@@ -1540,11 +1588,33 @@ export default function App() {
   const [news, setNews]         = useState(DEF_NEWS);
   const [qinfo, setQinfo]       = useState(DEF_QINFO);
   const [tools, setTools]       = useState(DEF_TOOLS);
+  const [p2p, setP2p]           = useState(DEF_P2P);
+  const [calendar, setCalendar] = useState(DEF_CALENDAR);
+  const [ticker, setTicker]     = useState(DEF_TICKER);
   const [loaded, setLoaded]     = useState(false);
   const [isAdmin, setIsAdmin]   = useState(()=>sessionStorage.getItem("dml_admin_ok")==="1");
   const [showLogin, setShowLogin] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [savedMsg, setSavedMsg]   = useState("");
+
+  // ─── TOOL BOOKMARKS on/off (localStorage) ─────────────────
+  const [toolBookmarks, setToolBookmarks] = useState(() => {
+    try {
+      const raw = localStorage.getItem("hw_tool_bookmarks");
+      if (!raw) return new Set();
+      return new Set(JSON.parse(raw));
+    } catch { return new Set(); }
+  });
+
+  function toggleToolBookmark(id) {
+    setToolBookmarks(prev => {
+      const next = new Set(prev);
+      const key  = String(id);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      try { localStorage.setItem("hw_tool_bookmarks", JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  }
 
   // ─── BOOKMARKS multi-level (localStorage) ─────────────────
   // level 1=kuning, 2=biru, 3=merah, 0/missing=tidak ada
@@ -1570,12 +1640,15 @@ export default function App() {
 
   // Load all data from IndexedDB on mount
   useEffect(() => {
-    idbGetAll().then(([a, ad, n, q, t]) => {
-      if (a)  setAirdrops(a);
-      if (ad) setAds(ad);
-      if (n)  setNews(n);
-      if (q)  setQinfo(q);
-      if (t)  setTools(t);
+    idbGetAll().then(([a, ad, n, q, t, p, cal, tick]) => {
+      if (a)    setAirdrops(a);
+      if (ad)   setAds(ad);
+      if (n)    setNews(n);
+      if (q)    setQinfo(q);
+      if (t)    setTools(t);
+      if (p)    setP2p(p);
+      if (cal)  setCalendar(cal);
+      if (tick) setTicker(tick);
       setLoaded(true);
     });
   }, []);
@@ -1686,7 +1759,7 @@ export default function App() {
 
       {/* Running Ticker — tampil di semua tab */}
       <div className="relative z-10 max-w-lg mx-auto">
-        <TickerBanner />
+        <TickerBanner texts={ticker} />
       </div>
 
       {/* Content */}
@@ -1694,8 +1767,8 @@ export default function App() {
         {tab==="intro"    && <IntroScreen />}
         {tab==="info"     && <InfoTerkiniScreen ads={ads} news={news} qinfo={qinfo} />}
         {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} />}
-        {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} />}
-        {tab==="discover" && <DiscoverScreen tools={tools} />}
+        {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
+        {tab==="discover" && <DiscoverScreen tools={tools} p2p={p2p} calendar={calendar} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
       </div>
 
       <BottomNav active={tab} onSelect={setTab} />
