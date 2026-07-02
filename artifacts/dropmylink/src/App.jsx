@@ -1401,17 +1401,19 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
 
   return (
     <div className="pb-32">
-      <div className="px-5 pt-6 mb-5">
+      <div className="px-5 pt-6 mb-4">
         <h1 className="text-lg font-bold text-white">🪂 Airdrop List</h1>
         <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
       </div>
-      <div className="px-5">
-        <div className="relative mb-3">
+
+      {/* ── STICKY SEARCH BAR ── */}
+      <div className="sticky top-[52px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md pb-3 px-5 pt-1 border-b border-white/[0.05]">
+        <div className="relative mb-2.5">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400/50 pointer-events-none"/>
           <input type="search" placeholder="Cari airdrop..." value={search} onChange={e=>setSearch(e.target.value)}
             className="w-full bg-blue-500/[0.08] ring-1 ring-blue-500/25 rounded-2xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 outline-none focus:ring-blue-400/50 transition-all"/>
         </div>
-        <div className="mb-4">
+        <div>
           <button onClick={()=>setFilterOpen(!filterOpen)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold ring-1 transition-all ${activeTag!=="All"?"bg-blue-500/20 ring-blue-400/40 text-blue-300":"bg-blue-500/[0.08] ring-blue-500/20 text-white/60"}`}>
             <SlidersHorizontal className="w-3.5 h-3.5"/>
@@ -1419,7 +1421,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
             {filterOpen?<ChevronUp className="w-3.5 h-3.5"/>:<ChevronDown className="w-3.5 h-3.5"/>}
           </button>
           {filterOpen && (
-            <div className="mt-3 glass-card rounded-2xl p-3 flex flex-wrap gap-2">
+            <div className="mt-2.5 glass-card rounded-2xl p-3 flex flex-wrap gap-2">
               {allTags.map(tag=>(
                 <button key={tag} onClick={()=>{setActiveTag(tag);setFilterOpen(false);}}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${activeTag===tag?"bg-blue-500 border-blue-500 text-white":"bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/80"}`}>
@@ -1429,6 +1431,9 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="px-5 pt-3">
         <p className="text-[11px] text-white/25 mb-3">{filtered.length} hasil{activeTag!=="All"&&<> untuk <span className="text-blue-400">{activeTag}</span></>}</p>
         <div className="flex flex-col gap-3">
           {filtered.map(item=>{
@@ -1503,17 +1508,21 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
   }
   return (
     <div className="pb-32">
-      <div className="px-5 pt-6 mb-5">
+      <div className="px-5 pt-6 mb-3">
         <h1 className="text-lg font-bold text-white">🧭 Discover</h1>
         <p className="text-xs text-white/30 mt-0.5">P2P, Kalender, dan Platform Tools</p>
       </div>
-      <div className="flex gap-2 px-5 mb-5 overflow-x-auto" style={{scrollbarWidth:"none"}}>
-        {[{id:"p2p",label:"P2P Seller",icon:Users},{id:"calendar",label:"Kalender",icon:Calendar},{id:"tools",label:"Platform & Tools",icon:Lightbulb}].map(({id,label,icon:Icon})=>(
-          <button key={id} onClick={()=>setSection(id)}
-            className={`flex-none flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold ring-1 transition-all ${section===id?"bg-blue-500 text-white ring-blue-500":"bg-blue-500/[0.08] ring-blue-500/20 text-white/50 hover:text-blue-300"}`}>
-            <Icon className="w-3.5 h-3.5"/>{label}
-          </button>
-        ))}
+
+      {/* ── STICKY SECTION TABS ── */}
+      <div className="sticky top-[52px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
+        <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+          {[{id:"p2p",label:"P2P Seller",icon:Users},{id:"calendar",label:"Kalender",icon:Calendar},{id:"tools",label:"Platform & Tools",icon:Lightbulb}].map(({id,label,icon:Icon})=>(
+            <button key={id} onClick={()=>setSection(id)}
+              className={`flex-none flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold ring-1 transition-all ${section===id?"bg-blue-500 text-white ring-blue-500":"bg-blue-500/[0.08] ring-blue-500/20 text-white/50 hover:text-blue-300"}`}>
+              <Icon className="w-3.5 h-3.5"/>{label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {section==="p2p" && (
