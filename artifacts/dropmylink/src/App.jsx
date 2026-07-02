@@ -691,7 +691,7 @@ function DonateFeedbackSection() {
   }
   return (
     <div className="px-5 mt-6 mb-2">
-      <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4 flex flex-col gap-3">
+      <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
         {/* Donate */}
         <div className="flex items-center gap-2">
           <Heart className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
@@ -858,7 +858,7 @@ function NewsCarousel({ news }) {
 function QinfoBoardCard({ board, items }) {
   const Icon = board.icon;
   return (
-    <div className="w-full aspect-video rounded-2xl p-4 bg-[#1E1E1E] border border-white/[0.06] flex flex-col gap-3 overflow-hidden">
+    <div className="w-full aspect-video rounded-2xl p-4 glass-card flex flex-col gap-3 overflow-hidden">
       <div className={`flex items-center gap-1.5 ${board.accent}`}>
         <Icon className="w-3.5 h-3.5" />
         <span className="text-xs font-bold tracking-wider uppercase">{board.label}</span>
@@ -1075,7 +1075,7 @@ function IntroScreen() {
 
       {/* Follow Kami */}
       <div className="px-5 mb-4">
-        <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
+        <div className="rounded-2xl glass-card p-4">
           <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Follow Kami</p>
           <div className="flex gap-2.5">
             {SOCIAL.map(({ label, Icon, url }) => (
@@ -1091,7 +1091,7 @@ function IntroScreen() {
 
       {/* Independence Disclaimer */}
       <div className="px-5 mb-4">
-        <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
+        <div className="rounded-2xl glass-card p-4">
           <div className="flex items-center gap-2 mb-2.5">
             <div className="w-7 h-7 rounded-lg bg-blue-500/15 ring-1 ring-blue-500/25 flex items-center justify-center flex-shrink-0">
               <Shield className="w-3.5 h-3.5 text-blue-400"/>
@@ -1106,7 +1106,7 @@ function IntroScreen() {
 
       {/* DYOR Disclaimer */}
       <div className="px-5 mb-4">
-        <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
+        <div className="rounded-2xl glass-card p-4">
           <div className="flex items-center gap-2 mb-2.5">
             <div className="w-7 h-7 rounded-lg bg-white/[0.06] ring-1 ring-white/[0.10] flex items-center justify-center flex-shrink-0">
               <AlertTriangle className="w-3.5 h-3.5 text-orange-400/70"/>
@@ -1243,7 +1243,7 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
         {/* Platform tab — saved tools */}
         {section === "platform" && (
           savedTools.length === 0 ? (
-            <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] border-dashed p-10 flex flex-col items-center gap-3 text-center">
+            <div className="rounded-2xl glass-card border-dashed p-10 flex flex-col items-center gap-3 text-center">
               <div className="w-14 h-14 rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.08] flex items-center justify-center">
                 <span className="text-2xl">🔧</span>
               </div>
@@ -1302,7 +1302,7 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
         )}
         {/* Airdrop daftar tabs */}
         {section !== "platform" && activeItems.length === 0 ? (
-          <div className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] border-dashed p-10 flex flex-col items-center gap-3 text-center">
+          <div className="rounded-2xl glass-card border-dashed p-10 flex flex-col items-center gap-3 text-center">
             <div className="w-14 h-14 rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.08] flex items-center justify-center">
               <span className="text-2xl">{activeGroup.emoji}</span>
             </div>
@@ -1419,7 +1419,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
             {filterOpen?<ChevronUp className="w-3.5 h-3.5"/>:<ChevronDown className="w-3.5 h-3.5"/>}
           </button>
           {filterOpen && (
-            <div className="mt-3 bg-[#1E1E1E] border border-white/[0.06] rounded-2xl p-3 flex flex-wrap gap-2">
+            <div className="mt-3 glass-card rounded-2xl p-3 flex flex-wrap gap-2">
               {allTags.map(tag=>(
                 <button key={tag} onClick={()=>{setActiveTag(tag);setFilterOpen(false);}}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${activeTag===tag?"bg-blue-500 border-blue-500 text-white":"bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/80"}`}>
@@ -1435,7 +1435,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
             const expanded = expandedId===item.id;
             const bmLevel = bookmarks.get(String(item.id)) || 0;
             return (
-              <div key={item.id} className={`card-shimmer rounded-2xl border transition-all duration-300 ${expanded?"bg-[#1E1E1E] border-blue-500/40":"bg-[#1E1E1E] border-white/[0.06] hover:border-white/[0.14]"}`}>
+              <div key={item.id} className={`card-shimmer rounded-2xl transition-all duration-300 ${expanded?"glass-card-blue":"glass-card hover:border-white/[0.18]"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:item.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
@@ -1523,7 +1523,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
             <p className="text-[11px] text-amber-300/80 leading-relaxed">Lakukan transaksi dengan hati-hati. Platform tidak bertanggung jawab atas risiko P2P deal.</p>
           </div>
           {p2p.map(l=>(
-            <div key={l.id} className="card-shimmer rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4">
+            <div key={l.id} className="card-shimmer rounded-2xl glass-card p-4">
               {/* Header — avatar + nama + verified */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2.5">
@@ -1601,7 +1601,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
       {section==="calendar" && (
         <div className="px-5 flex flex-col gap-3">
           {calendar.map(e=>(
-            <div key={e.id} className="rounded-2xl bg-[#1E1E1E] border border-white/[0.06] p-4 flex items-center gap-4">
+            <div key={e.id} className="rounded-2xl glass-card p-4 flex items-center gap-4">
               <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-blue-500/15 ring-1 ring-blue-500/20 flex flex-col items-center justify-center">
                 <span className="text-[9px] text-blue-400/60 uppercase font-bold">{e.date.split(" ")[0]}</span>
                 <span className="text-xl font-bold text-white leading-none">{e.date.split(" ")[1]}</span>
@@ -1621,7 +1621,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
             const open      = expandedItem === tool.id;
             const saved     = toolBookmarks && toolBookmarks.has(String(tool.id));
             return (
-              <div key={tool.id} className={`card-shimmer rounded-2xl border transition-all duration-300 ${open?"bg-[#1E1E1E] border-blue-500/40":"bg-[#1E1E1E] border-white/[0.06] hover:border-white/[0.14]"}`}>
+              <div key={tool.id} className={`card-shimmer rounded-2xl transition-all duration-300 ${open?"glass-card-blue":"glass-card hover:border-white/[0.18]"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedItem(open?null:tool.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     <Favicon url={tool.url} customImage={tool.customImage}/>
@@ -1684,7 +1684,7 @@ function BottomNav({ active, onSelect }) {
   }
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-4 px-3">
-      <div className="w-full max-w-lg flex items-center gap-0.5 px-2 py-1.5 rounded-2xl bg-[#1E1E1E] border border-white/[0.08] shadow-2xl shadow-black/60">
+      <div className="w-full max-w-lg flex items-center gap-0.5 px-2 py-1.5 rounded-2xl glass-nav shadow-2xl shadow-black/80">
         {tabs.map(({id,label,icon:Icon})=>(
           <button key={id} onClick={()=>handleSelect(id)}
             className={`flex-1 flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl transition-all duration-200 ${active===id?"bg-blue-500 text-white":"text-white/30 hover:text-white/60 hover:bg-white/[0.04]"}`}>
@@ -1849,10 +1849,6 @@ export default function App() {
                 <span className="text-[10px] text-blue-400 font-bold">ADMIN</span>
               </button>
             )}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/10 ring-1 ring-green-500/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"/>
-              <span className="text-[10px] text-green-400 font-bold">Live</span>
-            </div>
           </div>
         </div>
       </div>
