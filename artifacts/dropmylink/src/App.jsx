@@ -96,13 +96,24 @@ const TAG_COLORS = {
 };
 const DEF_TAG = { text:"text-blue-300", bg:"bg-blue-500/15", ring:"ring-blue-500/25" };
 
-const STATUS_STYLE = {
-  Active:      "bg-green-500/15 text-green-400 ring-green-500/25",
-  Testnet:     "bg-yellow-500/15 text-yellow-400 ring-yellow-500/25",
+// Unified badge style — dipakai di semua tab agar konsisten
+const BADGE_ALL = {
+  Active:      "bg-green-500/25 text-green-300 ring-green-500/30",
+  New:         "bg-sky-500/25 text-sky-300 ring-sky-500/30",
+  Confirmed:   "bg-blue-400/25 text-blue-200 ring-blue-400/30",
+  Upcoming:    "bg-purple-500/25 text-purple-300 ring-purple-500/30",
+  Soon:        "bg-amber-500/25 text-amber-300 ring-amber-500/30",
+  Rumored:     "bg-gray-500/25 text-gray-300 ring-gray-500/30",
+  Testnet:     "bg-yellow-500/20 text-yellow-400 ring-yellow-500/30",
+  Mainnet:     "bg-blue-500/20 text-blue-300 ring-blue-500/30",
   Distributed: "bg-gray-500/15 text-gray-400 ring-gray-500/25",
-  Mainnet:     "bg-blue-500/15 text-blue-400 ring-blue-500/25",
-  Upcoming:    "bg-blue-400/15 text-blue-300 ring-blue-400/25",
+  TGE:         "bg-amber-500/25 text-amber-300 ring-amber-500/30",
+  Snapshot:    "bg-indigo-500/25 text-indigo-300 ring-indigo-500/30",
+  DAO:         "bg-violet-500/25 text-violet-300 ring-violet-500/30",
+  Launch:      "bg-emerald-500/25 text-emerald-300 ring-emerald-500/30",
 };
+// Alias ringkas untuk Airdrop list (tetap pakai ring)
+const STATUS_STYLE = BADGE_ALL;
 
 // section:"cepat" → Info Cepat carousel | section:"teknis" → Info Teknis carousel
 const QINFO_BOARDS = [
@@ -742,16 +753,81 @@ function CarouselDots({ count, idx, onSelect }) {
   );
 }
 
-// ─── STATUS BADGE ─────────────────────────────────────────────
+// ─── STATUS BADGE (unified) ───────────────────────────────────
 function StatusBadge({ status }) {
-  const cls =
-    status === "New"       ? "bg-sky-500/30 text-sky-300" :
-    status === "Active"    ? "bg-green-500/30 text-green-300" :
-    status === "Confirmed" ? "bg-blue-400/30 text-blue-200" :
-    status === "Rumored"   ? "bg-gray-500/30 text-gray-300" :
-    status === "Upcoming"  ? "bg-purple-500/30 text-purple-300" :
-                             "bg-amber-500/30 text-amber-300";
-  return <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${cls}`}>{status}</span>;
+  const cls = BADGE_ALL[status] || "bg-amber-500/25 text-amber-300";
+  return <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${cls}`}>{status}</span>;
+}
+
+// ─── STATUS LEGEND (collapsible) ──────────────────────────────
+const LEGEND_ITEMS = [
+  { status:"Active",      desc:"Sedang berjalan" },
+  { status:"New",         desc:"Baru ditambahkan" },
+  { status:"Upcoming",    desc:"Segera mulai" },
+  { status:"Confirmed",   desc:"Sudah dikonfirmasi" },
+  { status:"Soon",        desc:"Dalam waktu dekat" },
+  { status:"Testnet",     desc:"Fase testnet" },
+  { status:"Mainnet",     desc:"Sudah mainnet" },
+  { status:"Rumored",     desc:"Masih rumor" },
+  { status:"Distributed", desc:"Token sudah dibagikan" },
+];
+function StatusLegend() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mb-3">
+      <button onClick={()=>setOpen(o=>!o)}
+        className="flex items-center gap-1.5 text-[10px] text-white/35 hover:text-white/60 transition-colors">
+        <span>📖 Keterangan Badge Status</span>
+        {open ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>}
+      </button>
+      {open && (
+        <div className="mt-2 p-3 rounded-xl glass-card">
+          <div className="flex flex-wrap gap-x-3 gap-y-2">
+            {LEGEND_ITEMS.map(({status,desc})=>(
+              <div key={status} className="flex items-center gap-1.5">
+                <StatusBadge status={status}/>
+                <span className="text-[9px] text-white/35">{desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── SIDEBAR NAV (desktop ≥ 1024px) ───────────────────────────
+function SidebarNav({ active, onSelect, onLogoTap, isAdmin, onOpenPanel }) {
+  const tabs = [
+    { id:"intro",    label:"Intro",        icon:Home },
+    { id:"info",     label:"Info Terkini", icon:Zap },
+    { id:"airdrops", label:"Airdrop",      icon:LayoutGrid },
+    { id:"bookmark", label:"Bookmark",     icon:Bookmark },
+    { id:"discover", label:"Discover",     icon:Compass },
+  ];
+  return (
+    <div className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-56 bg-[#0A0A0A] border-r border-white/[0.06] z-40 py-5 px-3">
+      <div className="flex items-center gap-2.5 px-3 mb-8 cursor-pointer select-none" onClick={onLogoTap}>
+        <img src="/logo.jpg" alt="logo" className="w-8 h-8 rounded-lg object-cover ring-1 ring-blue-500/30"/>
+        <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
+      </div>
+      <nav className="flex flex-col gap-1 flex-1">
+        {tabs.map(({id,label,icon:Icon})=>(
+          <button key={id} onClick={()=>onSelect(id)}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left
+              ${active===id?"bg-blue-500/20 text-blue-300 ring-1 ring-blue-500/30":"text-white/40 hover:text-white/70 hover:bg-white/[0.05]"}`}>
+            <Icon className="w-4 h-4 flex-shrink-0"/>{label}
+          </button>
+        ))}
+      </nav>
+      {isAdmin && (
+        <button onClick={onOpenPanel}
+          className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 text-blue-400 text-xs font-bold hover:bg-blue-500/20 transition-all mt-2">
+          <Settings className="w-3.5 h-3.5"/>ADMIN PANEL
+        </button>
+      )}
+    </div>
+  );
 }
 
 // ─── ADS CAROUSEL (16:9 horizontal auto-scroll) ───────────────
@@ -1023,7 +1099,57 @@ function TickerBanner({ texts = [] }) {
 }
 
 // ─── INTRO SCREEN ─────────────────────────────────────────────
-function IntroScreen() {
+const DYOR_TEXT = `Informasi yang tersaji di platform ini bukan merupakan saran investasi. Pasar kripto sangat volatil dan mengandung risiko tinggi. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial apa pun. Platform tidak bertanggung jawab atas kerugian yang timbul.`;
+
+function PrivacyModal({ onClose }) {
+  return (
+    <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center px-0 sm:px-5">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose}/>
+      <div className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl bg-[#131313] border border-white/[0.08] p-6 shadow-2xl max-h-[70vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm font-bold text-white">Privacy Policy</p>
+          <button onClick={onClose} className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center hover:bg-white/10">
+            <X className="w-3.5 h-3.5 text-white/50"/>
+          </button>
+        </div>
+        <div className="text-[11px] text-white/40 leading-relaxed space-y-3">
+          <p>HUNTER WAVE tidak mengumpulkan data pribadi pengguna. Semua data seperti bookmark dan preferensi disimpan secara lokal di perangkat Anda (localStorage/IndexedDB) dan tidak dikirim ke server mana pun.</p>
+          <p>Kami tidak menggunakan cookie pihak ketiga. Link ke platform eksternal (Telegram, X, Instagram, TikTok, dll) tunduk pada kebijakan privasi masing-masing platform tersebut.</p>
+          <p>Favicon platform diambil dari layanan Google S2 Favicons. Selain itu, tidak ada request ke server eksternal dari aplikasi ini.</p>
+          <p className="text-white/25">Terakhir diperbarui: Juli 2025</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TermsModal({ onClose }) {
+  return (
+    <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center px-0 sm:px-5">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose}/>
+      <div className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl bg-[#131313] border border-white/[0.08] p-6 shadow-2xl max-h-[70vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm font-bold text-white">Terms & Disclaimer</p>
+          <button onClick={onClose} className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center hover:bg-white/10">
+            <X className="w-3.5 h-3.5 text-white/50"/>
+          </button>
+        </div>
+        <div className="text-[11px] text-white/40 leading-relaxed space-y-3">
+          <p>HUNTER WAVE adalah platform kurasi informasi independen yang tidak berafiliasi dengan proyek, tim, atau entitas crypto mana pun.</p>
+          <p><span className="text-orange-400/70 font-semibold">Bukan Saran Investasi:</span> {DYOR_TEXT}</p>
+          <p>Dengan menggunakan platform ini, Anda menyetujui bahwa segala keputusan finansial merupakan tanggung jawab penuh Anda sendiri. Platform tidak menjamin keakuratan, kelengkapan, atau ketepatan waktu informasi yang disajikan.</p>
+          <p>Semua konten bersifat edukatif dan informatif semata. Gunakan dengan bijak dan selalu DYOR (Do Your Own Research).</p>
+          <p className="text-white/25">Terakhir diperbarui: Juli 2025</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IntroScreen({ airdrops = [], calendar = [] }) {
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms]     = useState(false);
+
   const SOCIAL = [
     { label:"X",         Icon:IconX,         url:"https://x.com/otgboys" },
     { label:"Instagram", Icon:IconInstagram, url:"https://www.instagram.com/airdrophunterwaveid?igsh=MTU5bmI5cXRtNmF3" },
@@ -1032,16 +1158,44 @@ function IntroScreen() {
 
   return (
     <div className="pb-32">
-      {/* Hero */}
-      <div className="px-5 pt-6 mb-6">
-        <span className="text-[10px] font-bold text-blue-400 tracking-widest uppercase">Web3 Channel</span>
-        <h1 className="text-2xl font-bold text-white leading-tight mt-1">
-          HUNTER <span className="text-blue-500">WAVE</span>
+      {/* ── HERO SECTION ── */}
+      <div className="relative px-5 pt-8 pb-7 mb-2 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/40 via-blue-950/15 to-transparent pointer-events-none"/>
+        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-blue-500/[0.07] blur-3xl pointer-events-none"/>
+        <span className="relative text-[10px] font-bold text-blue-400 tracking-widest uppercase">Web3 Airdrop Hub · Indonesia</span>
+        <h1 className="relative text-3xl font-black text-white leading-tight mt-2">
+          Jadilah Hunter<br/>
+          <span className="text-blue-500">Terdepan</span> di Web3
         </h1>
-        <p className="text-xs text-white/30 mt-2">Selamat datang di hub info airdrop & campaign Web3 terkurasi</p>
+        <p className="relative text-sm text-white/45 mt-2.5 leading-relaxed max-w-xs">
+          Info airdrop, campaign, dan tools Web3 terkurasi untuk komunitas crypto Indonesia.
+        </p>
+        <button
+          onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
+          className="relative mt-5 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-xl shadow-blue-500/30 btn-glow">
+          <IconTelegram className="w-4 h-4 text-white"/>
+          <span className="text-sm font-bold text-white">Bergabung di Telegram</span>
+        </button>
       </div>
 
-      {/* Brand Profile Card */}
+      {/* ── SOCIAL PROOF ── */}
+      <div className="px-5 mb-5">
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { value:"2K+",            label:"Member Telegram", icon:"👥" },
+            { value:airdrops.length,  label:"Proyek Airdrop",  icon:"🪂" },
+            { value:calendar.length,  label:"Event Kalender",  icon:"📅" },
+          ].map(({value,label,icon})=>(
+            <div key={label} className="rounded-2xl glass-card p-3 text-center">
+              <div className="text-base mb-0.5">{icon}</div>
+              <p className="text-xl font-black text-white">{value}</p>
+              <p className="text-[9px] text-white/35 mt-0.5 leading-tight">{label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── BRAND PROFILE CARD ── */}
       <div className="px-5 mb-4">
         <div className="rounded-2xl bg-gradient-to-br from-blue-600/20 to-blue-900/10 border border-blue-500/25 p-5">
           <div className="flex items-center gap-3.5 mb-4">
@@ -1062,23 +1216,15 @@ function IntroScreen() {
               <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20">{t}</span>
             ))}
           </div>
-
-          {/* Telegram join pill */}
-          <button
-            onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
-            className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-lg shadow-blue-500/25 btn-glow">
-            <IconTelegram className="w-4 h-4 text-white"/>
-            <span className="text-xs font-bold text-white">Bergabung di Telegram</span>
-          </button>
         </div>
       </div>
 
-      {/* Follow Kami */}
+      {/* ── FOLLOW KAMI ── */}
       <div className="px-5 mb-4">
         <div className="rounded-2xl glass-card p-4">
           <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Follow Kami</p>
           <div className="flex gap-2.5">
-            {SOCIAL.map(({ label, Icon, url }) => (
+            {SOCIAL.map(({label,Icon,url})=>(
               <button key={label} onClick={()=>window.open(url,"_blank","noopener,noreferrer")}
                 className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.08] hover:ring-white/[0.14] active:scale-95 transition-all">
                 <Icon className="w-5 h-5 text-white/55"/>
@@ -1089,7 +1235,7 @@ function IntroScreen() {
         </div>
       </div>
 
-      {/* Independence Disclaimer */}
+      {/* ── KEMANDIRIAN ── */}
       <div className="px-5 mb-4">
         <div className="rounded-2xl glass-card p-4">
           <div className="flex items-center gap-2 mb-2.5">
@@ -1104,7 +1250,7 @@ function IntroScreen() {
         </div>
       </div>
 
-      {/* DYOR Disclaimer */}
+      {/* ── DYOR ── */}
       <div className="px-5 mb-4">
         <div className="rounded-2xl glass-card p-4">
           <div className="flex items-center gap-2 mb-2.5">
@@ -1120,6 +1266,23 @@ function IntroScreen() {
       </div>
 
       <DonateFeedbackSection />
+
+      {/* ── FOOTER ── */}
+      <div className="px-5 pt-5 pb-4 mt-2 border-t border-white/[0.05]">
+        <div className="flex items-center justify-center gap-4 mb-2.5">
+          <button onClick={()=>setShowPrivacy(true)} className="text-[10px] text-white/30 hover:text-blue-400/70 transition-colors">
+            Privacy Policy
+          </button>
+          <span className="text-white/10">·</span>
+          <button onClick={()=>setShowTerms(true)} className="text-[10px] text-white/30 hover:text-blue-400/70 transition-colors">
+            Terms & Disclaimer
+          </button>
+        </div>
+        <p className="text-center text-[9px] text-white/20">© 2025 HUNTER WAVE · Indonesia · Independen &amp; Non-Profit</p>
+      </div>
+
+      {showPrivacy && <PrivacyModal onClose={()=>setShowPrivacy(false)}/>}
+      {showTerms   && <TermsModal  onClose={()=>setShowTerms(false)}/>}
     </div>
   );
 }
@@ -1145,12 +1308,82 @@ function InfoTerkiniScreen({ ads, news, qinfo }) {
 }
 
 // ─── BOOKMARK SCREEN ──────────────────────────────────────────
-function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBookmarks, onToggleToolBookmark }) {
-  const [section, setSection]             = useState("list1");
-  const [expandedId, setExpandedId]       = useState(null);
-  const [copiedId, setCopiedId]           = useState(null);
+function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBookmarks, onToggleToolBookmark, onImportBookmarks }) {
+  const [section, setSection]               = useState("list1");
+  const [expandedId, setExpandedId]         = useState(null);
+  const [copiedId, setCopiedId]             = useState(null);
   const [expandedToolId, setExpandedToolId] = useState(null);
-  const [copiedToolId, setCopiedToolId]   = useState(null);
+  const [copiedToolId, setCopiedToolId]     = useState(null);
+  const [importMsg, setImportMsg]           = useState("");
+
+  // ── Custom list names (localStorage) ──
+  const [listNames, setListNames] = useState(() => {
+    try {
+      const raw = localStorage.getItem("hw_bookmark_names");
+      return raw ? JSON.parse(raw) : {};
+    } catch { return {}; }
+  });
+  const [editingName, setEditingName] = useState(null);
+  const [tempName, setTempName]       = useState("");
+
+  function startEditName(id, current) { setEditingName(id); setTempName(current); }
+  function commitName(id, fallback) {
+    const name = tempName.trim() || fallback;
+    const next = { ...listNames, [id]: name };
+    setListNames(next);
+    try { localStorage.setItem("hw_bookmark_names", JSON.stringify(next)); } catch {}
+    setEditingName(null);
+  }
+
+  // ── Export bookmarks ──
+  function handleExport() {
+    const bm    = JSON.parse(localStorage.getItem("hw_bookmarks_v2") || "{}");
+    const tbm   = JSON.parse(localStorage.getItem("hw_tool_bookmarks") || "[]");
+    const names = JSON.parse(localStorage.getItem("hw_bookmark_names") || "{}");
+    const data  = { version:1, names, airdrops:bm, tools:tbm };
+    const blob  = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const a     = document.createElement("a");
+    a.href      = URL.createObjectURL(blob);
+    a.download  = `hunter-wave-bookmarks-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ── Import bookmarks ──
+  const importRef = useRef(null);
+  function handleImportFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const d = JSON.parse(ev.target.result);
+        // Validasi struktur minimal
+        if (typeof d !== "object" || d === null || d.version !== 1 ||
+            typeof d.airdrops !== "object" || !Array.isArray(d.tools)) {
+          setImportMsg("✗ Format file tidak valid. Pastikan file berasal dari export HUNTER WAVE.");
+          setTimeout(()=>setImportMsg(""),4000);
+          return;
+        }
+        // Simpan ke localStorage
+        try { localStorage.setItem("hw_bookmarks_v2", JSON.stringify(d.airdrops)); } catch {}
+        try { localStorage.setItem("hw_tool_bookmarks", JSON.stringify(d.tools)); } catch {}
+        if (d.names && typeof d.names === "object") {
+          try { localStorage.setItem("hw_bookmark_names", JSON.stringify(d.names)); } catch {}
+          setListNames(d.names);
+        }
+        // Reload state via parent callback
+        onImportBookmarks?.(d);
+        setImportMsg("✓ Bookmark berhasil diimpor!");
+        setTimeout(()=>setImportMsg(""),3000);
+      } catch {
+        setImportMsg("✗ File tidak dapat dibaca.");
+        setTimeout(()=>setImportMsg(""),4000);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }
 
   function copyToolUrl(tool) {
     navigator.clipboard.writeText(tool.targetUrl || `https://${tool.url}`).catch(()=>{});
@@ -1158,18 +1391,19 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
     setTimeout(()=>setCopiedToolId(null), 2000);
   }
 
+  const DEFAULT_NAMES = { list1:"Daftar 1", list2:"Daftar 2", list3:"Daftar 3" };
   const GROUPS = [
-    { id:"list1", level:1, label:"Daftar 1", emoji:"",
+    { id:"list1", level:1, label: listNames.list1 || "Daftar 1", emoji:"",
       activePill:"bg-yellow-500 text-white ring-yellow-500",
       activeBorder:"border-yellow-500/30",
       btn:"bg-yellow-500/20 ring-yellow-500/40",
       icon:"text-yellow-400 fill-yellow-400" },
-    { id:"list2", level:2, label:"Daftar 2", emoji:"",
+    { id:"list2", level:2, label: listNames.list2 || "Daftar 2", emoji:"",
       activePill:"bg-blue-500 text-white ring-blue-500",
       activeBorder:"border-blue-500/30",
       btn:"bg-blue-500/20 ring-blue-500/40",
       icon:"text-blue-400 fill-blue-400" },
-    { id:"list3", level:3, label:"Daftar 3", emoji:"",
+    { id:"list3", level:3, label: listNames.list3 || "Daftar 3", emoji:"",
       activePill:"bg-red-500 text-white ring-red-500",
       activeBorder:"border-red-500/30",
       btn:"bg-red-500/20 ring-red-500/40",
@@ -1201,39 +1435,74 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
     <div className="pb-32">
       {/* Header */}
       <div className="px-5 pt-6 mb-5">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Bookmark className="w-5 h-5 text-blue-400"/>
             <h1 className="text-lg font-bold text-white">Bookmark</h1>
           </div>
-          {(totalSaved + totalToolSaved) > 0 && (
-            <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20 font-bold">
-              {totalSaved + totalToolSaved} tersimpan
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {(totalSaved + totalToolSaved) > 0 && (
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20 font-bold">
+                {totalSaved + totalToolSaved} tersimpan
+              </span>
+            )}
+            <button onClick={handleExport}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 text-blue-400 text-[10px] font-bold hover:bg-blue-500/20 transition-all">
+              <Download className="w-3 h-3"/>Export
+            </button>
+            <button onClick={()=>importRef.current?.click()}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.05] ring-1 ring-white/10 text-white/50 text-[10px] font-bold hover:bg-white/10 transition-all">
+              ⬆ Import
+            </button>
+            <input ref={importRef} type="file" accept=".json" onChange={handleImportFile} className="hidden"/>
+          </div>
         </div>
-        <p className="text-xs text-white/30 mt-1">1× kuning · 2× biru · 3× merah · 4× hapus</p>
+        {importMsg && (
+          <p className={`text-[10px] font-semibold px-2 py-1 rounded-lg mb-1 ${importMsg.startsWith("✓")?"text-green-400 bg-green-500/10":"text-red-400 bg-red-500/10"}`}>
+            {importMsg}
+          </p>
+        )}
+        <p className="text-xs text-white/30">1× kuning · 2× biru · 3× merah · 4× hapus — ketuk nama daftar untuk ganti nama</p>
       </div>
 
-      {/* Sub-tabs — sama persis pola Discover */}
+      {/* Sub-tabs dengan rename */}
       <div className="flex gap-2 px-5 mb-5 overflow-x-auto" style={{scrollbarWidth:"none"}}>
         {GROUPS.map(g => {
           const count = g.id === "platform"
             ? (toolBookmarks ? toolBookmarks.size : 0)
             : airdrops.filter(a => bookmarks.get(String(a.id)) === g.level).length;
+          const isActive = section === g.id;
+          const isEditing = editingName === g.id && g.id !== "platform";
           return (
-            <button key={g.id} onClick={()=>{setSection(g.id);setExpandedId(null);}}
-              className={`flex-none flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold ring-1 transition-all
-                ${section===g.id ? g.activePill : "bg-blue-500/[0.08] ring-blue-500/20 text-white/50 hover:text-white/80"}`}>
+            <div key={g.id} className={`flex-none flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold ring-1 transition-all
+              ${isActive ? g.activePill : "bg-blue-500/[0.08] ring-blue-500/20 text-white/50 hover:text-white/80"}`}>
               <span>{g.emoji}</span>
-              {g.label}
-              {count > 0 && (
+              {isEditing ? (
+                <input
+                  autoFocus
+                  value={tempName}
+                  onChange={e=>setTempName(e.target.value)}
+                  onBlur={()=>commitName(g.id, DEFAULT_NAMES[g.id]||g.label)}
+                  onKeyDown={e=>{if(e.key==="Enter")commitName(g.id,DEFAULT_NAMES[g.id]||g.label);if(e.key==="Escape")setEditingName(null);}}
+                  className="bg-transparent border-b border-white/40 outline-none w-20 text-xs"
+                  maxLength={18}
+                />
+              ) : (
+                <button
+                  onClick={()=>{
+                    if(isActive && g.id!=="platform") { startEditName(g.id, g.label); }
+                    else { setSection(g.id); setExpandedId(null); }
+                  }}>
+                  {g.label}
+                </button>
+              )}
+              {count > 0 && !isEditing && (
                 <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold
-                  ${section===g.id?"bg-white/20 text-white":"bg-white/10 text-white/50"}`}>
+                  ${isActive?"bg-white/20 text-white":"bg-white/10 text-white/50"}`}>
                   {count}
                 </span>
               )}
-            </button>
+            </div>
           );
         })}
       </div>
@@ -1434,6 +1703,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
       </div>
 
       <div className="px-5 pt-3">
+        <StatusLegend />
         <p className="text-[11px] text-white/25 mb-3">{filtered.length} hasil{activeTag!=="All"&&<> untuk <span className="text-blue-400">{activeTag}</span></>}</p>
         <div className="flex flex-col gap-3">
           {filtered.map(item=>{
@@ -1609,6 +1879,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
 
       {section==="calendar" && (
         <div className="px-5 flex flex-col gap-3">
+          <StatusLegend />
           {calendar.map(e=>(
             <div key={e.id} className="rounded-2xl glass-card p-4 flex items-center gap-4">
               <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-blue-500/15 ring-1 ring-blue-500/20 flex flex-col items-center justify-center">
@@ -1692,7 +1963,7 @@ function BottomNav({ active, onSelect }) {
     setTimeout(() => setPoppedId(null), 400);
   }
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-4 px-3">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-4 px-3">
       <div className="w-full max-w-lg flex items-center gap-0.5 px-2 py-1.5 rounded-2xl glass-nav shadow-2xl shadow-black/80">
         {tabs.map(({id,label,icon:Icon})=>(
           <button key={id} onClick={()=>handleSelect(id)}
@@ -1840,60 +2111,90 @@ export default function App() {
 
   function handleLogout() { sessionStorage.removeItem("dml_admin_ok"); setIsAdmin(false); setShowPanel(false); }
 
+  // Bookmark import callback — refresh state from localStorage
+  function handleImportBookmarks(d) {
+    try {
+      const bmObj = d.airdrops || {};
+      const newBm = new Map(Object.entries(bmObj).map(([k,v])=>[k,Number(v)]).filter(([,v])=>v>0));
+      setBookmarks(newBm);
+      const newTbm = new Set((d.tools||[]).map(String));
+      setToolBookmarks(newTbm);
+    } catch {}
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-x-hidden">
 
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-[#0A0A0A] border-b border-white/[0.06]">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer select-none" onClick={handleLogoTap}>
-            <img src="/logo.jpg" alt="logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-blue-500/30"/>
-            <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
-          </div>
-          <div className="flex items-center gap-2">
-            {isAdmin && (
-              <button onClick={()=>setShowPanel(true)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/15 ring-1 ring-blue-500/30 hover:bg-blue-500/25 transition-all">
-                <Settings className="w-3 h-3 text-blue-400"/>
-                <span className="text-[10px] text-blue-400 font-bold">ADMIN</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* ── SIDEBAR NAV (desktop ≥ 1024px) ── */}
+      <SidebarNav active={tab} onSelect={setTab} onLogoTap={handleLogoTap} isAdmin={isAdmin} onOpenPanel={()=>setShowPanel(true)} />
 
-      {/* Loading overlay */}
-      {!loaded && (
-        <div className="fixed inset-0 z-[300] bg-black flex items-center justify-center">
-          <div className="flex flex-col items-center gap-3">
-            <img src="/logo.jpg" alt="logo" className="w-12 h-12 rounded-2xl object-cover ring-1 ring-blue-500/40 animate-pulse"/>
-            <p className="text-xs text-blue-400/60">Memuat data...</p>
+      {/* ── MAIN COLUMN ── */}
+      <div className="lg:ml-56">
+
+        {/* Header — hanya tampil di mobile */}
+        <div className="lg:hidden sticky top-0 z-40 bg-[#0A0A0A] border-b border-white/[0.06]">
+          <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2 cursor-pointer select-none" onClick={handleLogoTap}>
+              <img src="/logo.jpg" alt="logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-blue-500/30"/>
+              <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
+            </div>
+            <div className="flex items-center gap-2">
+              {isAdmin && (
+                <button onClick={()=>setShowPanel(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/15 ring-1 ring-blue-500/30 hover:bg-blue-500/25 transition-all">
+                  <Settings className="w-3 h-3 text-blue-400"/>
+                  <span className="text-[10px] text-blue-400 font-bold">ADMIN</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      )}
 
-      {/* Save toast */}
-      {savedMsg && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[250] px-4 py-2 rounded-full bg-[#1E1E1E] border border-blue-500/30 text-blue-300 text-xs font-bold shadow-lg shadow-black/40">
-          {savedMsg}
+        {/* Desktop header — hanya admin button, di dalam kolom konten */}
+        {isAdmin && (
+          <div className="hidden lg:flex justify-end px-5 pt-4 pb-0 max-w-xl mx-auto">
+            <button onClick={()=>setShowPanel(true)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/15 ring-1 ring-blue-500/30 hover:bg-blue-500/25 transition-all">
+              <Settings className="w-3 h-3 text-blue-400"/>
+              <span className="text-[10px] text-blue-400 font-bold">ADMIN</span>
+            </button>
+          </div>
+        )}
+
+        {/* Loading overlay */}
+        {!loaded && (
+          <div className="fixed inset-0 z-[300] bg-black flex items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+              <img src="/logo.jpg" alt="logo" className="w-12 h-12 rounded-2xl object-cover ring-1 ring-blue-500/40 animate-pulse"/>
+              <p className="text-xs text-blue-400/60">Memuat data...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Save toast */}
+        {savedMsg && (
+          <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[250] px-4 py-2 rounded-full bg-[#1E1E1E] border border-blue-500/30 text-blue-300 text-xs font-bold shadow-lg shadow-black/40">
+            {savedMsg}
+          </div>
+        )}
+
+        {/* Running Ticker — tampil di semua tab */}
+        <div className="relative z-10 max-w-xl mx-auto">
+          <TickerBanner texts={ticker} />
         </div>
-      )}
 
-      {/* Running Ticker — tampil di semua tab */}
-      <div className="relative z-10 max-w-lg mx-auto">
-        <TickerBanner texts={ticker} />
-      </div>
+        {/* Content */}
+        <div className="relative z-10 max-w-xl mx-auto">
+          {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} />}
+          {tab==="info"     && <InfoTerkiniScreen ads={ads} news={news} qinfo={qinfo} />}
+          {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} />}
+          {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} onImportBookmarks={handleImportBookmarks} />}
+          {tab==="discover" && <DiscoverScreen tools={tools} p2p={p2p} calendar={calendar} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
+        </div>
 
-      {/* Content */}
-      <div className="relative z-10 max-w-lg mx-auto">
-        {tab==="intro"    && <IntroScreen />}
-        {tab==="info"     && <InfoTerkiniScreen ads={ads} news={news} qinfo={qinfo} />}
-        {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} />}
-        {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
-        {tab==="discover" && <DiscoverScreen tools={tools} p2p={p2p} calendar={calendar} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
-      </div>
+        <BottomNav active={tab} onSelect={setTab} />
 
-      <BottomNav active={tab} onSelect={setTab} />
+      </div>{/* end lg:ml-56 */}
 
       {showLogin && <AdminLogin onClose={()=>setShowLogin(false)} onSuccess={handleAdminSuccess} />}
       {showPanel && (
