@@ -885,31 +885,275 @@ function FirstVisitSplash({ airdrops = [], calendar = [], onDone }) {
   );
 }
 
-// ─── HAMBURGER OVERLAY ────────────────────────────────────────
+// ─── HAMBURGER OVERLAY — constants ──────────────────────────
 const SOCIAL_LINKS = [
   { label:"X",         Icon:IconX,         url:"https://x.com/otgboys" },
   { label:"Instagram", Icon:IconInstagram, url:"https://www.instagram.com/airdrophunterwaveid?igsh=MTU5bmI5cXRtNmF3" },
   { label:"TikTok",    Icon:IconTikTok,    url:"https://www.tiktok.com/@airdrophunterwaveid?_r=1&_t=ZS-96oeh8Xs9zB" },
 ];
 
-function HamburgerOverlay({ open, onClose, airdrops = [], calendar = [] }) {
-  const [showPrivacy, setShowPrivacy] = useState(false);
-  const [showTerms,   setShowTerms]   = useState(false);
-  const [copied,      setCopied]      = useState(false);
+const MENU_ITEMS = [
+  { id:"intro",    emoji:"🏠", label:"Beranda",           desc:"Hero & info utama" },
+  { id:"about",    emoji:"ℹ️",  label:"About Us",          desc:"Profil & kemandirian" },
+  { id:"community",emoji:"👥", label:"Community",          desc:"Sosial & Telegram" },
+  { id:"donation", emoji:"💙", label:"Donasi & Feedback",  desc:"Dukung & masukan" },
+  { id:"privacy",  emoji:"🔒", label:"Privacy & Terms",    desc:"Kebijakan & disclaimer" },
+];
 
-  useEffect(() => {
-    if (open) document.body.style.overflow = "hidden";
-    else       document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
+// ─── OVERLAY PAGE: MENU LIST ──────────────────────────────────
+function OverlayMenuList({ onSelect }) {
+  return (
+    <nav className="flex flex-col py-2">
+      {MENU_ITEMS.map(({ id, emoji, label, desc }) => (
+        <button key={id} onClick={() => onSelect(id)}
+          className="flex items-center gap-4 px-5 py-4 hover:bg-white/[0.04] active:bg-white/[0.07] transition-colors text-left border-b border-white/[0.04] last:border-0">
+          <span className="text-xl w-7 text-center flex-shrink-0">{emoji}</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-white">{label}</p>
+            <p className="text-[10px] text-white/35 mt-0.5">{desc}</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-white/20 flex-shrink-0"/>
+        </button>
+      ))}
+      <p className="text-center text-[9px] text-white/15 pt-5 pb-3">© 2025 HUNTER WAVE · Indonesia · Non-Profit</p>
+    </nav>
+  );
+}
 
+// ─── OVERLAY PAGE: BERANDA / INTRO ────────────────────────────
+function IntroPage({ airdrops = [], calendar = [] }) {
+  return (
+    <div className="p-5 flex flex-col gap-4 pb-8">
+      {/* Hero */}
+      <div className="relative rounded-2xl overflow-hidden p-5 bg-gradient-to-br from-blue-950/60 to-blue-900/10 border border-blue-500/20">
+        <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-blue-500/[0.08] blur-2xl pointer-events-none"/>
+        <span className="relative text-[9px] font-bold text-blue-400 tracking-widest uppercase">Web3 Airdrop Hub · Indonesia</span>
+        <h2 className="relative text-2xl font-black text-white leading-tight mt-1.5">
+          Jadilah Hunter<br/><span className="text-blue-500">Terdepan</span> di Web3
+        </h2>
+        <p className="relative text-xs text-white/40 mt-2 leading-relaxed">
+          Info airdrop, campaign, dan tools Web3 terkurasi untuk komunitas crypto Indonesia.
+        </p>
+        <button
+          onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
+          className="relative mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-lg shadow-blue-500/25 btn-glow">
+          <IconTelegram className="w-3.5 h-3.5 text-white"/>
+          <span className="text-xs font-bold text-white">Bergabung di Telegram</span>
+        </button>
+      </div>
+      {/* Social proof */}
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          { value:"2K+",            label:"Member Telegram", icon:"👥" },
+          { value:airdrops.length,  label:"Proyek Airdrop",  icon:"🪂" },
+          { value:calendar.length,  label:"Event Kalender",  icon:"📅" },
+        ].map(({value,label,icon})=>(
+          <div key={label} className="rounded-2xl glass-card p-3 text-center">
+            <div className="text-base mb-0.5">{icon}</div>
+            <p className="text-lg font-black text-white">{value}</p>
+            <p className="text-[8px] text-white/35 mt-0.5 leading-tight">{label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── OVERLAY PAGE: ABOUT US ───────────────────────────────────
+function AboutPage() {
+  return (
+    <div className="p-5 flex flex-col gap-4 pb-8">
+      {/* Brand profile */}
+      <div className="rounded-2xl bg-gradient-to-br from-blue-600/20 to-blue-900/10 border border-blue-500/25 p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <img src="/logo.jpg" alt="logo" className="w-12 h-12 rounded-2xl object-cover ring-2 ring-blue-500/40 shadow-lg shadow-blue-500/20"/>
+          <div>
+            <p className="text-sm font-bold text-white">HUNTER WAVE</p>
+            <p className="text-[10px] text-blue-400/70 font-semibold tracking-wide">Web3 Airdrop Info Hub</p>
+            <span className="inline-flex items-center gap-1 mt-1 text-[8px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 ring-1 ring-green-500/25">
+              <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse"/> AKTIF
+            </span>
+          </div>
+        </div>
+        <p className="text-xs text-white/50 leading-relaxed">
+          Platform kurasi informasi airdrop, campaign, dan tips Web3 untuk komunitas crypto Indonesia. Kami menyajikan info terkini secara mandiri dan tidak berafiliasi dengan proyek mana pun.
+        </p>
+        <div className="mt-3.5 flex gap-1.5 flex-wrap">
+          {["Airdrop","Campaign","Web3","DeFi","Layer2"].map(t=>(
+            <span key={t} className="text-[9px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20">{t}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Kemandirian */}
+      <div className="rounded-2xl glass-card p-4">
+        <div className="flex items-center gap-2 mb-2.5">
+          <div className="w-7 h-7 rounded-lg bg-blue-500/15 ring-1 ring-blue-500/25 flex items-center justify-center flex-shrink-0">
+            <Shield className="w-3.5 h-3.5 text-blue-400"/>
+          </div>
+          <p className="text-xs font-bold text-white">Kemandirian HUNTER WAVE</p>
+        </div>
+        <p className="text-[11px] text-white/40 leading-relaxed">
+          HUNTER WAVE adalah platform <span className="text-blue-400/80">independen</span> yang tidak memiliki afiliasi resmi, sponsor, atau kerja sama berbayar dengan proyek, tim, atau entitas mana pun. Semua konten disajikan murni berdasarkan riset dan kurasi komunitas.
+        </p>
+      </div>
+
+      {/* DYOR */}
+      <div className="rounded-2xl glass-card p-4">
+        <div className="flex items-center gap-2 mb-2.5">
+          <div className="w-7 h-7 rounded-lg bg-white/[0.06] ring-1 ring-white/[0.10] flex items-center justify-center flex-shrink-0">
+            <AlertTriangle className="w-3.5 h-3.5 text-orange-400/70"/>
+          </div>
+          <p className="text-xs font-bold text-white/80">DYOR — Do Your Own Research</p>
+        </div>
+        <p className="text-[11px] text-white/35 leading-relaxed">
+          Informasi yang tersaji di platform ini <span className="text-orange-400/60">bukan merupakan saran investasi</span>. Pasar kripto sangat volatil dan mengandung risiko tinggi. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial apa pun. Platform tidak bertanggung jawab atas kerugian yang timbul.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── OVERLAY PAGE: COMMUNITY ──────────────────────────────────
+function CommunityPage() {
+  return (
+    <div className="p-5 flex flex-col gap-4 pb-8">
+      <div className="rounded-2xl glass-card p-4">
+        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Follow Kami</p>
+        <div className="flex gap-2.5">
+          {SOCIAL_LINKS.map(({label,Icon,url})=>(
+            <button key={label} onClick={()=>window.open(url,"_blank","noopener,noreferrer")}
+              className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.08] active:scale-95 transition-all">
+              <Icon className="w-5 h-5 text-white/55"/>
+              <span className="text-[9px] font-bold text-white/45">{label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
+        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Telegram Group</p>
+        <p className="text-[11px] text-white/40 leading-relaxed">
+          Bergabung dengan komunitas hunter Indonesia di grup Telegram kami. Diskusi airdrop, sharing tips, dan update info Web3 setiap hari.
+        </p>
+        <button
+          onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-lg shadow-blue-500/25 btn-glow">
+          <IconTelegram className="w-4 h-4 text-white"/>
+          <span className="text-sm font-bold text-white">Bergabung di Telegram</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── OVERLAY PAGE: DONASI & FEEDBACK ─────────────────────────
+function DonationPage() {
+  const [copied, setCopied] = useState(false);
   function copyAddr() {
     navigator.clipboard.writeText(DONATE_ADDRESS).catch(()=>{});
     setCopied(true);
     setTimeout(()=>setCopied(false), 2000);
   }
+  return (
+    <div className="p-5 flex flex-col gap-4 pb-8">
+      {/* Donate */}
+      <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <Heart className="w-4 h-4 text-white/25 flex-shrink-0"/>
+          <p className="text-xs font-bold text-white/60">Dukung HUNTER WAVE</p>
+        </div>
+        <p className="text-[11px] text-white/35 leading-relaxed">
+          HUNTER WAVE adalah proyek independen non-profit. Jika konten kami bermanfaat, kamu bisa mendukung lewat donasi crypto.
+        </p>
+        <div>
+          <p className="text-[9px] text-white/30 mb-1.5 font-medium">Alamat EVM (ETH / BNB / MATIC / dll)</p>
+          <div className="flex items-center gap-2 bg-black/40 border border-white/[0.07] rounded-xl px-3 py-2.5">
+            <p className="text-[10px] font-mono text-white/40 flex-1 break-all leading-relaxed">{DONATE_ADDRESS}</p>
+            <button onClick={copyAddr}
+              className="flex-shrink-0 flex items-center gap-1 text-[10px] text-white/30 hover:text-blue-400 transition-colors ml-2">
+              {copied
+                ? <><Check className="w-3.5 h-3.5 text-green-400"/><span className="text-green-400 font-semibold">Tersalin</span></>
+                : <><Copy className="w-3.5 h-3.5"/><span>Salin</span></>}
+            </button>
+          </div>
+        </div>
+      </div>
+      {/* Feedback */}
+      <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <MessageCircle className="w-4 h-4 text-white/25 flex-shrink-0"/>
+          <p className="text-xs font-bold text-white/60">Kirim Masukan</p>
+        </div>
+        <p className="text-[11px] text-white/35 leading-relaxed">
+          Ada saran, bug, atau masukan untuk HUNTER WAVE? Hubungi founder langsung lewat Telegram.
+        </p>
+        <button onClick={()=>window.open(FEEDBACK_TG,"_blank","noopener,noreferrer")}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/[0.06] ring-1 ring-white/[0.09] hover:bg-white/[0.09] active:scale-95 transition-all">
+          <IconTelegram className="w-4 h-4 text-blue-400/70"/>
+          <span className="text-sm font-semibold text-white/60">Hubungi <span className="text-blue-400">@otgdontcry</span></span>
+        </button>
+      </div>
+    </div>
+  );
+}
 
-  if (!open && !showPrivacy && !showTerms) return null;
+// ─── OVERLAY PAGE: PRIVACY & TERMS ───────────────────────────
+function PrivacyPage() {
+  const [section, setSection] = useState("privacy"); // "privacy" | "terms"
+  return (
+    <div className="p-5 flex flex-col gap-4 pb-8">
+      {/* Tab switcher */}
+      <div className="flex gap-2 p-1 rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.06]">
+        {[{id:"privacy",label:"Privacy Policy"},{id:"terms",label:"Terms & Disclaimer"}].map(({id,label})=>(
+          <button key={id} onClick={()=>setSection(id)}
+            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${section===id?"bg-blue-500 text-white shadow":"text-white/40 hover:text-white/70"}`}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {section==="privacy" && (
+        <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
+          <p className="text-xs font-bold text-white">Privacy Policy</p>
+          <div className="text-[11px] text-white/40 leading-relaxed space-y-3">
+            <p>HUNTER WAVE tidak mengumpulkan data pribadi pengguna. Semua data seperti bookmark dan preferensi disimpan secara lokal di perangkat Anda (localStorage/IndexedDB) dan tidak dikirim ke server mana pun.</p>
+            <p>Kami tidak menggunakan cookie pihak ketiga. Link ke platform eksternal (Telegram, X, Instagram, TikTok, dll) tunduk pada kebijakan privasi masing-masing platform tersebut.</p>
+            <p>Favicon platform diambil dari layanan Google S2 Favicons. Selain itu, tidak ada request ke server eksternal dari aplikasi ini.</p>
+            <p className="text-white/25">Terakhir diperbarui: Juli 2025</p>
+          </div>
+        </div>
+      )}
+
+      {section==="terms" && (
+        <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
+          <p className="text-xs font-bold text-white">Terms & Disclaimer</p>
+          <div className="text-[11px] text-white/40 leading-relaxed space-y-3">
+            <p>HUNTER WAVE adalah platform kurasi informasi independen yang tidak berafiliasi dengan proyek, tim, atau entitas crypto mana pun.</p>
+            <p><span className="text-orange-400/70 font-semibold">Bukan Saran Investasi:</span> Informasi yang tersaji bukan merupakan saran investasi. Pasar kripto sangat volatil. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial apa pun.</p>
+            <p>Dengan menggunakan platform ini, Anda menyetujui bahwa segala keputusan finansial merupakan tanggung jawab penuh Anda sendiri. Platform tidak menjamin keakuratan atau ketepatan waktu informasi yang disajikan.</p>
+            <p>Semua konten bersifat edukatif dan informatif semata. Gunakan dengan bijak dan selalu DYOR.</p>
+            <p className="text-white/25">Terakhir diperbarui: Juli 2025</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── HAMBURGER OVERLAY — shell ────────────────────────────────
+function HamburgerOverlay({ open, onClose, airdrops = [], calendar = [] }) {
+  const [activePage, setActivePage] = useState(null); // null = menu list
+
+  useEffect(() => {
+    if (!open) setActivePage(null); // reset ke menu saat ditutup
+    if (open) document.body.style.overflow = "hidden";
+    else       document.body.style.overflow = "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  if (!open) return null;
+
+  const pageTitle = MENU_ITEMS.find(m => m.id === activePage)?.label ?? null;
 
   return (
     <>
@@ -918,189 +1162,48 @@ function HamburgerOverlay({ open, onClose, airdrops = [], calendar = [] }) {
           from { transform: translateX(100%); }
           to   { transform: translateX(0); }
         }
-        .hw-slide-right { animation: hw-slide-right 0.28s cubic-bezier(0.25,0.46,0.45,0.94) both; }
+        .hw-slide-right { animation: hw-slide-right 0.26s cubic-bezier(0.25,0.46,0.45,0.94) both; }
       `}</style>
 
-      {open && (
-        <div className="fixed inset-0 z-[100] flex justify-end">
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}/>
+      <div className="fixed inset-0 z-[100] flex justify-end">
+        {/* Backdrop */}
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}/>
 
-          {/* Panel */}
-          <div className="hw-slide-right relative w-full max-w-[300px] h-full bg-[#0C0C18] border-l border-white/[0.07] flex flex-col shadow-2xl">
+        {/* Panel */}
+        <div className="hw-slide-right relative w-full max-w-[300px] h-full bg-[#0C0C18] border-l border-white/[0.07] flex flex-col shadow-2xl">
 
-            {/* Panel header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.05] flex-shrink-0">
-              <div className="flex items-center gap-2">
+          {/* ── Header ── */}
+          <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.05] flex-shrink-0 min-h-[56px]">
+            {activePage ? (
+              <button onClick={() => setActivePage(null)}
+                className="flex items-center gap-1.5 text-white/55 hover:text-white/90 active:scale-95 transition-all">
+                <ChevronLeft className="w-4 h-4"/>
+                <span className="text-sm font-semibold">{pageTitle}</span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 select-none">
                 <img src="/logo.jpg" alt="logo" className="w-6 h-6 rounded-lg object-cover ring-1 ring-blue-500/30"/>
                 <span className="text-sm font-bold text-white">HUNTER<span className="text-blue-500"> WAVE</span></span>
               </div>
-              <button onClick={onClose} className="w-8 h-8 rounded-xl bg-white/[0.06] flex items-center justify-center hover:bg-white/[0.10] active:scale-90 transition-all">
-                <X className="w-4 h-4 text-white/50"/>
-              </button>
-            </div>
-
-            {/* Scrollable body */}
-            <div className="flex-1 overflow-y-auto pb-8" style={{scrollbarWidth:"none"}}>
-
-              {/* ── 1. INTRO / HERO ── */}
-              <div className="relative px-5 pt-5 pb-4 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-950/40 to-transparent pointer-events-none"/>
-                <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-blue-500/[0.07] blur-3xl pointer-events-none"/>
-                <span className="relative text-[9px] font-bold text-blue-400 tracking-widest uppercase">Web3 Airdrop Hub · Indonesia</span>
-                <h2 className="relative text-xl font-black text-white leading-tight mt-1.5">
-                  Jadilah Hunter<br/>
-                  <span className="text-blue-500">Terdepan</span> di Web3
-                </h2>
-                <p className="relative text-[11px] text-white/40 mt-2 leading-relaxed">
-                  Info airdrop, campaign, dan tools Web3 terkurasi untuk komunitas crypto Indonesia.
-                </p>
-                <button
-                  onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
-                  className="relative mt-3.5 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-lg shadow-blue-500/25 btn-glow">
-                  <IconTelegram className="w-3.5 h-3.5 text-white"/>
-                  <span className="text-xs font-bold text-white">Bergabung di Telegram</span>
-                </button>
-                {/* Social proof mini */}
-                <div className="grid grid-cols-3 gap-2 mt-4 relative">
-                  {[
-                    { value:"2K+",            label:"Member",  icon:"👥" },
-                    { value:airdrops.length,  label:"Airdrop", icon:"🪂" },
-                    { value:calendar.length,  label:"Event",   icon:"📅" },
-                  ].map(({value,label,icon})=>(
-                    <div key={label} className="rounded-xl glass-card p-2.5 text-center">
-                      <div className="text-sm mb-0.5">{icon}</div>
-                      <p className="text-sm font-black text-white">{value}</p>
-                      <p className="text-[8px] text-white/35 leading-tight">{label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mx-5 border-t border-white/[0.05] my-1"/>
-
-              {/* ── 2. ABOUT US ── */}
-              <div className="px-5 py-4 flex flex-col gap-3">
-                <p className="text-[9px] font-bold text-white/35 uppercase tracking-widest">About Us</p>
-
-                {/* Brand profile card */}
-                <div className="rounded-2xl bg-gradient-to-br from-blue-600/20 to-blue-900/10 border border-blue-500/25 p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <img src="/logo.jpg" alt="logo" className="w-9 h-9 rounded-xl object-cover ring-2 ring-blue-500/40"/>
-                    <div>
-                      <p className="text-sm font-bold text-white">HUNTER WAVE</p>
-                      <p className="text-[10px] text-blue-400/70 font-semibold">Web3 Airdrop Info Hub</p>
-                      <span className="inline-flex items-center gap-1 mt-0.5 text-[8px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 ring-1 ring-green-500/25">
-                        <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse"/> AKTIF
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-white/45 leading-relaxed">
-                    Platform kurasi informasi airdrop, campaign, dan tips Web3 untuk komunitas crypto Indonesia. Independen dan tidak berafiliasi dengan proyek mana pun.
-                  </p>
-                  <div className="mt-3 flex gap-1.5 flex-wrap">
-                    {["Airdrop","Campaign","Web3","DeFi","Layer2"].map(t=>(
-                      <span key={t} className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20">{t}</span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Kemandirian */}
-                <div className="rounded-2xl glass-card p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 rounded-lg bg-blue-500/15 ring-1 ring-blue-500/25 flex items-center justify-center flex-shrink-0">
-                      <Shield className="w-3 h-3 text-blue-400"/>
-                    </div>
-                    <p className="text-xs font-bold text-white">Kemandirian HUNTER WAVE</p>
-                  </div>
-                  <p className="text-[11px] text-white/40 leading-relaxed">
-                    HUNTER WAVE adalah platform <span className="text-blue-400/80">independen</span> yang tidak memiliki afiliasi resmi, sponsor, atau kerja sama berbayar dengan proyek, tim, atau entitas mana pun.
-                  </p>
-                </div>
-
-                {/* DYOR */}
-                <div className="rounded-2xl glass-card p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-6 h-6 rounded-lg bg-white/[0.06] ring-1 ring-white/[0.10] flex items-center justify-center flex-shrink-0">
-                      <AlertTriangle className="w-3 h-3 text-orange-400/70"/>
-                    </div>
-                    <p className="text-xs font-bold text-white/80">DYOR — Do Your Own Research</p>
-                  </div>
-                  <p className="text-[11px] text-white/35 leading-relaxed">
-                    Informasi di platform ini <span className="text-orange-400/60">bukan saran investasi</span>. Pasar kripto sangat volatil. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mx-5 border-t border-white/[0.05]"/>
-
-              {/* ── 3. COMMUNITY JOIN ── */}
-              <div className="px-5 py-4 flex flex-col gap-3">
-                <p className="text-[9px] font-bold text-white/35 uppercase tracking-widest">Community Join</p>
-                <div className="rounded-2xl glass-card p-4">
-                  <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest mb-3">Follow Kami</p>
-                  <div className="flex gap-2">
-                    {SOCIAL_LINKS.map(({label,Icon,url})=>(
-                      <button key={label} onClick={()=>window.open(url,"_blank","noopener,noreferrer")}
-                        className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.08] active:scale-95 transition-all">
-                        <Icon className="w-4 h-4 text-white/55"/>
-                        <span className="text-[9px] font-bold text-white/45">{label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <button
-                  onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-blue-500/15 ring-1 ring-blue-500/30 hover:bg-blue-500/25 active:scale-95 transition-all">
-                  <IconTelegram className="w-4 h-4 text-blue-400"/>
-                  <span className="text-sm font-bold text-blue-300">Bergabung di Telegram</span>
-                </button>
-              </div>
-
-              <div className="mx-5 border-t border-white/[0.05]"/>
-
-              {/* ── 4. DONASI & FEEDBACK ── */}
-              <div className="px-5 py-4 flex flex-col gap-3">
-                <p className="text-[9px] font-bold text-white/35 uppercase tracking-widest">Donasi & Feedback</p>
-                <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-3.5 h-3.5 text-white/20 flex-shrink-0"/>
-                    <p className="text-[10px] text-white/30">Dukung via crypto (EVM)</p>
-                  </div>
-                  <div className="flex items-center gap-2 bg-black/30 border border-white/[0.06] rounded-xl px-3 py-2">
-                    <p className="text-[10px] font-mono text-white/30 flex-1 truncate">{DONATE_ADDRESS}</p>
-                    <button onClick={copyAddr} className="flex-shrink-0 flex items-center gap-1 text-[10px] text-white/30 hover:text-blue-400 transition-colors">
-                      {copied ? <><Check className="w-3 h-3 text-green-400"/><span className="text-green-400">Tersalin</span></> : <><Copy className="w-3 h-3"/>Salin</>}
-                    </button>
-                  </div>
-                  <div className="border-t border-white/[0.06]"/>
-                  <button onClick={()=>window.open(FEEDBACK_TG,"_blank","noopener,noreferrer")}
-                    className="flex items-center gap-2 text-left hover:opacity-80 active:scale-95 transition-all">
-                    <MessageCircle className="w-3.5 h-3.5 text-white/20 flex-shrink-0"/>
-                    <span className="text-[10px] text-white/30">Kirim feedback dan masukan, hubungi founder <span className="text-blue-400/60">@otgdontcry</span></span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="mx-5 border-t border-white/[0.05]"/>
-
-              {/* ── 5. PRIVACY / TERMS ── */}
-              <div className="px-5 py-4 flex flex-col items-center gap-2">
-                <div className="flex items-center gap-4">
-                  <button onClick={()=>setShowPrivacy(true)} className="text-[10px] text-white/30 hover:text-blue-400/70 transition-colors">Privacy Policy</button>
-                  <span className="text-white/10">·</span>
-                  <button onClick={()=>setShowTerms(true)} className="text-[10px] text-white/30 hover:text-blue-400/70 transition-colors">Terms & Disclaimer</button>
-                </div>
-                <p className="text-[9px] text-white/15">© 2025 HUNTER WAVE · Indonesia · Non-Profit</p>
-              </div>
-
-            </div>
+            )}
+            <button onClick={onClose}
+              className="w-8 h-8 rounded-xl bg-white/[0.06] flex items-center justify-center hover:bg-white/[0.10] active:scale-90 transition-all flex-shrink-0">
+              <X className="w-4 h-4 text-white/50"/>
+            </button>
           </div>
-        </div>
-      )}
 
-      {showPrivacy && <PrivacyModal onClose={()=>setShowPrivacy(false)}/>}
-      {showTerms   && <TermsModal  onClose={()=>setShowTerms(false)}/>}
+          {/* ── Page body ── */}
+          <div className="flex-1 overflow-y-auto" style={{scrollbarWidth:"none"}}>
+            {!activePage                   && <OverlayMenuList onSelect={setActivePage} />}
+            {activePage === "intro"        && <IntroPage airdrops={airdrops} calendar={calendar} />}
+            {activePage === "about"        && <AboutPage />}
+            {activePage === "community"    && <CommunityPage />}
+            {activePage === "donation"     && <DonationPage />}
+            {activePage === "privacy"      && <PrivacyPage />}
+          </div>
+
+        </div>
+      </div>
     </>
   );
 }
