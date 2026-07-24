@@ -1,17 +1,13 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { getAirdrops, getAds, getNews, getQinfo, getTools, getP2P, getCalendar, getTicker } from "./lib/data";
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
   ExternalLink, Copy, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-  Calendar, Users, Lightbulb, Zap, Bell, Clock,
-  Settings, Plus, Trash2, X, Shield, MessageCircle, Heart,
-  Rocket, TrendingUp, BarChart2, Download, Bookmark, AlertTriangle,
+  Calendar, Users, Lightbulb, Zap,
+  X, Shield, MessageCircle, Heart,
+  Rocket, TrendingUp, BarChart2, Bookmark, AlertTriangle,
   Landmark, Phone, Send,
 } from "lucide-react";
-
-// ─── ADMIN CONFIG ─────────────────────────────────────────────
-const ADMIN_EMAIL = "mulyanaemulemul002@gmail.com";
-const ADMIN_PIN   = "050208";
 
 // ─── DONATE & FEEDBACK ────────────────────────────────────────
 const DONATE_ADDRESS  = "0xfb0792130e2218fa7bef32eb5a023366f8b5d644";
@@ -227,470 +223,6 @@ function Btn({ onClick, children, variant = "primary", className = "", type = "b
   );
 }
 
-// ─── ADMIN LOGIN ───────────────────────────────────────────────
-function AdminLogin({ onClose, onSuccess }) {
-  const [email, setEmail] = useState("");
-  const [pin, setPin]     = useState("");
-  const [err, setErr]     = useState("");
-  function submit(e) {
-    e.preventDefault();
-    if (email.trim() === ADMIN_EMAIL && pin === ADMIN_PIN) {
-      sessionStorage.setItem("dml_admin_ok","1");
-      onSuccess();
-    } else { setErr("Email atau PIN salah."); }
-  }
-  return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center px-5">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
-      <div className="relative w-full max-w-sm rounded-3xl bg-[#1E1E1E] border border-blue-500/25 p-6 shadow-2xl shadow-black/60">
-        <div className="flex items-center gap-2.5 mb-5">
-          <div className="w-9 h-9 rounded-xl bg-blue-500/15 ring-1 ring-blue-500/30 flex items-center justify-center">
-            <Shield className="w-4 h-4 text-blue-400" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-bold text-white">Admin Access</p>
-            <p className="text-[10px] text-white/30">Masukkan kredensial admin</p>
-          </div>
-          <button onClick={onClose} className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center hover:bg-white/10">
-            <X className="w-3.5 h-3.5 text-white/50" />
-          </button>
-        </div>
-        <form onSubmit={submit} className="flex flex-col gap-3">
-          <FormInput label="Email Admin" type="email" placeholder="email@domain.com" value={email} onChange={e=>setEmail(e.target.value)} required />
-          <FormInput label="PIN" type="password" placeholder="••••••" value={pin} onChange={e=>setPin(e.target.value)} required />
-          {err && <p className="text-xs text-red-400">{err}</p>}
-          <Btn type="submit" className="w-full mt-1">Masuk sebagai Admin</Btn>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-// ─── ADMIN: PLATFORM & TOOLS ──────────────────────────────────
-const TOOL_CATEGORIES = ["Quest Platform","Wallet","Dashboard","Explorer","Exchange","Launchpad","Bridge","Lainnya"];
-function AdminToolsTab({ data, onUpdate }) {
-  const blank = { icon:"", title:"", url:"", customImage:"", category:"Quest Platform", description:"", targetUrl:"" };
-  const [form, setForm] = useState(blank);
-  const [editId, setEditId] = useState(null);
-  function cancel() { setForm(blank); setEditId(null); }
-  function startEdit(item) { setForm({...item}); setEditId(item.id); }
-  function handleSave(e) {
-    e.preventDefault();
-    const item = { ...form, id: editId || Date.now() };
-    onUpdate(editId ? data.map(d => d.id === editId ? item : d) : [item, ...data]);
-    cancel();
-  }
-  return (
-    <div>
-      <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20 flex flex-col gap-3">
-        <div className="flex gap-2">
-          <FormInput label="Emoji" placeholder="🌌" value={form.icon} onChange={e=>setForm({...form,icon:e.target.value})} />
-          <div className="flex-1"><FormInput label="Nama Platform *" placeholder="Galxe" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} required /></div>
-        </div>
-        <FormInput label="Domain *" placeholder="galxe.com" value={form.url} onChange={e=>setForm({...form,url:e.target.value})} required />
-        <ImageUpload label="Logo Custom (opsional)" value={form.customImage} onChange={v=>setForm({...form,customImage:v})} />
-        <FormSelect label="Kategori" value={form.category} onChange={e=>setForm({...form,category:e.target.value})} options={TOOL_CATEGORIES} />
-        <div>
-          <label className="block text-[10px] text-white/40 mb-1">Deskripsi</label>
-          <textarea value={form.description} onChange={e=>setForm({...form,description:e.target.value})} rows={2} placeholder="Deskripsi singkat platform..."
-            className="w-full bg-[#1E1E1E] border border-white/[0.08] rounded-xl px-3 py-2.5 text-xs text-white/80 resize-none outline-none focus:border-blue-500/40 placeholder:text-white/20" />
-        </div>
-        <FormInput label="URL Target (link buka)" placeholder="https://galxe.com" value={form.targetUrl} onChange={e=>setForm({...form,targetUrl:e.target.value})} />
-        <div className="flex gap-2">
-          <button type="submit" className="flex-1 py-2.5 rounded-xl bg-blue-500 text-white text-xs font-bold hover:bg-blue-400 transition-all">{editId?"Simpan Perubahan":"+ Tambah Platform"}</button>
-          {editId && <button type="button" onClick={cancel} className="px-4 py-2.5 rounded-xl bg-white/[0.05] ring-1 ring-white/10 text-white/50 text-xs hover:bg-white/10 transition-all">Batal</button>}
-        </div>
-      </form>
-      {data.map(item=>(
-        <div key={item.id} className="flex items-center gap-3 p-3 rounded-2xl bg-[#161616] border border-white/[0.06] mb-2">
-          <div className="w-8 h-8 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
-            {item.icon?<span className="text-sm">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage} size={20}/>}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-white truncate">{item.title}</p>
-            <p className="text-[10px] text-white/30">{item.category}</p>
-          </div>
-          <button onClick={()=>startEdit(item)} className="p-1.5 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 text-blue-400 hover:bg-blue-500/20 transition-all"><Settings className="w-3 h-3"/></button>
-          <button onClick={()=>onUpdate(data.filter(d=>d.id!==item.id))} className="p-1.5 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 text-red-400 hover:bg-red-500/20 transition-all"><Trash2 className="w-3 h-3"/></button>
-        </div>
-      ))}
-      <AdminExportBox data={data} filename="tools.json" />
-    </div>
-  );
-}
-
-// ─── ADMIN EXPORT BOX ─────────────────────────────────────────
-// Hanya ekspor item yang ditambahkan admin (ID = Date.now() > 1_000_000_000)
-// Item bawaan repo punya ID kecil (1, 2, 3, ...)
-function AdminExportBox({ data, filename }) {
-  const [copied, setCopied] = useState(false);
-  const newItems = data.filter(item => typeof item.id === "number" && item.id > 1_000_000_000);
-
-  function getJson() { return JSON.stringify(newItems, null, 2); }
-
-  function handleCopy() {
-    navigator.clipboard.writeText(getJson()).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    }).catch(() => {
-      // Fallback untuk browser yang blokir clipboard di non-HTTPS
-      const ta = document.createElement("textarea");
-      ta.value = getJson();
-      ta.style.position = "fixed"; ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    });
-  }
-
-  function handleDownload() {
-    const blob = new Blob([getJson()], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
-  return (
-    <div className="mt-5 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20">
-      <div className="flex items-center justify-between mb-2">
-        <div>
-          <p className="text-xs font-bold text-blue-300">📋 Export Data Baru</p>
-          <p className="text-[10px] text-white/30 mt-0.5">
-            {newItems.length === 0
-              ? "Belum ada data baru — tambah item dulu"
-              : `${newItems.length} item baru (belum ada di repo)`}
-          </p>
-        </div>
-        {newItems.length > 0 && (
-          <span className="text-[10px] font-mono bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full">
-            {filename}
-          </span>
-        )}
-      </div>
-
-      {newItems.length > 0 && (
-        <>
-          <div className="mb-3 p-2.5 rounded-xl bg-black/40 ring-1 ring-white/[0.06] max-h-28 overflow-y-auto" style={{scrollbarWidth:"none"}}>
-            <pre className="text-[9px] text-green-400/70 font-mono leading-relaxed whitespace-pre-wrap break-all">
-              {getJson()}
-            </pre>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={handleCopy}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${copied ? "bg-green-500/20 ring-1 ring-green-500/30 text-green-400" : "bg-blue-500/20 ring-1 ring-blue-500/30 text-blue-300 hover:bg-blue-500/30"}`}>
-              {copied ? <><Check className="w-3.5 h-3.5"/> Tersalin!</> : <><Copy className="w-3.5 h-3.5"/> Copy JSON</>}
-            </button>
-            <button onClick={handleDownload}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/[0.05] ring-1 ring-white/10 text-white/50 text-xs font-bold hover:bg-white/10 hover:text-white/80 active:scale-95 transition-all">
-              <Download className="w-3.5 h-3.5"/> Download
-            </button>
-          </div>
-          <p className="text-[9px] text-white/20 mt-2 text-center leading-relaxed">
-            Paste ke dalam array <span className="font-mono text-white/30">{filename}</span> di repo, lalu push → Vercel auto-deploy
-          </p>
-        </>
-      )}
-    </div>
-  );
-}
-
-// ─── ADMIN PANEL SHELL ────────────────────────────────────────
-function AdminPanel({ airdrops, ads, news, qinfo, tools, onUpdate, onExport, onImport, onClose }) {
-  const [tab, setTab]       = useState("airdrop");
-  const importRef           = useRef(null);
-  return (
-    <div className="fixed inset-0 z-[150] flex flex-col bg-[#0A0A0A] overflow-hidden">
-      <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
-        <div className="w-8 h-8 rounded-xl bg-blue-500/15 ring-1 ring-blue-500/30 flex items-center justify-center">
-          <Settings className="w-4 h-4 text-blue-400" />
-        </div>
-        <span className="text-sm font-bold text-white flex-1">Panel Admin</span>
-        <button onClick={onClose} className="w-8 h-8 rounded-xl bg-[#1E1E1E] border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.08]">
-          <X className="w-4 h-4 text-white/60" />
-        </button>
-      </div>
-
-      {/* Export / Import bar */}
-      <div className="flex items-center gap-2 px-5 py-2.5 border-b border-white/[0.06]">
-        <span className="text-[10px] text-white/30 flex-1">Backup &amp; Restore data</span>
-        <button onClick={onExport}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 text-blue-400 text-[10px] font-bold hover:bg-blue-500/20 transition-all">
-          ⬇ Export JSON
-        </button>
-        <button onClick={()=>importRef.current?.click()}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1E1E1E] border border-white/[0.08] text-white/50 text-[10px] font-bold hover:bg-white/[0.08] transition-all">
-          ⬆ Import JSON
-        </button>
-        <input ref={importRef} type="file" accept=".json" onChange={onImport} className="hidden" />
-      </div>
-
-      <div className="flex gap-1 px-5 py-3 border-b border-white/[0.06] overflow-x-auto" style={{scrollbarWidth:"none"}}>
-        {[{id:"airdrop",label:"🪂 Airdrop"},{id:"ads",label:"📢 Iklan"},{id:"news",label:"📰 Berita"},{id:"qinfo",label:"⚡ Info Cepat"},{id:"tools",label:"🛠 Platform"}].map(t=>(
-          <button key={t.id} onClick={()=>setTab(t.id)}
-            className={`flex-none px-4 py-2 rounded-xl text-xs font-semibold transition-all ${tab===t.id?"bg-blue-500/20 ring-1 ring-blue-500/40 text-blue-300":"text-white/40 hover:text-white/60"}`}>
-            {t.label}
-          </button>
-        ))}
-      </div>
-      <div className="flex-1 overflow-y-auto px-5 py-4">
-        {tab==="airdrop" && <AdminAirdropTab data={airdrops} onUpdate={d=>onUpdate("airdrops",d)} />}
-        {tab==="ads"     && <AdminAdsTab     data={ads}      onUpdate={d=>onUpdate("ads",d)} />}
-        {tab==="news"    && <AdminNewsTab    data={news}     onUpdate={d=>onUpdate("news",d)} />}
-        {tab==="qinfo"   && <AdminQinfoTab   data={qinfo}    onUpdate={d=>onUpdate("qinfo",d)} />}
-        {tab==="tools"   && <AdminToolsTab   data={tools}    onUpdate={d=>onUpdate("tools",d)} />}
-      </div>
-    </div>
-  );
-}
-
-// ─── ADMIN: AIRDROP ───────────────────────────────────────────
-function AdminAirdropTab({ data, onUpdate }) {
-  const blank = { icon:"", title:"", url:"", customImage:"", tags:"", description:"", status:"Active", reward:"", difficulty:"Easy" };
-  const [form, setForm]     = useState(blank);
-  const [show, setShow]     = useState(false);
-  const [editId, setEditId] = useState(null);
-
-  function openAdd()      { setForm(blank); setEditId(null); setShow(true); }
-  function openEdit(item) { setForm({...item, tags:(item.tags||[]).join(", ")}); setEditId(item.id); setShow(true); }
-  function cancel()       { setShow(false); setEditId(null); }
-
-  function handleSave(e) {
-    e.preventDefault();
-    const item = { ...form, id:editId||Date.now(), tags:form.tags.split(",").map(t=>t.trim()).filter(Boolean), url:form.url.replace(/^https?:\/\//,"") };
-    onUpdate(editId ? data.map(d=>d.id===editId?item:d) : [item,...data]);
-    cancel();
-  }
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-xs text-white/40">{data.length} airdrop</p>
-        <Btn onClick={openAdd}><Plus className="w-3.5 h-3.5 inline mr-1"/>Tambah</Btn>
-      </div>
-
-      {show && (
-        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20 flex flex-col gap-3">
-          <p className="text-xs font-bold text-blue-400">{editId?"Edit":"Tambah"} Airdrop</p>
-          <div className="flex gap-2">
-            <FormInput label="Emoji" placeholder="🚀" value={form.icon} onChange={e=>setForm({...form,icon:e.target.value})} />
-            <div className="flex-1"><FormInput label="Nama Airdrop *" placeholder="LayerZero" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} required /></div>
-          </div>
-          <FormInput label="URL / Domain *" placeholder="layerzero.network" value={form.url} onChange={e=>setForm({...form,url:e.target.value})} required />
-          <ImageUpload label="Logo / Gambar Custom (opsional — kosongkan untuk auto favicon)" value={form.customImage} onChange={v=>setForm({...form,customImage:v})} />
-          <FormInput label="Tags (pisah koma)" placeholder="DeFi, Layer2, ZK" value={form.tags} onChange={e=>setForm({...form,tags:e.target.value})} />
-          <div>
-            <p className="text-[11px] text-white/40 mb-1 font-medium">Deskripsi</p>
-            <textarea value={form.description} onChange={e=>setForm({...form,description:e.target.value})} rows={2} placeholder="Penjelasan singkat cara farming..."
-              className="w-full bg-[#1E1E1E] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/20 outline-none focus:border-blue-500/50 resize-none" />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <FormSelect label="Status"    value={form.status}     onChange={e=>setForm({...form,status:e.target.value})}     options={STATUS_OPTIONS} />
-            <FormSelect label="Kesulitan" value={form.difficulty} onChange={e=>setForm({...form,difficulty:e.target.value})} options={DIFFICULTY_OPTIONS} />
-          </div>
-          <FormInput label="Token Reward" placeholder="ZRO Token" value={form.reward} onChange={e=>setForm({...form,reward:e.target.value})} />
-          <div className="flex gap-2 mt-1"><Btn type="submit" className="flex-1">Simpan</Btn><Btn variant="ghost" onClick={cancel}>Batal</Btn></div>
-        </form>
-      )}
-
-      <div className="flex flex-col gap-2">
-        {data.map(item=>(
-          <div key={item.id} className="flex items-center gap-3 p-3 rounded-2xl bg-[#161616] border border-white/[0.06]">
-            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
-              {item.icon ? <span className="text-lg">{item.icon}</span> : <Favicon url={item.url} customImage={item.customImage} size={22} />}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">{item.title}</p>
-              <p className="text-[10px] text-white/30 font-mono truncate">{item.url}</p>
-            </div>
-            <div className="flex gap-1.5 flex-shrink-0">
-              <button onClick={()=>openEdit(item)} className="w-7 h-7 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center text-blue-400 text-xs">✏</button>
-              <button onClick={()=>onUpdate(data.filter(d=>d.id!==item.id))} className="w-7 h-7 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 flex items-center justify-center"><Trash2 className="w-3 h-3 text-red-400"/></button>
-            </div>
-          </div>
-        ))}
-      </div>
-      <AdminExportBox data={data} filename="airdrops.json" />
-    </div>
-  );
-}
-
-// ─── ADMIN: ADS ───────────────────────────────────────────────
-function AdminAdsTab({ data, onUpdate }) {
-  const blank = { title:"", subtitle:"", imageUrl:"", buttonText:"BUKA", targetUrl:"", active:true };
-  const [form, setForm]     = useState(blank);
-  const [show, setShow]     = useState(false);
-  const [editId, setEditId] = useState(null);
-
-  function openAdd()      { setForm(blank); setEditId(null); setShow(true); }
-  function openEdit(item) { setForm(item); setEditId(item.id); setShow(true); }
-  function cancel()       { setShow(false); setEditId(null); }
-  function handleSave(e)  { e.preventDefault(); const item={...form,id:editId||Date.now()}; onUpdate(editId?data.map(d=>d.id===editId?item:d):[item,...data]); cancel(); }
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-xs text-white/40">{data.length} iklan</p>
-        <Btn onClick={openAdd}><Plus className="w-3.5 h-3.5 inline mr-1"/>Tambah</Btn>
-      </div>
-
-      {show && (
-        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20 flex flex-col gap-3">
-          <p className="text-xs font-bold text-blue-400">{editId?"Edit":"Tambah"} Iklan</p>
-          <FormInput label="Judul Banner *"  placeholder="Iklan Terbaru" value={form.title}    onChange={e=>setForm({...form,title:e.target.value})} required />
-          <FormInput label="Subjudul"        placeholder="Teks kecil"    value={form.subtitle} onChange={e=>setForm({...form,subtitle:e.target.value})} />
-          <ImageUpload label="Gambar Banner (opsional)" value={form.imageUrl} onChange={v=>setForm({...form,imageUrl:v})} />
-          <FormInput label="Label Tombol"   placeholder="BUKA, DAFTAR..." value={form.buttonText} onChange={e=>setForm({...form,buttonText:e.target.value})} />
-          <FormInput label="URL Target *"   placeholder="https://website.com" value={form.targetUrl} onChange={e=>setForm({...form,targetUrl:e.target.value})} required />
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={form.active} onChange={e=>setForm({...form,active:e.target.checked})} className="accent-blue-500 w-4 h-4" />
-            <span className="text-[11px] text-white/50">Tampilkan iklan ini</span>
-          </label>
-          <div className="flex gap-2 mt-1"><Btn type="submit" className="flex-1">Simpan</Btn><Btn variant="ghost" onClick={cancel}>Batal</Btn></div>
-        </form>
-      )}
-
-      <div className="flex flex-col gap-2">
-        {data.map(item=>(
-          <div key={item.id} className="p-3 rounded-2xl bg-[#161616] border border-white/[0.06]">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                {item.imageUrl && <img src={item.imageUrl} className="w-10 h-10 rounded-lg object-cover flex-shrink-0"/>}
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">{item.title}</p>
-                  <p className="text-[10px] text-white/30">Tombol: "{item.buttonText}"</p>
-                </div>
-              </div>
-              <div className="flex gap-1.5 flex-shrink-0">
-                <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${item.active?"bg-green-500/15 text-green-400":"bg-gray-500/15 text-gray-400"}`}>{item.active?"Aktif":"Off"}</span>
-                <button onClick={()=>openEdit(item)} className="w-7 h-7 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center text-blue-400 text-xs">✏</button>
-                <button onClick={()=>onUpdate(data.filter(d=>d.id!==item.id))} className="w-7 h-7 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 flex items-center justify-center"><Trash2 className="w-3 h-3 text-red-400"/></button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <AdminExportBox data={data} filename="ads.json" />
-    </div>
-  );
-}
-
-// ─── ADMIN: NEWS ──────────────────────────────────────────────
-function AdminNewsTab({ data, onUpdate }) {
-  const blank = { title:"", description:"", category:"Market", time:"Baru saja", color:NEWS_COLORS[0].value, imageUrl:"", targetUrl:"" };
-  const [form, setForm]     = useState(blank);
-  const [show, setShow]     = useState(false);
-  const [editId, setEditId] = useState(null);
-
-  function openAdd()      { setForm(blank); setEditId(null); setShow(true); }
-  function openEdit(item) { setForm({...blank,...item}); setEditId(item.id); setShow(true); }
-  function cancel()       { setShow(false); setEditId(null); }
-  function handleSave(e)  { e.preventDefault(); const item={...form,id:editId||Date.now()}; onUpdate(editId?data.map(d=>d.id===editId?item:d):[item,...data]); cancel(); }
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-xs text-white/40">{data.length} berita</p>
-        <Btn onClick={openAdd}><Plus className="w-3.5 h-3.5 inline mr-1"/>Tambah</Btn>
-      </div>
-
-      {show && (
-        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20 flex flex-col gap-3">
-          <p className="text-xs font-bold text-blue-400">{editId?"Edit":"Tambah"} Berita</p>
-          <FormInput label="Judul Berita *"       placeholder="Headline berita..."         value={form.title}       onChange={e=>setForm({...form,title:e.target.value})} required />
-          <FormInput label="Deskripsi Singkat"    placeholder="Ringkasan 1-2 kalimat..."   value={form.description} onChange={e=>setForm({...form,description:e.target.value})} />
-          <FormInput label="Kategori"             placeholder="Market, Airdrop..."          value={form.category}    onChange={e=>setForm({...form,category:e.target.value})} />
-          <FormInput label="Waktu"                placeholder="2j lalu, 1h lalu..."         value={form.time}        onChange={e=>setForm({...form,time:e.target.value})} />
-          <FormSelect label="Warna Fallback Card" value={form.color} onChange={e=>setForm({...form,color:e.target.value})} options={NEWS_COLORS} />
-          <ImageUpload label="Foto (rasio 4:5 ideal)" value={form.imageUrl} onChange={v=>setForm({...form,imageUrl:v})} />
-          <FormInput label="URL Target *"         placeholder="https://link-berita.com"    value={form.targetUrl}   onChange={e=>setForm({...form,targetUrl:e.target.value})} required />
-          <div className="flex gap-2 mt-1"><Btn type="submit" className="flex-1">Simpan</Btn><Btn variant="ghost" onClick={cancel}>Batal</Btn></div>
-        </form>
-      )}
-
-      <div className="flex flex-col gap-2">
-        {data.map(item=>(
-          <div key={item.id} className={`p-3 rounded-2xl bg-gradient-to-r ${item.color} ring-1 ring-white/10 flex items-start gap-2`}>
-            {item.imageUrl && <img src={item.imageUrl} className="w-12 h-16 rounded-xl object-cover flex-shrink-0" style={{aspectRatio:"4/5"}}/>}
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-white/40">{item.category} · {item.time}</p>
-              <p className="text-xs font-semibold text-white line-clamp-2">{item.title}</p>
-              {item.description && <p className="text-[10px] text-white/30 mt-0.5 line-clamp-1">{item.description}</p>}
-            </div>
-            <div className="flex gap-1.5 flex-shrink-0">
-              <button onClick={()=>openEdit(item)} className="w-7 h-7 rounded-lg bg-white/10 flex items-center justify-center text-white/50 text-xs">✏</button>
-              <button onClick={()=>onUpdate(data.filter(d=>d.id!==item.id))} className="w-7 h-7 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 flex items-center justify-center"><Trash2 className="w-3 h-3 text-red-400"/></button>
-            </div>
-          </div>
-        ))}
-      </div>
-      <AdminExportBox data={data} filename="news.json" />
-    </div>
-  );
-}
-
-// ─── ADMIN: QUICK INFO ────────────────────────────────────────
-function AdminQinfoTab({ data, onUpdate }) {
-  const blank = { board:"garapan", name:"", date:"", status:"New", targetUrl:"" };
-  const [form, setForm]     = useState(blank);
-  const [show, setShow]     = useState(false);
-  const [editId, setEditId] = useState(null);
-
-  function openAdd()      { setForm(blank); setEditId(null); setShow(true); }
-  function openEdit(item) { setForm(item); setEditId(item.id); setShow(true); }
-  function cancel()       { setShow(false); setEditId(null); }
-  function handleSave(e)  { e.preventDefault(); const item={...form,id:editId||Date.now()}; onUpdate(editId?data.map(d=>d.id===editId?item:d):[item,...data]); cancel(); }
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-xs text-white/40">{data.length} item</p>
-        <Btn onClick={openAdd}><Plus className="w-3.5 h-3.5 inline mr-1"/>Tambah</Btn>
-      </div>
-
-      {show && (
-        <form onSubmit={handleSave} className="mb-4 p-4 rounded-2xl bg-[#1E1E1E] border border-blue-500/20 flex flex-col gap-3">
-          <p className="text-xs font-bold text-blue-400">{editId?"Edit":"Tambah"} Info Cepat</p>
-          <FormSelect label="Papan" value={form.board} onChange={e=>setForm({...form,board:e.target.value})} options={[{value:"garapan",label:"🚀 Garapan Baru"},{value:"tge",label:"⚡ TGE"},{value:"presale",label:"📈 Presale"},{value:"tokenomics",label:"📊 Tokenomics"}]} />
-          <FormInput label="Nama Proyek *"      placeholder="Monad (MONAD)"         value={form.name}      onChange={e=>setForm({...form,name:e.target.value})} required />
-          <FormInput label="Tanggal / Periode"  placeholder="Q3 2025, 15 Mei..."    value={form.date}      onChange={e=>setForm({...form,date:e.target.value})} />
-          <FormSelect label="Status" value={form.status} onChange={e=>setForm({...form,status:e.target.value})} options={QINFO_STATUS} />
-          <FormInput label="URL Target (opsional)" placeholder="https://website.com" value={form.targetUrl} onChange={e=>setForm({...form,targetUrl:e.target.value})} />
-          <div className="flex gap-2 mt-1"><Btn type="submit" className="flex-1">Simpan</Btn><Btn variant="ghost" onClick={cancel}>Batal</Btn></div>
-        </form>
-      )}
-
-      <div className="flex flex-col gap-2">
-        {QINFO_BOARDS.map(board=>{
-          const items = data.filter(d=>d.board===board.id);
-          if (!items.length) return null;
-          return (
-            <div key={board.id}>
-              <p className={`text-[10px] font-bold mb-1.5 ${board.accent}`}>{board.label}</p>
-              {items.map(item=>(
-                <div key={item.id} className="flex items-center gap-2 p-2.5 mb-1.5 rounded-xl bg-[#161616] border border-white/[0.06]">
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold text-white">{item.name}</p>
-                    <p className="text-[10px] text-white/30">{item.date} · {item.status}</p>
-                  </div>
-                  <div className="flex gap-1.5">
-                    <button onClick={()=>openEdit(item)} className="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 text-[10px]">✏</button>
-                    <button onClick={()=>onUpdate(data.filter(d=>d.id!==item.id))} className="w-6 h-6 rounded-lg bg-red-500/10 flex items-center justify-center"><Trash2 className="w-3 h-3 text-red-400"/></button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          );
-        })}
-      </div>
-      <AdminExportBox data={data} filename="qinfo.json" />
-    </div>
-  );
-}
 
 // ─── DONATE & FEEDBACK CARD ───────────────────────────────────
 function DonateFeedbackSection() {
@@ -797,7 +329,7 @@ function StatusLegend() {
 }
 
 // ─── SIDEBAR NAV (desktop ≥ 1024px) ───────────────────────────
-function SidebarNav({ active, onSelect, onLogoTap, isAdmin, onOpenPanel }) {
+function SidebarNav({ active, onSelect }) {
   const tabs = [
     { id:"intro",    label:"Intro",        icon:Home },
     { id:"info",     label:"Info Terkini", icon:Zap },
@@ -807,7 +339,7 @@ function SidebarNav({ active, onSelect, onLogoTap, isAdmin, onOpenPanel }) {
   ];
   return (
     <div className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-56 bg-[#0A0A0A] border-r border-white/[0.06] z-40 py-5 px-3">
-      <div className="flex items-center gap-2.5 px-3 mb-8 cursor-pointer select-none" onClick={onLogoTap}>
+      <div className="flex items-center gap-2.5 px-3 mb-8 select-none">
         <img src="/logo.jpg" alt="logo" className="w-8 h-8 rounded-lg object-cover ring-1 ring-blue-500/30"/>
         <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
       </div>
@@ -820,12 +352,6 @@ function SidebarNav({ active, onSelect, onLogoTap, isAdmin, onOpenPanel }) {
           </button>
         ))}
       </nav>
-      {isAdmin && (
-        <button onClick={onOpenPanel}
-          className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 text-blue-400 text-xs font-bold hover:bg-blue-500/20 transition-all mt-2">
-          <Settings className="w-3.5 h-3.5"/>ADMIN PANEL
-        </button>
-      )}
     </div>
   );
 }
@@ -1308,13 +834,12 @@ function InfoTerkiniScreen({ ads, news, qinfo }) {
 }
 
 // ─── BOOKMARK SCREEN ──────────────────────────────────────────
-function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBookmarks, onToggleToolBookmark, onImportBookmarks }) {
+function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBookmarks, onToggleToolBookmark }) {
   const [section, setSection]               = useState("list1");
   const [expandedId, setExpandedId]         = useState(null);
   const [copiedId, setCopiedId]             = useState(null);
   const [expandedToolId, setExpandedToolId] = useState(null);
   const [copiedToolId, setCopiedToolId]     = useState(null);
-  const [importMsg, setImportMsg]           = useState("");
 
   // ── Custom list names (localStorage) ──
   const [listNames, setListNames] = useState(() => {
@@ -1333,56 +858,6 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
     setListNames(next);
     try { localStorage.setItem("hw_bookmark_names", JSON.stringify(next)); } catch {}
     setEditingName(null);
-  }
-
-  // ── Export bookmarks ──
-  function handleExport() {
-    const bm    = JSON.parse(localStorage.getItem("hw_bookmarks_v2") || "{}");
-    const tbm   = JSON.parse(localStorage.getItem("hw_tool_bookmarks") || "[]");
-    const names = JSON.parse(localStorage.getItem("hw_bookmark_names") || "{}");
-    const data  = { version:1, names, airdrops:bm, tools:tbm };
-    const blob  = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-    const a     = document.createElement("a");
-    a.href      = URL.createObjectURL(blob);
-    a.download  = `hunter-wave-bookmarks-${new Date().toISOString().slice(0,10)}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-
-  // ── Import bookmarks ──
-  const importRef = useRef(null);
-  function handleImportFile(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        const d = JSON.parse(ev.target.result);
-        // Validasi struktur minimal
-        if (typeof d !== "object" || d === null || d.version !== 1 ||
-            typeof d.airdrops !== "object" || !Array.isArray(d.tools)) {
-          setImportMsg("✗ Format file tidak valid. Pastikan file berasal dari export HUNTER WAVE.");
-          setTimeout(()=>setImportMsg(""),4000);
-          return;
-        }
-        // Simpan ke localStorage
-        try { localStorage.setItem("hw_bookmarks_v2", JSON.stringify(d.airdrops)); } catch {}
-        try { localStorage.setItem("hw_tool_bookmarks", JSON.stringify(d.tools)); } catch {}
-        if (d.names && typeof d.names === "object") {
-          try { localStorage.setItem("hw_bookmark_names", JSON.stringify(d.names)); } catch {}
-          setListNames(d.names);
-        }
-        // Reload state via parent callback
-        onImportBookmarks?.(d);
-        setImportMsg("✓ Bookmark berhasil diimpor!");
-        setTimeout(()=>setImportMsg(""),3000);
-      } catch {
-        setImportMsg("✗ File tidak dapat dibaca.");
-        setTimeout(()=>setImportMsg(""),4000);
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
   }
 
   function copyToolUrl(tool) {
@@ -1446,22 +921,8 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
                 {totalSaved + totalToolSaved} tersimpan
               </span>
             )}
-            <button onClick={handleExport}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 text-blue-400 text-[10px] font-bold hover:bg-blue-500/20 transition-all">
-              <Download className="w-3 h-3"/>Export
-            </button>
-            <button onClick={()=>importRef.current?.click()}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/[0.05] ring-1 ring-white/10 text-white/50 text-[10px] font-bold hover:bg-white/10 transition-all">
-              ⬆ Import
-            </button>
-            <input ref={importRef} type="file" accept=".json" onChange={handleImportFile} className="hidden"/>
           </div>
         </div>
-        {importMsg && (
-          <p className={`text-[10px] font-semibold px-2 py-1 rounded-lg mb-1 ${importMsg.startsWith("✓")?"text-green-400 bg-green-500/10":"text-red-400 bg-red-500/10"}`}>
-            {importMsg}
-          </p>
-        )}
         <p className="text-xs text-white/30">1× kuning · 2× biru · 3× merah · 4× hapus — ketuk nama daftar untuk ganti nama</p>
       </div>
 
@@ -1989,10 +1450,6 @@ export default function App() {
   const [calendar, setCalendar] = useState(DEF_CALENDAR);
   const [ticker, setTicker]     = useState(DEF_TICKER);
   const [loaded, setLoaded]     = useState(false);
-  const [isAdmin, setIsAdmin]   = useState(()=>sessionStorage.getItem("dml_admin_ok")==="1");
-  const [showLogin, setShowLogin] = useState(false);
-  const [showPanel, setShowPanel] = useState(false);
-  const [savedMsg, setSavedMsg]   = useState("");
 
   // ─── TOOL BOOKMARKS on/off (localStorage) ─────────────────
   const [toolBookmarks, setToolBookmarks] = useState(() => {
@@ -2035,7 +1492,7 @@ export default function App() {
     });
   }
 
-  // Load all data from IndexedDB on mount
+  // Load all data from IndexedDB on mount (tapCount/handleLogoTap sudah dihapus bersama admin panel)
   useEffect(() => {
     idbGetAll().then(([a, ad, n, q, t, p, cal, tick]) => {
       if (a)    setAirdrops(a);
@@ -2050,116 +1507,24 @@ export default function App() {
     });
   }, []);
 
-  // 5-tap logo to open admin
-  const tapCount = useRef(0);
-  const tapTimer = useRef(null);
-  function handleLogoTap() {
-    tapCount.current += 1;
-    clearTimeout(tapTimer.current);
-    tapTimer.current = setTimeout(()=>{ tapCount.current=0; }, 2000);
-    if (tapCount.current >= 5) {
-      tapCount.current = 0;
-      if (isAdmin) setShowPanel(true);
-      else setShowLogin(true);
-    }
-  }
-
-  function handleAdminSuccess() { setIsAdmin(true); setShowLogin(false); setShowPanel(true); }
-
-  function showSaved(msg = "✓ Tersimpan") {
-    setSavedMsg(msg);
-    setTimeout(() => setSavedMsg(""), 2500);
-  }
-
-  async function handleUpdate(type, data) {
-    if (type==="airdrops") { setAirdrops(data); await idbSet("airdrops", data); }
-    if (type==="ads")      { setAds(data);      await idbSet("ads", data); }
-    if (type==="news")     { setNews(data);      await idbSet("news", data); }
-    if (type==="qinfo")    { setQinfo(data);     await idbSet("qinfo", data); }
-    if (type==="tools")    { setTools(data);     await idbSet("tools", data); }
-    showSaved();
-  }
-
-  // Export all data as JSON file
-  function handleExport() {
-    const blob = new Blob([JSON.stringify({ airdrops, ads, news, qinfo, tools }, null, 2)], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `dropmylink-backup-${new Date().toISOString().slice(0,10)}.json`;
-    a.click();
-  }
-
-  // Import data from JSON file
-  function handleImport(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (ev) => {
-      try {
-        const d = JSON.parse(ev.target.result);
-        if (d.airdrops) { setAirdrops(d.airdrops); await idbSet("airdrops", d.airdrops); }
-        if (d.ads)      { setAds(d.ads);            await idbSet("ads", d.ads); }
-        if (d.news)     { setNews(d.news);           await idbSet("news", d.news); }
-        if (d.qinfo)    { setQinfo(d.qinfo);         await idbSet("qinfo", d.qinfo); }
-        if (d.tools)    { setTools(d.tools);         await idbSet("tools", d.tools); }
-        showSaved("✓ Data berhasil diimpor!");
-      } catch { showSaved("✗ File tidak valid"); }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
-  }
-
-  function handleLogout() { sessionStorage.removeItem("dml_admin_ok"); setIsAdmin(false); setShowPanel(false); }
-
-  // Bookmark import callback — refresh state from localStorage
-  function handleImportBookmarks(d) {
-    try {
-      const bmObj = d.airdrops || {};
-      const newBm = new Map(Object.entries(bmObj).map(([k,v])=>[k,Number(v)]).filter(([,v])=>v>0));
-      setBookmarks(newBm);
-      const newTbm = new Set((d.tools||[]).map(String));
-      setToolBookmarks(newTbm);
-    } catch {}
-  }
-
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-x-hidden">
 
       {/* ── SIDEBAR NAV (desktop ≥ 1024px) ── */}
-      <SidebarNav active={tab} onSelect={setTab} onLogoTap={handleLogoTap} isAdmin={isAdmin} onOpenPanel={()=>setShowPanel(true)} />
+      <SidebarNav active={tab} onSelect={setTab} />
 
       {/* ── MAIN COLUMN ── */}
       <div className="lg:ml-56">
 
         {/* Header — hanya tampil di mobile */}
         <div className="lg:hidden sticky top-0 z-40 bg-[#0A0A0A] border-b border-white/[0.06]">
-          <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2 cursor-pointer select-none" onClick={handleLogoTap}>
+          <div className="max-w-lg mx-auto px-5 py-3 flex items-center">
+            <div className="flex items-center gap-2 select-none">
               <img src="/logo.jpg" alt="logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-blue-500/30"/>
               <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
             </div>
-            <div className="flex items-center gap-2">
-              {isAdmin && (
-                <button onClick={()=>setShowPanel(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/15 ring-1 ring-blue-500/30 hover:bg-blue-500/25 transition-all">
-                  <Settings className="w-3 h-3 text-blue-400"/>
-                  <span className="text-[10px] text-blue-400 font-bold">ADMIN</span>
-                </button>
-              )}
-            </div>
           </div>
         </div>
-
-        {/* Desktop header — hanya admin button, di dalam kolom konten */}
-        {isAdmin && (
-          <div className="hidden lg:flex justify-end px-5 pt-4 pb-0 max-w-xl mx-auto">
-            <button onClick={()=>setShowPanel(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/15 ring-1 ring-blue-500/30 hover:bg-blue-500/25 transition-all">
-              <Settings className="w-3 h-3 text-blue-400"/>
-              <span className="text-[10px] text-blue-400 font-bold">ADMIN</span>
-            </button>
-          </div>
-        )}
 
         {/* Loading overlay */}
         {!loaded && (
@@ -2168,13 +1533,6 @@ export default function App() {
               <img src="/logo.jpg" alt="logo" className="w-12 h-12 rounded-2xl object-cover ring-1 ring-blue-500/40 animate-pulse"/>
               <p className="text-xs text-blue-400/60">Memuat data...</p>
             </div>
-          </div>
-        )}
-
-        {/* Save toast */}
-        {savedMsg && (
-          <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[250] px-4 py-2 rounded-full bg-[#1E1E1E] border border-blue-500/30 text-blue-300 text-xs font-bold shadow-lg shadow-black/40">
-            {savedMsg}
           </div>
         )}
 
@@ -2188,7 +1546,7 @@ export default function App() {
           {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} />}
           {tab==="info"     && <InfoTerkiniScreen ads={ads} news={news} qinfo={qinfo} />}
           {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} />}
-          {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} onImportBookmarks={handleImportBookmarks} />}
+          {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
           {tab==="discover" && <DiscoverScreen tools={tools} p2p={p2p} calendar={calendar} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
         </div>
 
@@ -2196,24 +1554,6 @@ export default function App() {
 
       </div>{/* end lg:ml-56 */}
 
-      {showLogin && <AdminLogin onClose={()=>setShowLogin(false)} onSuccess={handleAdminSuccess} />}
-      {showPanel && (
-        <AdminPanel
-          airdrops={airdrops} ads={ads} news={news} qinfo={qinfo} tools={tools}
-          onUpdate={handleUpdate}
-          onExport={handleExport}
-          onImport={handleImport}
-          onClose={()=>setShowPanel(false)}
-        />
-      )}
-
-      {isAdmin && !showPanel && (
-        <div className="fixed bottom-24 right-4 z-50">
-          <button onClick={handleLogout} className="text-[9px] text-blue-500/40 hover:text-blue-400 transition-colors px-2 py-1">
-            logout admin
-          </button>
-        </div>
-      )}
     </div>
   );
 }
