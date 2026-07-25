@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { getAirdrops, getAds, getNews, getQinfo, getTools, getP2P, getCalendar, getTicker } from "./lib/data";
+import { getAirdrops, getNews, getQinfo, getTools, getP2P, getCalendar, getTicker } from "./lib/data";
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
   ExternalLink, Copy, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
@@ -53,7 +53,6 @@ async function idbSet(key, value) {
 async function idbGetAll() {
   return Promise.all([
     idbGet("airdrops", null),
-    idbGet("ads",      null),
     idbGet("news",     null),
     idbGet("qinfo",    null),
     idbGet("tools",    null),
@@ -65,7 +64,6 @@ async function idbGetAll() {
 
 // ─── DEFAULT DATA (loaded & validated from src/data/*.json via Zod) ──
 const DEF_AIRDROPS = getAirdrops();
-const DEF_ADS      = getAds();
 const DEF_NEWS     = getNews();
 const DEF_QINFO    = getQinfo();
 const DEF_TOOLS    = getTools();
@@ -356,41 +354,6 @@ function SidebarNav({ active, onSelect }) {
   );
 }
 
-// ─── ADS CAROUSEL (16:9 horizontal auto-scroll) ───────────────
-function AdsCarousel({ ads }) {
-  const active = ads.filter(a => a.active);
-  const [idx, setIdx] = useCarousel(active.length);
-  if (!active.length) return null;
-  return (
-    <div className="px-5 mb-6">
-      <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/[0.08]">
-        {active.map((a, i) => (
-          <div key={a.id}
-            className={`absolute inset-0 transition-opacity duration-500 ${i === idx ? "opacity-100 z-10" : "opacity-0 z-0"}`}>
-            {a.imageUrl
-              ? <img src={a.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
-              : <div className="absolute inset-0 bg-gradient-to-br from-blue-900/60 to-black" />
-            }
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center z-10">
-              <p className="text-[9px] text-blue-400/60 uppercase tracking-widest font-bold">Iklan</p>
-              <p className="text-base font-bold text-white leading-snug">{a.title}</p>
-              {a.subtitle && <p className="text-xs text-white/40">{a.subtitle}</p>}
-              {a.buttonText && a.targetUrl && (
-                <button onClick={() => window.open(a.targetUrl,"_blank","noopener,noreferrer")}
-                  className="mt-1 px-5 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all shadow-lg shadow-blue-500/30">
-                  {a.buttonText}
-                </button>
-              )}
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent z-20" />
-          </div>
-        ))}
-      </div>
-      <CarouselDots count={active.length} idx={idx} onSelect={setIdx} />
-    </div>
-  );
-}
 
 // ─── NEWS CAROUSEL (4:5 portrait — Instagram style) ───────────
 function NewsCarousel({ news }) {
@@ -814,7 +777,7 @@ function IntroScreen({ airdrops = [], calendar = [] }) {
 }
 
 // ─── INFO TERKINI SCREEN ──────────────────────────────────────
-function InfoTerkiniScreen({ ads, news, qinfo }) {
+function InfoTerkiniScreen({ news, qinfo }) {
   return (
     <div className="pb-32">
       <div className="px-5 pt-6 mb-6">
@@ -825,7 +788,6 @@ function InfoTerkiniScreen({ ads, news, qinfo }) {
         <p className="text-xs text-white/30 mt-1">Berita, iklan, dan update teknis terbaru</p>
       </div>
 
-      <AdsCarousel ads={ads} />
       <NewsCarousel news={news} />
       <InfoCepatCarousel qinfo={qinfo} />
       <InfoTeknisCarousel qinfo={qinfo} />
@@ -1442,7 +1404,6 @@ function BottomNav({ active, onSelect }) {
 export default function App() {
   const [tab, setTab]           = useState("intro");
   const [airdrops, setAirdrops] = useState(DEF_AIRDROPS);
-  const [ads, setAds]           = useState(DEF_ADS);
   const [news, setNews]         = useState(DEF_NEWS);
   const [qinfo, setQinfo]       = useState(DEF_QINFO);
   const [tools, setTools]       = useState(DEF_TOOLS);
@@ -1494,9 +1455,8 @@ export default function App() {
 
   // Load all data from IndexedDB on mount (tapCount/handleLogoTap sudah dihapus bersama admin panel)
   useEffect(() => {
-    idbGetAll().then(([a, ad, n, q, t, p, cal, tick]) => {
+    idbGetAll().then(([a, n, q, t, p, cal, tick]) => {
       if (a)    setAirdrops(a);
-      if (ad)   setAds(ad);
       if (n)    setNews(n);
       if (q)    setQinfo(q);
       if (t)    setTools(t);
@@ -1544,7 +1504,7 @@ export default function App() {
         {/* Content */}
         <div className="relative z-10 max-w-xl mx-auto">
           {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} />}
-          {tab==="info"     && <InfoTerkiniScreen ads={ads} news={news} qinfo={qinfo} />}
+          {tab==="info"     && <InfoTerkiniScreen news={news} qinfo={qinfo} />}
           {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} />}
           {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
           {tab==="discover" && <DiscoverScreen tools={tools} p2p={p2p} calendar={calendar} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
