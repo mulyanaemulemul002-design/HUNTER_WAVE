@@ -61,16 +61,17 @@ function validateIds(file: string) {
 // ─── SCHEMAS ──────────────────────────────────────────────────
 
 export const AirdropSchema = z.object({
-  id:          z.number().int().positive(),
-  icon:        z.string().default(""),
-  title:       z.string().min(1),
-  url:         z.string().min(1),
-  customImage: z.string().default(""),
-  tags:        z.array(z.string()).default([]),
-  description: z.string().default(""),
-  status:      z.enum(["Active", "Testnet", "Upcoming", "Mainnet", "Distributed"]),
-  reward:      z.string().default(""),
-  difficulty:  z.enum(["Easy", "Medium", "Hard"]),
+  id:           z.number().int().positive(),
+  icon:         z.string().default(""),
+  title:        z.string().min(1),
+  url:          z.string().min(1),
+  customImage:  z.string().default(""),
+  tags:         z.array(z.string()).default([]),
+  description:  z.string().default(""),
+  status:       z.enum(["Active", "Testnet", "Upcoming", "Mainnet", "Distributed"]),
+  reward:       z.string().default(""),
+  difficulty:   z.enum(["Easy", "Medium", "Hard"]),
+  howToGuide:   z.array(z.string()).optional(),
 });
 
 export const AdSchema = z.object({

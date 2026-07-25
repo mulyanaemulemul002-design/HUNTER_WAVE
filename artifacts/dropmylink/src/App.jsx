@@ -3,7 +3,7 @@ import { getAirdrops, getNews, getQinfo, getTools, getP2P, getCalendar, getTicke
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
   ExternalLink, Copy, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-  Calendar, Users, Lightbulb, Zap,
+  Calendar, Users, Lightbulb, Zap, BookOpen,
   X, Shield, MessageCircle, Heart,
   Rocket, TrendingUp, BarChart2, Bookmark, AlertTriangle,
   Landmark, Phone, Send,
@@ -1064,6 +1064,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
   const [activeTag, setActiveTag]   = useState("All");
   const [filterOpen, setFilterOpen] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
+  const [guideOpenId, setGuideOpenId] = useState(null);
   const [copiedId, setCopiedId]     = useState(null);
   const [burstId, setBurstId]       = useState(null);
 
@@ -1177,6 +1178,38 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
                         {copiedId===item.id?<Check className="w-4 h-4 text-green-400"/>:<Copy className="w-4 h-4 text-blue-400/60"/>}
                       </button>
                     </div>
+
+                    {/* ── CARA MENGERJAKAN — hanya tampil kalau ada isinya ── */}
+                    {item.howToGuide && item.howToGuide.length > 0 && (
+                      <div className="mt-3">
+                        <button
+                          onClick={()=>setGuideOpenId(guideOpenId===item.id?null:item.id)}
+                          className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.07] transition-all">
+                          <div className="flex items-center gap-2">
+                            <BookOpen className="w-3.5 h-3.5 text-blue-400/70"/>
+                            <span className="text-xs font-semibold text-white/70">Cara Mengerjakan</span>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 ring-1 ring-blue-500/25">
+                              {item.howToGuide.length} langkah
+                            </span>
+                          </div>
+                          {guideOpenId===item.id
+                            ? <ChevronUp className="w-3.5 h-3.5 text-white/30 flex-shrink-0"/>
+                            : <ChevronDown className="w-3.5 h-3.5 text-white/30 flex-shrink-0"/>}
+                        </button>
+                        {guideOpenId===item.id && (
+                          <div className="mt-2 rounded-xl bg-[#111827]/60 ring-1 ring-blue-500/[0.12] px-3 py-3 flex flex-col gap-2">
+                            {item.howToGuide.map((step, idx)=>(
+                              <div key={idx} className="flex gap-2.5 items-start">
+                                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-500/20 ring-1 ring-blue-500/30 flex items-center justify-center text-[10px] font-bold text-blue-400 mt-0.5">
+                                  {idx+1}
+                                </span>
+                                <p className="text-xs text-white/60 leading-relaxed">{step}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

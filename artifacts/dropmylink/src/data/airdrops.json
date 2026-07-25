@@ -9,7 +9,14 @@
     "description": "Omnichain interoperability protocol menghubungkan 30+ blockchain. Eligible via bridging & penggunaan dApp.",
     "status": "Active",
     "reward": "ZRO Token",
-    "difficulty": "Medium"
+    "difficulty": "Medium",
+    "howToGuide": [
+      "Kunjungi layerzero.network dan hubungkan wallet (MetaMask / Rabby).",
+      "Bridge aset minimal 3–5 kali antar chain berbeda (misal ETH → Polygon → Arbitrum).",
+      "Gunakan dApp berbasis LayerZero seperti Stargate Finance untuk swap cross-chain.",
+      "Pastikan interaksi dari minimal 2–3 chain berbeda agar eligible.",
+      "Pantau pengumuman snapshot di Twitter/X resmi @LayerZero_Core."
+    ]
   },
   {
     "id": 2,
