@@ -6,7 +6,7 @@ import {
   Calendar, Users, Lightbulb, Zap,
   X, Shield, MessageCircle, Heart,
   Rocket, TrendingUp, BarChart2, Bookmark, AlertTriangle,
-  Landmark, Phone, Send, Menu,
+  Landmark, Phone, Send,
 } from "lucide-react";
 
 // ─── DONATE & FEEDBACK ────────────────────────────────────────
@@ -331,6 +331,7 @@ function StatusLegend() {
 // ─── SIDEBAR NAV (desktop ≥ 1024px) ───────────────────────────
 function SidebarNav({ active, onSelect }) {
   const tabs = [
+    { id:"intro",    label:"Intro",        icon:Home },
     { id:"info",     label:"Info Terkini", icon:Zap },
     { id:"airdrops", label:"Airdrop",      icon:LayoutGrid },
     { id:"bookmark", label:"Bookmark",     icon:Bookmark },
@@ -809,402 +810,6 @@ function IntroScreen({ airdrops = [], calendar = [] }) {
       {showPrivacy && <PrivacyModal onClose={()=>setShowPrivacy(false)}/>}
       {showTerms   && <TermsModal  onClose={()=>setShowTerms(false)}/>}
     </div>
-  );
-}
-
-// ─── FIRST VISIT SPLASH ───────────────────────────────────────
-function FirstVisitSplash({ airdrops = [], calendar = [], onDone }) {
-  function handleTelegram() {
-    window.open("https://t.me/+mkv5RT1Ov25kZmI1", "_blank", "noopener,noreferrer");
-    onDone();
-  }
-  return (
-    <div className="fixed inset-0 z-[500] flex flex-col bg-[#070711] overflow-y-auto">
-      <style>{`
-        @keyframes hw-fade-up {
-          from { opacity:0; transform:translateY(18px); }
-          to   { opacity:1; transform:translateY(0); }
-        }
-        .hw-fade-up { animation: hw-fade-up 0.55s cubic-bezier(0.22,1,0.36,1) both; }
-        .hw-fade-up-d1 { animation-delay: 0.08s; }
-        .hw-fade-up-d2 { animation-delay: 0.18s; }
-        .hw-fade-up-d3 { animation-delay: 0.28s; }
-        .hw-fade-up-d4 { animation-delay: 0.38s; }
-      `}</style>
-
-      {/* Ambient glows */}
-      <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-blue-500/[0.07] blur-3xl pointer-events-none"/>
-      <div className="absolute bottom-10 -left-20 w-64 h-64 rounded-full bg-blue-800/[0.05] blur-3xl pointer-events-none"/>
-
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center max-w-sm mx-auto w-full relative">
-        {/* Logo */}
-        <div className="hw-fade-up">
-          <img src="/logo.jpg" alt="logo" className="w-16 h-16 rounded-2xl object-cover ring-2 ring-blue-500/30 shadow-2xl shadow-blue-500/20 mx-auto mb-5"/>
-        </div>
-
-        <div className="hw-fade-up hw-fade-up-d1">
-          <span className="text-[10px] font-bold text-blue-400 tracking-widest uppercase">Web3 Airdrop Hub · Indonesia</span>
-          <h1 className="text-3xl font-black text-white leading-tight mt-2 mb-2.5">
-            Jadilah Hunter<br/>
-            <span className="text-blue-500">Terdepan</span> di Web3
-          </h1>
-          <p className="text-sm text-white/45 leading-relaxed max-w-xs mx-auto">
-            Info airdrop, campaign, dan tools Web3 terkurasi untuk komunitas crypto Indonesia.
-          </p>
-        </div>
-
-        {/* Social proof */}
-        <div className="hw-fade-up hw-fade-up-d2 grid grid-cols-3 gap-3 w-full mt-7 mb-8">
-          {[
-            { value:"2K+",            label:"Member Telegram", icon:"👥" },
-            { value:airdrops.length,  label:"Proyek Airdrop",  icon:"🪂" },
-            { value:calendar.length,  label:"Event Kalender",  icon:"📅" },
-          ].map(({value,label,icon})=>(
-            <div key={label} className="rounded-2xl glass-card p-3 text-center">
-              <div className="text-base mb-0.5">{icon}</div>
-              <p className="text-xl font-black text-white">{value}</p>
-              <p className="text-[9px] text-white/35 mt-0.5 leading-tight">{label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* CTAs */}
-        <div className="hw-fade-up hw-fade-up-d3 w-full flex flex-col gap-3">
-          <button onClick={handleTelegram}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-xl shadow-blue-500/30 btn-glow">
-            <IconTelegram className="w-4 h-4 text-white"/>
-            <span className="text-sm font-bold text-white">Bergabung di Telegram</span>
-          </button>
-          <button onClick={onDone}
-            className="w-full py-2.5 rounded-2xl text-sm text-white/35 hover:text-white/60 transition-colors">
-            Lanjut ke App →
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── HAMBURGER OVERLAY — constants ──────────────────────────
-const SOCIAL_LINKS = [
-  { label:"X",         Icon:IconX,         url:"https://x.com/otgboys" },
-  { label:"Instagram", Icon:IconInstagram, url:"https://www.instagram.com/airdrophunterwaveid?igsh=MTU5bmI5cXRtNmF3" },
-  { label:"TikTok",    Icon:IconTikTok,    url:"https://www.tiktok.com/@airdrophunterwaveid?_r=1&_t=ZS-96oeh8Xs9zB" },
-];
-
-const MENU_ITEMS = [
-  { id:"intro",    emoji:"🏠", label:"Beranda",           desc:"Hero & info utama" },
-  { id:"about",    emoji:"ℹ️",  label:"About Us",          desc:"Profil & kemandirian" },
-  { id:"community",emoji:"👥", label:"Community",          desc:"Sosial & Telegram" },
-  { id:"donation", emoji:"💙", label:"Donasi & Feedback",  desc:"Dukung & masukan" },
-  { id:"privacy",  emoji:"🔒", label:"Privacy & Terms",    desc:"Kebijakan & disclaimer" },
-];
-
-// ─── OVERLAY PAGE: MENU LIST ──────────────────────────────────
-function OverlayMenuList({ onSelect }) {
-  return (
-    <nav className="flex flex-col py-2">
-      {MENU_ITEMS.map(({ id, emoji, label, desc }) => (
-        <button key={id} onClick={() => onSelect(id)}
-          className="flex items-center gap-4 px-5 py-4 hover:bg-white/[0.04] active:bg-white/[0.07] transition-colors text-left border-b border-white/[0.04] last:border-0">
-          <span className="text-xl w-7 text-center flex-shrink-0">{emoji}</span>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white">{label}</p>
-            <p className="text-[10px] text-white/35 mt-0.5">{desc}</p>
-          </div>
-          <ChevronRight className="w-4 h-4 text-white/20 flex-shrink-0"/>
-        </button>
-      ))}
-      <p className="text-center text-[9px] text-white/15 pt-5 pb-3">© 2025 HUNTER WAVE · Indonesia · Non-Profit</p>
-    </nav>
-  );
-}
-
-// ─── OVERLAY PAGE: BERANDA / INTRO ────────────────────────────
-function IntroPage({ airdrops = [], calendar = [] }) {
-  return (
-    <div className="p-5 flex flex-col gap-4 pb-8">
-      {/* Hero */}
-      <div className="relative rounded-2xl overflow-hidden p-5 bg-gradient-to-br from-blue-950/60 to-blue-900/10 border border-blue-500/20">
-        <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-blue-500/[0.08] blur-2xl pointer-events-none"/>
-        <span className="relative text-[9px] font-bold text-blue-400 tracking-widest uppercase">Web3 Airdrop Hub · Indonesia</span>
-        <h2 className="relative text-2xl font-black text-white leading-tight mt-1.5">
-          Jadilah Hunter<br/><span className="text-blue-500">Terdepan</span> di Web3
-        </h2>
-        <p className="relative text-xs text-white/40 mt-2 leading-relaxed">
-          Info airdrop, campaign, dan tools Web3 terkurasi untuk komunitas crypto Indonesia.
-        </p>
-        <button
-          onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
-          className="relative mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-lg shadow-blue-500/25 btn-glow">
-          <IconTelegram className="w-3.5 h-3.5 text-white"/>
-          <span className="text-xs font-bold text-white">Bergabung di Telegram</span>
-        </button>
-      </div>
-      {/* Social proof */}
-      <div className="grid grid-cols-3 gap-2">
-        {[
-          { value:"2K+",            label:"Member Telegram", icon:"👥" },
-          { value:airdrops.length,  label:"Proyek Airdrop",  icon:"🪂" },
-          { value:calendar.length,  label:"Event Kalender",  icon:"📅" },
-        ].map(({value,label,icon})=>(
-          <div key={label} className="rounded-2xl glass-card p-3 text-center">
-            <div className="text-base mb-0.5">{icon}</div>
-            <p className="text-lg font-black text-white">{value}</p>
-            <p className="text-[8px] text-white/35 mt-0.5 leading-tight">{label}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── OVERLAY PAGE: ABOUT US ───────────────────────────────────
-function AboutPage() {
-  return (
-    <div className="p-5 flex flex-col gap-4 pb-8">
-      {/* Brand profile */}
-      <div className="rounded-2xl bg-gradient-to-br from-blue-600/20 to-blue-900/10 border border-blue-500/25 p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <img src="/logo.jpg" alt="logo" className="w-12 h-12 rounded-2xl object-cover ring-2 ring-blue-500/40 shadow-lg shadow-blue-500/20"/>
-          <div>
-            <p className="text-sm font-bold text-white">HUNTER WAVE</p>
-            <p className="text-[10px] text-blue-400/70 font-semibold tracking-wide">Web3 Airdrop Info Hub</p>
-            <span className="inline-flex items-center gap-1 mt-1 text-[8px] px-1.5 py-0.5 rounded-full bg-green-500/15 text-green-400 ring-1 ring-green-500/25">
-              <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse"/> AKTIF
-            </span>
-          </div>
-        </div>
-        <p className="text-xs text-white/50 leading-relaxed">
-          Platform kurasi informasi airdrop, campaign, dan tips Web3 untuk komunitas crypto Indonesia. Kami menyajikan info terkini secara mandiri dan tidak berafiliasi dengan proyek mana pun.
-        </p>
-        <div className="mt-3.5 flex gap-1.5 flex-wrap">
-          {["Airdrop","Campaign","Web3","DeFi","Layer2"].map(t=>(
-            <span key={t} className="text-[9px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20">{t}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* Kemandirian */}
-      <div className="rounded-2xl glass-card p-4">
-        <div className="flex items-center gap-2 mb-2.5">
-          <div className="w-7 h-7 rounded-lg bg-blue-500/15 ring-1 ring-blue-500/25 flex items-center justify-center flex-shrink-0">
-            <Shield className="w-3.5 h-3.5 text-blue-400"/>
-          </div>
-          <p className="text-xs font-bold text-white">Kemandirian HUNTER WAVE</p>
-        </div>
-        <p className="text-[11px] text-white/40 leading-relaxed">
-          HUNTER WAVE adalah platform <span className="text-blue-400/80">independen</span> yang tidak memiliki afiliasi resmi, sponsor, atau kerja sama berbayar dengan proyek, tim, atau entitas mana pun. Semua konten disajikan murni berdasarkan riset dan kurasi komunitas.
-        </p>
-      </div>
-
-      {/* DYOR */}
-      <div className="rounded-2xl glass-card p-4">
-        <div className="flex items-center gap-2 mb-2.5">
-          <div className="w-7 h-7 rounded-lg bg-white/[0.06] ring-1 ring-white/[0.10] flex items-center justify-center flex-shrink-0">
-            <AlertTriangle className="w-3.5 h-3.5 text-orange-400/70"/>
-          </div>
-          <p className="text-xs font-bold text-white/80">DYOR — Do Your Own Research</p>
-        </div>
-        <p className="text-[11px] text-white/35 leading-relaxed">
-          Informasi yang tersaji di platform ini <span className="text-orange-400/60">bukan merupakan saran investasi</span>. Pasar kripto sangat volatil dan mengandung risiko tinggi. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial apa pun. Platform tidak bertanggung jawab atas kerugian yang timbul.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// ─── OVERLAY PAGE: COMMUNITY ──────────────────────────────────
-function CommunityPage() {
-  return (
-    <div className="p-5 flex flex-col gap-4 pb-8">
-      <div className="rounded-2xl glass-card p-4">
-        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Follow Kami</p>
-        <div className="flex gap-2.5">
-          {SOCIAL_LINKS.map(({label,Icon,url})=>(
-            <button key={label} onClick={()=>window.open(url,"_blank","noopener,noreferrer")}
-              className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.08] active:scale-95 transition-all">
-              <Icon className="w-5 h-5 text-white/55"/>
-              <span className="text-[9px] font-bold text-white/45">{label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
-        <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Telegram Group</p>
-        <p className="text-[11px] text-white/40 leading-relaxed">
-          Bergabung dengan komunitas hunter Indonesia di grup Telegram kami. Diskusi airdrop, sharing tips, dan update info Web3 setiap hari.
-        </p>
-        <button
-          onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-lg shadow-blue-500/25 btn-glow">
-          <IconTelegram className="w-4 h-4 text-white"/>
-          <span className="text-sm font-bold text-white">Bergabung di Telegram</span>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─── OVERLAY PAGE: DONASI & FEEDBACK ─────────────────────────
-function DonationPage() {
-  const [copied, setCopied] = useState(false);
-  function copyAddr() {
-    navigator.clipboard.writeText(DONATE_ADDRESS).catch(()=>{});
-    setCopied(true);
-    setTimeout(()=>setCopied(false), 2000);
-  }
-  return (
-    <div className="p-5 flex flex-col gap-4 pb-8">
-      {/* Donate */}
-      <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <Heart className="w-4 h-4 text-white/25 flex-shrink-0"/>
-          <p className="text-xs font-bold text-white/60">Dukung HUNTER WAVE</p>
-        </div>
-        <p className="text-[11px] text-white/35 leading-relaxed">
-          HUNTER WAVE adalah proyek independen non-profit. Jika konten kami bermanfaat, kamu bisa mendukung lewat donasi crypto.
-        </p>
-        <div>
-          <p className="text-[9px] text-white/30 mb-1.5 font-medium">Alamat EVM (ETH / BNB / MATIC / dll)</p>
-          <div className="flex items-center gap-2 bg-black/40 border border-white/[0.07] rounded-xl px-3 py-2.5">
-            <p className="text-[10px] font-mono text-white/40 flex-1 break-all leading-relaxed">{DONATE_ADDRESS}</p>
-            <button onClick={copyAddr}
-              className="flex-shrink-0 flex items-center gap-1 text-[10px] text-white/30 hover:text-blue-400 transition-colors ml-2">
-              {copied
-                ? <><Check className="w-3.5 h-3.5 text-green-400"/><span className="text-green-400 font-semibold">Tersalin</span></>
-                : <><Copy className="w-3.5 h-3.5"/><span>Salin</span></>}
-            </button>
-          </div>
-        </div>
-      </div>
-      {/* Feedback */}
-      <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="w-4 h-4 text-white/25 flex-shrink-0"/>
-          <p className="text-xs font-bold text-white/60">Kirim Masukan</p>
-        </div>
-        <p className="text-[11px] text-white/35 leading-relaxed">
-          Ada saran, bug, atau masukan untuk HUNTER WAVE? Hubungi founder langsung lewat Telegram.
-        </p>
-        <button onClick={()=>window.open(FEEDBACK_TG,"_blank","noopener,noreferrer")}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/[0.06] ring-1 ring-white/[0.09] hover:bg-white/[0.09] active:scale-95 transition-all">
-          <IconTelegram className="w-4 h-4 text-blue-400/70"/>
-          <span className="text-sm font-semibold text-white/60">Hubungi <span className="text-blue-400">@otgdontcry</span></span>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─── OVERLAY PAGE: PRIVACY & TERMS ───────────────────────────
-function PrivacyPage() {
-  const [section, setSection] = useState("privacy"); // "privacy" | "terms"
-  return (
-    <div className="p-5 flex flex-col gap-4 pb-8">
-      {/* Tab switcher */}
-      <div className="flex gap-2 p-1 rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.06]">
-        {[{id:"privacy",label:"Privacy Policy"},{id:"terms",label:"Terms & Disclaimer"}].map(({id,label})=>(
-          <button key={id} onClick={()=>setSection(id)}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${section===id?"bg-blue-500 text-white shadow":"text-white/40 hover:text-white/70"}`}>
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {section==="privacy" && (
-        <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
-          <p className="text-xs font-bold text-white">Privacy Policy</p>
-          <div className="text-[11px] text-white/40 leading-relaxed space-y-3">
-            <p>HUNTER WAVE tidak mengumpulkan data pribadi pengguna. Semua data seperti bookmark dan preferensi disimpan secara lokal di perangkat Anda (localStorage/IndexedDB) dan tidak dikirim ke server mana pun.</p>
-            <p>Kami tidak menggunakan cookie pihak ketiga. Link ke platform eksternal (Telegram, X, Instagram, TikTok, dll) tunduk pada kebijakan privasi masing-masing platform tersebut.</p>
-            <p>Favicon platform diambil dari layanan Google S2 Favicons. Selain itu, tidak ada request ke server eksternal dari aplikasi ini.</p>
-            <p className="text-white/25">Terakhir diperbarui: Juli 2025</p>
-          </div>
-        </div>
-      )}
-
-      {section==="terms" && (
-        <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
-          <p className="text-xs font-bold text-white">Terms & Disclaimer</p>
-          <div className="text-[11px] text-white/40 leading-relaxed space-y-3">
-            <p>HUNTER WAVE adalah platform kurasi informasi independen yang tidak berafiliasi dengan proyek, tim, atau entitas crypto mana pun.</p>
-            <p><span className="text-orange-400/70 font-semibold">Bukan Saran Investasi:</span> Informasi yang tersaji bukan merupakan saran investasi. Pasar kripto sangat volatil. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial apa pun.</p>
-            <p>Dengan menggunakan platform ini, Anda menyetujui bahwa segala keputusan finansial merupakan tanggung jawab penuh Anda sendiri. Platform tidak menjamin keakuratan atau ketepatan waktu informasi yang disajikan.</p>
-            <p>Semua konten bersifat edukatif dan informatif semata. Gunakan dengan bijak dan selalu DYOR.</p>
-            <p className="text-white/25">Terakhir diperbarui: Juli 2025</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── HAMBURGER OVERLAY — shell ────────────────────────────────
-function HamburgerOverlay({ open, onClose, airdrops = [], calendar = [] }) {
-  const [activePage, setActivePage] = useState(null); // null = menu list
-
-  useEffect(() => {
-    if (!open) setActivePage(null); // reset ke menu saat ditutup
-    if (open) document.body.style.overflow = "hidden";
-    else       document.body.style.overflow = "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
-
-  if (!open) return null;
-
-  const pageTitle = MENU_ITEMS.find(m => m.id === activePage)?.label ?? null;
-
-  return (
-    <>
-      <style>{`
-        @keyframes hw-slide-right {
-          from { transform: translateX(100%); }
-          to   { transform: translateX(0); }
-        }
-        .hw-slide-right { animation: hw-slide-right 0.26s cubic-bezier(0.25,0.46,0.45,0.94) both; }
-      `}</style>
-
-      <div className="fixed inset-0 z-[100] flex justify-end">
-        {/* Backdrop */}
-        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}/>
-
-        {/* Panel */}
-        <div className="hw-slide-right relative w-full max-w-[300px] h-full bg-[#0C0C18] border-l border-white/[0.07] flex flex-col shadow-2xl">
-
-          {/* ── Header ── */}
-          <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/[0.05] flex-shrink-0 min-h-[56px]">
-            {activePage ? (
-              <button onClick={() => setActivePage(null)}
-                className="flex items-center gap-1.5 text-white/55 hover:text-white/90 active:scale-95 transition-all">
-                <ChevronLeft className="w-4 h-4"/>
-                <span className="text-sm font-semibold">{pageTitle}</span>
-              </button>
-            ) : (
-              <div className="flex items-center gap-2 select-none">
-                <img src="/logo.jpg" alt="logo" className="w-6 h-6 rounded-lg object-cover ring-1 ring-blue-500/30"/>
-                <span className="text-sm font-bold text-white">HUNTER<span className="text-blue-500"> WAVE</span></span>
-              </div>
-            )}
-            <button onClick={onClose}
-              className="w-8 h-8 rounded-xl bg-white/[0.06] flex items-center justify-center hover:bg-white/[0.10] active:scale-90 transition-all flex-shrink-0">
-              <X className="w-4 h-4 text-white/50"/>
-            </button>
-          </div>
-
-          {/* ── Page body ── */}
-          <div className="flex-1 overflow-y-auto" style={{scrollbarWidth:"none"}}>
-            {!activePage                   && <OverlayMenuList onSelect={setActivePage} />}
-            {activePage === "intro"        && <IntroPage airdrops={airdrops} calendar={calendar} />}
-            {activePage === "about"        && <AboutPage />}
-            {activePage === "community"    && <CommunityPage />}
-            {activePage === "donation"     && <DonationPage />}
-            {activePage === "privacy"      && <PrivacyPage />}
-          </div>
-
-        </div>
-      </div>
-    </>
   );
 }
 
@@ -1807,6 +1412,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
 function BottomNav({ active, onSelect }) {
   const [poppedId, setPoppedId] = useState(null);
   const tabs = [
+    { id:"intro",    label:"Intro",       icon:Home },
     { id:"info",     label:"Info Terkini",icon:Zap },
     { id:"airdrops", label:"Airdrop",     icon:LayoutGrid },
     { id:"bookmark", label:"Bookmark",    icon:Bookmark },
@@ -1834,7 +1440,7 @@ function BottomNav({ active, onSelect }) {
 
 // ─── MAIN APP ─────────────────────────────────────────────────
 export default function App() {
-  const [tab, setTab]           = useState("info");
+  const [tab, setTab]           = useState("intro");
   const [airdrops, setAirdrops] = useState(DEF_AIRDROPS);
   const [ads, setAds]           = useState(DEF_ADS);
   const [news, setNews]         = useState(DEF_NEWS);
@@ -1844,22 +1450,6 @@ export default function App() {
   const [calendar, setCalendar] = useState(DEF_CALENDAR);
   const [ticker, setTicker]     = useState(DEF_TICKER);
   const [loaded, setLoaded]     = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  // ─── FIRST-VISIT DETECTION ─────────────────────────────────
-  // Cek localStorage flag `hw_has_visited`.
-  // Jika belum ada → first visit → tampilkan splash hero.
-  // Jika sudah ada → returning user → langsung ke app (tab Info Terkini).
-  const [isFirstVisit, setIsFirstVisit] = useState(() => {
-    try { return !localStorage.getItem("hw_has_visited"); }
-    catch { return false; }
-  });
-
-  function handleFirstVisitDone() {
-    try { localStorage.setItem("hw_has_visited", "1"); } catch {}
-    setIsFirstVisit(false);
-    setTab("info");
-  }
 
   // ─── TOOL BOOKMARKS on/off (localStorage) ─────────────────
   const [toolBookmarks, setToolBookmarks] = useState(() => {
@@ -1902,7 +1492,7 @@ export default function App() {
     });
   }
 
-  // Load all data from IndexedDB on mount
+  // Load all data from IndexedDB on mount (tapCount/handleLogoTap sudah dihapus bersama admin panel)
   useEffect(() => {
     idbGetAll().then(([a, ad, n, q, t, p, cal, tick]) => {
       if (a)    setAirdrops(a);
@@ -1920,14 +1510,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-x-hidden">
 
-      {/* ── FIRST VISIT SPLASH — z-[500], menutupi segalanya ── */}
-      {isFirstVisit && (
-        <FirstVisitSplash airdrops={airdrops} calendar={calendar} onDone={handleFirstVisitDone} />
-      )}
-
-      {/* ── HAMBURGER OVERLAY — z-[100] ── */}
-      <HamburgerOverlay open={menuOpen} onClose={()=>setMenuOpen(false)} airdrops={airdrops} calendar={calendar} />
-
       {/* ── SIDEBAR NAV (desktop ≥ 1024px) ── */}
       <SidebarNav active={tab} onSelect={setTab} />
 
@@ -1936,20 +1518,16 @@ export default function App() {
 
         {/* Header — hanya tampil di mobile */}
         <div className="lg:hidden sticky top-0 z-40 bg-[#0A0A0A] border-b border-white/[0.06]">
-          <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
+          <div className="max-w-lg mx-auto px-5 py-3 flex items-center">
             <div className="flex items-center gap-2 select-none">
               <img src="/logo.jpg" alt="logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-blue-500/30"/>
               <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
             </div>
-            <button onClick={()=>setMenuOpen(true)}
-              className="w-9 h-9 rounded-xl bg-white/[0.05] ring-1 ring-white/[0.07] flex items-center justify-center hover:bg-white/[0.09] active:scale-90 transition-all">
-              <Menu className="w-4 h-4 text-white/60"/>
-            </button>
           </div>
         </div>
 
-        {/* Loading overlay — hanya untuk returning visitor */}
-        {!loaded && !isFirstVisit && (
+        {/* Loading overlay */}
+        {!loaded && (
           <div className="fixed inset-0 z-[300] bg-black flex items-center justify-center">
             <div className="flex flex-col items-center gap-3">
               <img src="/logo.jpg" alt="logo" className="w-12 h-12 rounded-2xl object-cover ring-1 ring-blue-500/40 animate-pulse"/>
@@ -1963,8 +1541,9 @@ export default function App() {
           <TickerBanner texts={ticker} />
         </div>
 
-        {/* Content — 4 tab (Intro dihapus dari nav) */}
+        {/* Content */}
         <div className="relative z-10 max-w-xl mx-auto">
+          {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} />}
           {tab==="info"     && <InfoTerkiniScreen ads={ads} news={news} qinfo={qinfo} />}
           {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} />}
           {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
