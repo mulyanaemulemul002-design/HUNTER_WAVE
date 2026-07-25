@@ -588,7 +588,8 @@ function TickerBanner({ texts = [] }) {
 }
 
 // ─── INTRO SCREEN ─────────────────────────────────────────────
-const DYOR_TEXT = `Informasi yang tersaji di platform ini bukan merupakan saran investasi. Pasar kripto sangat volatil dan mengandung risiko tinggi. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial apa pun. Platform tidak bertanggung jawab atas kerugian yang timbul.`;
+const DYOR_TEXT = `Airdrop bersifat spekulatif tidak ada jaminan proyek bakal TGE, apalagi worth farming dalam jangka panjang. Prosesnya bisa makan waktu berbulan-bulan sampai tahunan, dan proyek bisa aja shutdown di tengah jalan tanpa distribusi apa pun.
+Jangan jadikan airdrop sebagai sumber penghasilan utama. Disarankan fokus di lebih dari 5+ proyek sekaligus biar waktu dan effort lu gak kebagi terlalu tipis. Platform tidak bertanggung jawab atas kerugian waktu maupun aset yang timbul.`;
 
 function PrivacyModal({ onClose }) {
   return (
@@ -651,7 +652,7 @@ function IntroScreen({ airdrops = [], calendar = [] }) {
       <div className="relative px-5 pt-8 pb-7 mb-2 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-950/40 via-blue-950/15 to-transparent pointer-events-none"/>
         <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-blue-500/[0.07] blur-3xl pointer-events-none"/>
-        <span className="relative text-[10px] font-bold text-blue-400 tracking-widest uppercase">Web3 Airdrop Hub · Indonesia</span>
+        <span className="relative text-[10px] font-bold text-blue-400 tracking-widest uppercase">Web3 Airdrop Hub</span>
         <h1 className="relative text-3xl font-black text-white leading-tight mt-2">
           Jadilah Hunter<br/>
           <span className="text-blue-500">Terdepan</span> di Web3
@@ -746,10 +747,11 @@ function IntroScreen({ airdrops = [], calendar = [] }) {
             <div className="w-7 h-7 rounded-lg bg-white/[0.06] ring-1 ring-white/[0.10] flex items-center justify-center flex-shrink-0">
               <AlertTriangle className="w-3.5 h-3.5 text-orange-400/70"/>
             </div>
-            <p className="text-xs font-bold text-white/80">DYOR — Do Your Own Research</p>
+            <p className="text-xs font-bold text-white/80">DYOR</p>
           </div>
           <p className="text-[11px] text-white/35 leading-relaxed">
-            Informasi yang tersaji di platform ini <span className="text-orange-400/60">bukan merupakan saran investasi</span>. Pasar kripto sangat volatil dan mengandung risiko tinggi. Selalu lakukan riset mandiri sebelum mengambil keputusan finansial apa pun. Platform tidak bertanggung jawab atas kerugian yang timbul.
+           Airdrop bersifat spekulatif tidak ada jaminan proyek bakal TGE, apalagi worth farming dalam jangka panjang. Prosesnya bisa makan waktu berbulan-bulan sampai tahunan, dan proyek bisa aja shutdown di tengah jalan tanpa distribusi apa pun.
+Jangan jadikan airdrop sebagai sumber penghasilan utama. Disarankan fokus di lebih dari 5+ proyek sekaligus biar waktu dan effort lu gak kebagi terlalu tipis. Platform tidak bertanggung jawab atas kerugian waktu maupun aset yang timbul.
           </p>
         </div>
       </div>
