@@ -579,7 +579,7 @@ function TickerBanner({ texts = [] }) {
         .hw-ticker-track:hover { animation-play-state: paused; }
       `}</style>
       <div className="w-full overflow-hidden border-b border-white/[0.06] py-2" style={{background:"linear-gradient(90deg,#080810,#0D0D1C,#080810)"}}>
-        <div className="hw-ticker-track text-[12px] tracking-wide font-medium" style={{color:"rgba(147,197,253,0.82)"}}>
+        <div className="hw-ticker-track text-[12px] tracking-wide font-bold" style={{color:"rgba(147,197,253,0.92)"}}>
           {display}
         </div>
       </div>
@@ -1099,7 +1099,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
       </div>
 
       {/* ── STICKY SEARCH BAR ── */}
-      <div className="sticky top-[86px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md pb-3 px-5 pt-1 border-b border-white/[0.05]">
+      <div className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md pb-3 px-5 pt-1 border-b border-white/[0.05]">
         <div className="relative mb-2.5">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400/50 pointer-events-none"/>
           <input type="search" placeholder="Cari airdrop..." value={search} onChange={e=>setSearch(e.target.value)}
@@ -1207,7 +1207,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
       </div>
 
       {/* ── STICKY SECTION TABS ── */}
-      <div className="sticky top-[86px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
+      <div className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
         <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
           {[{id:"p2p",label:"P2P Seller",icon:Users},{id:"calendar",label:"Kalender",icon:Calendar},{id:"tools",label:"Platform & Tools",icon:Lightbulb}].map(({id,label,icon:Icon})=>(
             <button key={id} onClick={()=>setSection(id)}
@@ -1476,8 +1476,8 @@ export default function App() {
       {/* ── MAIN COLUMN ── */}
       <div className="lg:ml-56">
 
-        {/* Header logo — mobile only, sticky top-0 */}
-        <div className="lg:hidden sticky top-0 z-40 bg-[#0A0A0A] border-b border-white/[0.06]">
+        {/* Header logo — mobile only, fixed top-0 */}
+        <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A0A0A] border-b border-white/[0.06]">
           <div className="max-w-lg mx-auto px-5 py-3 flex items-center">
             <div className="flex items-center gap-2 select-none">
               <img src="/logo.jpg" alt="logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-blue-500/30"/>
@@ -1486,8 +1486,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* Ticker — sticky di semua ukuran layar: top-[52px] mobile (di bawah header), top-0 desktop */}
-        <div className="sticky top-[52px] lg:top-0 z-39 max-w-xl mx-auto lg:max-w-none">
+        {/* Ticker — fixed di semua layar: di bawah header (mobile) atau paling atas (desktop) */}
+        <div className="fixed top-[52px] left-0 right-0 lg:top-0 lg:left-56 z-[39]">
           <TickerBanner texts={ticker} />
         </div>
 
@@ -1501,8 +1501,8 @@ export default function App() {
           </div>
         )}
 
-        {/* Content */}
-        <div className="relative z-10 max-w-xl mx-auto">
+        {/* Content — pt untuk offset header(52) + ticker(34) = 86px mobile, ticker(34) desktop */}
+        <div className="relative z-10 max-w-xl mx-auto pt-[86px] lg:pt-[34px]">
           {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} />}
           {tab==="info"     && <InfoTerkiniScreen news={news} qinfo={qinfo} />}
           {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} />}
