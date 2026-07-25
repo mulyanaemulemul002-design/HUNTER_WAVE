@@ -1099,7 +1099,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
       </div>
 
       {/* ── STICKY SEARCH BAR ── */}
-      <div className="sticky top-[52px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md pb-3 px-5 pt-1 border-b border-white/[0.05]">
+      <div className="sticky top-[86px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md pb-3 px-5 pt-1 border-b border-white/[0.05]">
         <div className="relative mb-2.5">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400/50 pointer-events-none"/>
           <input type="search" placeholder="Cari airdrop..." value={search} onChange={e=>setSearch(e.target.value)}
@@ -1207,7 +1207,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
       </div>
 
       {/* ── STICKY SECTION TABS ── */}
-      <div className="sticky top-[52px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
+      <div className="sticky top-[86px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
         <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
           {[{id:"p2p",label:"P2P Seller",icon:Users},{id:"calendar",label:"Kalender",icon:Calendar},{id:"tools",label:"Platform & Tools",icon:Lightbulb}].map(({id,label,icon:Icon})=>(
             <button key={id} onClick={()=>setSection(id)}
@@ -1476,7 +1476,7 @@ export default function App() {
       {/* ── MAIN COLUMN ── */}
       <div className="lg:ml-56">
 
-        {/* Header — hanya tampil di mobile */}
+        {/* Header logo — mobile only, sticky top-0 */}
         <div className="lg:hidden sticky top-0 z-40 bg-[#0A0A0A] border-b border-white/[0.06]">
           <div className="max-w-lg mx-auto px-5 py-3 flex items-center">
             <div className="flex items-center gap-2 select-none">
@@ -1484,6 +1484,11 @@ export default function App() {
               <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
             </div>
           </div>
+        </div>
+
+        {/* Ticker — sticky di semua ukuran layar: top-[52px] mobile (di bawah header), top-0 desktop */}
+        <div className="sticky top-[52px] lg:top-0 z-39 max-w-xl mx-auto lg:max-w-none">
+          <TickerBanner texts={ticker} />
         </div>
 
         {/* Loading overlay */}
@@ -1495,11 +1500,6 @@ export default function App() {
             </div>
           </div>
         )}
-
-        {/* Running Ticker — tampil di semua tab */}
-        <div className="relative z-10 max-w-xl mx-auto">
-          <TickerBanner texts={ticker} />
-        </div>
 
         {/* Content */}
         <div className="relative z-10 max-w-xl mx-auto">
