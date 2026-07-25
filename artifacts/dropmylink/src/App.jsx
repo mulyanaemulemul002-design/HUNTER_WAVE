@@ -578,8 +578,8 @@ function TickerBanner({ texts = [] }) {
         }
         .hw-ticker-track:hover { animation-play-state: paused; }
       `}</style>
-      <div className="w-full overflow-hidden border-b border-white/[0.04] py-1.5" style={{background:"linear-gradient(90deg,#080810,#0D0D1C,#080810)"}}>
-        <div className="hw-ticker-track text-[10px] tracking-wide font-medium" style={{color:"rgba(147,197,253,0.45)"}}>
+      <div className="w-full overflow-hidden border-b border-white/[0.06] py-2" style={{background:"linear-gradient(90deg,#080810,#0D0D1C,#080810)"}}>
+        <div className="hw-ticker-track text-[12px] tracking-wide font-medium" style={{color:"rgba(147,197,253,0.82)"}}>
           {display}
         </div>
       </div>
