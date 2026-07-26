@@ -1,4 +1,5 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import Fuse from "fuse.js";
 import { getAirdrops, getNews, getQinfo, getTools, getP2P, getCalendar, getTicker } from "./lib/data";
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
@@ -327,7 +328,7 @@ function StatusLegend() {
 }
 
 // ─── SIDEBAR NAV (desktop ≥ 1024px) ───────────────────────────
-function SidebarNav({ active, onSelect }) {
+function SidebarNav({ active, onSelect, onOpenSearch }) {
   const tabs = [
     { id:"intro",    label:"Intro",        icon:Home },
     { id:"info",     label:"Info Terkini", icon:Zap },
@@ -337,9 +338,16 @@ function SidebarNav({ active, onSelect }) {
   ];
   return (
     <div className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-56 bg-[#0A0A0A] border-r border-white/[0.06] z-40 py-5 px-3">
-      <div className="flex items-center gap-2.5 px-3 mb-8 select-none">
-        <img src="/logo.jpg" alt="logo" className="w-8 h-8 rounded-lg object-cover ring-1 ring-blue-500/30"/>
-        <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
+      <div className="flex items-center justify-between px-3 mb-8 select-none">
+        <div className="flex items-center gap-2.5">
+          <img src="/logo.jpg" alt="logo" className="w-8 h-8 rounded-lg object-cover ring-1 ring-blue-500/30"/>
+          <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
+        </div>
+        <button onClick={onOpenSearch}
+          className="w-7 h-7 rounded-lg bg-blue-500/[0.08] ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/15 transition-all"
+          title="Cari (Global Search)">
+          <Search className="w-3.5 h-3.5 text-blue-400/70"/>
+        </button>
       </div>
       <nav className="flex flex-col gap-1 flex-1">
         {tabs.map(({id,label,icon:Icon})=>(
@@ -1057,7 +1065,7 @@ const CONFIRM_TABS = [
   { id: "rumored",   label: "Rumored" },
 ];
 
-function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
+function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId }) {
   const [search, setSearch]           = useState("");
   const [activeTag, setActiveTag]     = useState("All");
   const [filterOpen, setFilterOpen]   = useState(false);
@@ -1066,6 +1074,14 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
   const [guideOpenId, setGuideOpenId] = useState(null);
   const [copiedId, setCopiedId]       = useState(null);
   const [burstId, setBurstId]         = useState(null);
+
+  // Auto-expand card navigated from Global Search
+  useEffect(() => {
+    if (initialExpandId) {
+      setExpandedId(initialExpandId);
+      setConfirmTab("all");
+    }
+  }, [initialExpandId]);
 
   function handleToggleBookmark(id) {
     onToggleBookmark(id);
@@ -1266,10 +1282,15 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
 }
 
 // ─── DISCOVER SCREEN ──────────────────────────────────────────
-function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookmark }) {
-  const [section, setSection]       = useState("p2p");
+function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookmark, requestSection }) {
+  const [section, setSection]       = useState(requestSection || "p2p");
   const [expandedItem, setExpandedItem] = useState(null);
   const [copiedToolId, setCopiedToolId] = useState(null);
+
+  // Navigate to section from Global Search
+  useEffect(() => {
+    if (requestSection) setSection(requestSection);
+  }, [requestSection]);
 
   function copyToolUrl(tool) {
     navigator.clipboard.writeText(tool.targetUrl || `https://${tool.url}`).catch(()=>{});
@@ -1477,9 +1498,251 @@ function BottomNav({ active, onSelect }) {
   );
 }
 
+// ─── GLOBAL SEARCH ────────────────────────────────────────────
+
+function highlightText(text, matches, key) {
+  if (!text) return null;
+  const keyMatches = matches?.find(m => m.key === key);
+  if (!keyMatches?.indices?.length) return <span>{text}</span>;
+  const parts = [];
+  let last = 0;
+  for (const [s, e] of keyMatches.indices) {
+    if (s > last) parts.push(<span key={`${last}n`}>{text.slice(last, s)}</span>);
+    parts.push(<span key={`${s}h`} className="text-blue-300 font-bold">{text.slice(s, e + 1)}</span>);
+    last = e + 1;
+  }
+  if (last < text.length) parts.push(<span key={`${last}t`}>{text.slice(last)}</span>);
+  return <>{parts}</>;
+}
+
+const SEARCH_SECTIONS = [
+  { type: "airdrop",  label: "Airdrop",         tab: "airdrops",  discoverSection: null,       icon: "🪂" },
+  { type: "tool",     label: "Platform & Tools", tab: "discover",  discoverSection: "tools",    icon: "🔧" },
+  { type: "p2p",      label: "P2P Seller",       tab: "discover",  discoverSection: "p2p",      icon: "🤝" },
+  { type: "calendar", label: "Kalender",          tab: "discover",  discoverSection: "calendar", icon: "📅" },
+];
+
+function buildCorpus(airdrops, p2p, calendar, tools) {
+  return [
+    ...airdrops.map(a => ({
+      _type: "airdrop", _id: a.id,
+      title: a.title,
+      body: a.description || "",
+      meta: [(a.tags||[]).join(" "), a.reward||"", a.status||""].join(" "),
+    })),
+    ...tools.map(t => ({
+      _type: "tool", _id: t.id,
+      title: t.title,
+      body: t.description || "",
+      meta: t.category || "",
+    })),
+    ...p2p.map(p => ({
+      _type: "p2p", _id: p.id,
+      title: p.user,
+      body: `Jual ${p.selling} · ${p.price}`,
+      meta: (p.methods||[]).join(" "),
+    })),
+    ...calendar.map(c => ({
+      _type: "calendar", _id: c.id,
+      title: c.title,
+      body: `${c.date} · ${c.type}`,
+      meta: c.type || "",
+    })),
+  ];
+}
+
+function GlobalSearch({ open, onClose, airdrops, p2p, calendar, tools, onNavigate }) {
+  const [query, setQuery]   = useState("");
+  const [openKey, setOpenKey] = useState(0);
+  const inputRef = useRef(null);
+
+  // On open: reset query, re-roll suggestion, focus input
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      setOpenKey(k => k + 1);
+      const t = setTimeout(() => inputRef.current?.focus(), 80);
+      return () => clearTimeout(t);
+    }
+  }, [open]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!open) return;
+    const handler = e => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [open, onClose]);
+
+  // Build flat corpus from all 4 sources
+  const corpus = useMemo(
+    () => buildCorpus(airdrops, p2p, calendar, tools),
+    [airdrops, p2p, calendar, tools]
+  );
+
+  // Random suggestion — re-rolled every time openKey changes (i.e. on each open)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const suggestion = useMemo(() => {
+    if (!corpus.length) return null;
+    return corpus[Math.floor(Math.random() * corpus.length)];
+  }, [openKey]); // intentionally only depends on openKey, not corpus
+
+  // Fuse.js instance
+  const fuse = useMemo(() => new Fuse(corpus, {
+    keys: [
+      { name: "title", weight: 2 },
+      { name: "body",  weight: 1 },
+      { name: "meta",  weight: 0.5 },
+    ],
+    threshold: 0.4,
+    includeMatches: true,
+    minMatchCharLength: 1,
+    ignoreLocation: true,
+  }), [corpus]);
+
+  // Search results
+  const results = useMemo(() => {
+    if (!query.trim()) return [];
+    return fuse.search(query.trim(), { limit: 30 });
+  }, [query, fuse]);
+
+  // Group by _type, preserving SEARCH_SECTIONS order
+  const grouped = useMemo(() => {
+    const map = {};
+    for (const r of results) {
+      const t = r.item._type;
+      if (!map[t]) map[t] = [];
+      map[t].push(r);
+    }
+    return map;
+  }, [results]);
+
+  function handleSelect(item) {
+    const sec = SEARCH_SECTIONS.find(s => s.type === item._type);
+    onNavigate({ tab: sec.tab, type: item._type, id: item._id, discoverSection: sec.discoverSection });
+    onClose();
+  }
+
+  if (!open) return null;
+
+  const suggestionSec = suggestion ? SEARCH_SECTIONS.find(s => s.type === suggestion._type) : null;
+
+  return (
+    <div className="fixed inset-0 z-[500] bg-[#0A0A0A] flex flex-col"
+      style={{animation: "gsSlideIn 0.18s ease-out"}}>
+      <style>{`@keyframes gsSlideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}`}</style>
+
+      {/* ── TOP BAR ── */}
+      <div className="flex-shrink-0 flex items-center gap-3 px-4 pt-safe pt-3 pb-3 border-b border-white/[0.07]" style={{paddingTop:"max(12px, env(safe-area-inset-top))"}}>
+        <button onClick={onClose}
+          className="w-9 h-9 rounded-xl bg-white/[0.06] ring-1 ring-white/[0.10] flex items-center justify-center flex-shrink-0 active:bg-white/[0.12] transition-all">
+          <ChevronLeft className="w-4 h-4 text-white/60"/>
+        </button>
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400/50 pointer-events-none"/>
+          <input
+            ref={inputRef}
+            type="search"
+            placeholder="Cari airdrop, tools, event..."
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className="w-full bg-white/[0.06] ring-1 ring-white/[0.10] focus:ring-blue-400/50 rounded-2xl pl-10 pr-9 py-3 text-sm text-white placeholder-white/25 outline-none transition-all"
+            autoComplete="off"
+          />
+          {query.length > 0 && (
+            <button onClick={() => setQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/10 flex items-center justify-center active:bg-white/20 transition-all">
+              <X className="w-3 h-3 text-white/50"/>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── CONTENT ── */}
+      <div className="flex-1 overflow-y-auto pb-12">
+
+        {/* Empty state — random suggestion */}
+        {!query && suggestion && (
+          <div className="px-4 pt-5">
+            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-2.5">✨ Coba Lihat</p>
+            <button
+              onClick={() => handleSelect(suggestion)}
+              className="w-full text-left rounded-2xl bg-gradient-to-br from-blue-600/15 to-blue-900/10 border border-blue-500/20 p-4 hover:border-blue-400/35 active:scale-[0.99] transition-all">
+              <div className="flex items-start gap-3">
+                <span className="text-xl flex-shrink-0 mt-0.5">{suggestionSec?.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <p className="text-sm font-semibold text-white">{suggestion.title}</p>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 ring-1 ring-blue-500/25 font-bold">
+                      {suggestionSec?.label}
+                    </span>
+                  </div>
+                  {suggestion.body && (
+                    <p className="text-xs text-white/40 leading-relaxed line-clamp-2">{suggestion.body}</p>
+                  )}
+                </div>
+              </div>
+            </button>
+
+            {/* Source hint */}
+            <p className="text-center text-[10px] text-white/15 mt-5">
+              Ketuk untuk langsung buka · Saran berubah setiap kali kamu buka search
+            </p>
+          </div>
+        )}
+
+        {/* Results */}
+        {query.trim().length > 0 && (
+          <div className="px-4 pt-4">
+            {results.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 py-16 text-center">
+                <span className="text-3xl">🔍</span>
+                <p className="text-sm font-semibold text-white/40">Tidak ada hasil untuk</p>
+                <p className="text-sm text-blue-300/70 font-bold">"{query}"</p>
+                <p className="text-xs text-white/20 mt-1">Coba kata kunci lain</p>
+              </div>
+            ) : (
+              SEARCH_SECTIONS.filter(s => grouped[s.type]?.length).map(sec => (
+                <div key={sec.type} className="mb-6">
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <span className="text-sm">{sec.icon}</span>
+                    <p className="text-[10px] font-bold text-white/35 uppercase tracking-widest">{sec.label}</p>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-white/30 font-bold">
+                      {grouped[sec.type].length}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    {grouped[sec.type].map(({ item, matches }) => (
+                      <button key={`${item._type}-${item._id}`}
+                        onClick={() => handleSelect(item)}
+                        className="w-full text-left rounded-xl bg-white/[0.04] ring-1 ring-white/[0.07] hover:bg-white/[0.08] hover:ring-blue-500/25 active:scale-[0.99] transition-all px-4 py-3">
+                        <p className="text-sm font-semibold text-white/90 leading-snug">
+                          {highlightText(item.title, matches, "title")}
+                        </p>
+                        {item.body && (
+                          <p className="text-[11px] text-white/35 leading-relaxed mt-0.5 line-clamp-1">
+                            {highlightText(item.body, matches, "body")}
+                          </p>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── MAIN APP ─────────────────────────────────────────────────
 export default function App() {
-  const [tab, setTab]           = useState("intro");
+  const [tab, setTab]             = useState("intro");
+  const [searchOpen, setSearchOpen]     = useState(false);
+  const [globalExpandId, setGlobalExpandId] = useState(null);
+  const [discoverSection, setDiscoverSection] = useState(null);
   const [airdrops, setAirdrops] = useState(DEF_AIRDROPS);
   const [news, setNews]         = useState(DEF_NEWS);
   const [qinfo, setQinfo]       = useState(DEF_QINFO);
@@ -1530,6 +1793,17 @@ export default function App() {
     });
   }
 
+  // ─── GLOBAL SEARCH NAVIGATION ─────────────────────────────
+  const handleSearchNavigate = useCallback(({ tab: destTab, type, id, discoverSection: ds }) => {
+    setTab(destTab);
+    if (type === "airdrop") {
+      setGlobalExpandId(id);
+      // Clear after a tick so AirdropScreen's useEffect can fire on re-navigate to same id
+      setTimeout(() => setGlobalExpandId(null), 500);
+    }
+    if (ds) setDiscoverSection(ds);
+  }, []);
+
   // Load all data from IndexedDB on mount (tapCount/handleLogoTap sudah dihapus bersama admin panel)
   useEffect(() => {
     idbGetAll().then(([a, n, q, t, p, cal, tick]) => {
@@ -1548,18 +1822,22 @@ export default function App() {
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-x-hidden">
 
       {/* ── SIDEBAR NAV (desktop ≥ 1024px) ── */}
-      <SidebarNav active={tab} onSelect={setTab} />
+      <SidebarNav active={tab} onSelect={setTab} onOpenSearch={() => setSearchOpen(true)} />
 
       {/* ── MAIN COLUMN ── */}
       <div className="lg:ml-56">
 
         {/* Header logo — mobile only, fixed top-0 */}
         <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A0A0A] border-b border-white/[0.06]">
-          <div className="max-w-lg mx-auto px-5 py-3 flex items-center">
+          <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2 select-none">
               <img src="/logo.jpg" alt="logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-blue-500/30"/>
               <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
             </div>
+            <button onClick={() => setSearchOpen(true)}
+              className="w-8 h-8 rounded-xl bg-blue-500/[0.08] ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/15 active:scale-90 transition-all">
+              <Search className="w-4 h-4 text-blue-400/70"/>
+            </button>
           </div>
         </div>
 
@@ -1582,14 +1860,25 @@ export default function App() {
         <div className="relative z-10 max-w-xl mx-auto pt-[86px] lg:pt-[34px]">
           {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} />}
           {tab==="info"     && <InfoTerkiniScreen news={news} qinfo={qinfo} />}
-          {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} />}
+          {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} initialExpandId={globalExpandId} />}
           {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
-          {tab==="discover" && <DiscoverScreen tools={tools} p2p={p2p} calendar={calendar} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
+          {tab==="discover" && <DiscoverScreen tools={tools} p2p={p2p} calendar={calendar} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} requestSection={discoverSection} />}
         </div>
 
         <BottomNav active={tab} onSelect={setTab} />
 
       </div>{/* end lg:ml-56 */}
+
+      {/* ── GLOBAL SEARCH OVERLAY ── */}
+      <GlobalSearch
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        airdrops={airdrops}
+        p2p={p2p}
+        calendar={calendar}
+        tools={tools}
+        onNavigate={handleSearchNavigate}
+      />
 
     </div>
   );
