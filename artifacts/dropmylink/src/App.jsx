@@ -595,7 +595,7 @@ function PrivacyModal({ onClose }) {
   return (
     <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center px-0 sm:px-5">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose}/>
-      <div className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl bg-[#131313] border border-white/[0.08] p-6 shadow-2xl max-h-[70vh] overflow-y-auto">
+      <div className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl bg-[#131313] border border-white/[0.08] p-6 pb-20 sm:pb-6 shadow-2xl max-h-[70vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm font-bold text-white">Privacy Policy</p>
           <button onClick={onClose} className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center hover:bg-white/10">
@@ -617,7 +617,7 @@ function TermsModal({ onClose }) {
   return (
     <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center px-0 sm:px-5">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose}/>
-      <div className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl bg-[#131313] border border-white/[0.08] p-6 shadow-2xl max-h-[70vh] overflow-y-auto">
+      <div className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl bg-[#131313] border border-white/[0.08] p-6 pb-20 sm:pb-6 shadow-2xl max-h-[70vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm font-bold text-white">Terms & Disclaimer</p>
           <button onClick={onClose} className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center hover:bg-white/10">
@@ -688,15 +688,10 @@ function IntroScreen({ airdrops = [], calendar = [] }) {
       {/* ── BRAND PROFILE CARD ── */}
       <div className="px-5 mb-4">
         <div className="rounded-2xl bg-gradient-to-br from-blue-600/20 to-blue-900/10 border border-blue-500/25 p-5">
-          <div className="flex items-center gap-3.5 mb-4">
-            <img src="/logo.jpg" alt="logo" className="w-14 h-14 rounded-2xl object-cover ring-2 ring-blue-500/40 shadow-lg shadow-blue-500/20"/>
-            <div>
-              <p className="text-base font-bold text-white">HUNTER WAVE</p>
-              <p className="text-[11px] text-blue-400/70 font-semibold tracking-wide">Web3 Airdrop Info Hub</p>
-              <span className="inline-flex items-center gap-1 mt-1 text-[9px] px-2 py-0.5 rounded-full bg-green-500/15 text-green-400 ring-1 ring-green-500/25">
-                <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse"/> AKTIF
-              </span>
-            </div>
+          <div className="mb-3">
+            <span className="inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full bg-green-500/15 text-green-400 ring-1 ring-green-500/25">
+              <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse"/> AKTIF
+            </span>
           </div>
           <p className="text-xs text-white/50 leading-relaxed">
             Platform kurasi informasi airdrop, campaign, dan tips Web3 untuk komunitas crypto Indonesia. Kami menyajikan info terkini secara mandiri dan tidak berafiliasi dengan proyek mana pun.
