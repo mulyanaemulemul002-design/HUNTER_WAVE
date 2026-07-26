@@ -1,48 +1,51 @@
-# HUNTER WAVE
+# HUNTER WAVE — Airdrop Tracker PWA
 
-A PWA dashboard for the Indonesian crypto/airdrop hunting community. Tracks airdrops, Web3 news, P2P sellers, calendar events, and tools — all curated for the Indonesian market.
+A Progressive Web App dashboard for crypto airdrop hunters, built for the Indonesian community.
 
 ## Stack
 
-- **Frontend:** React + Vite + Tailwind CSS v4
-- **Language:** TypeScript / JSX
-- **Data:** Static JSON files in `artifacts/dropmylink/src/data/`
-- **Storage:** IndexedDB (via custom `idbGet`/`idbSet` helpers in `App.jsx`) for offline caching
-- **Package manager:** pnpm (workspace monorepo)
+- **Frontend**: React 18 + Vite + Tailwind CSS v4 (`artifacts/dropmylink`)
+- **Backend**: Express 5 + TypeScript (`artifacts/api-server`)
+- **Monorepo**: pnpm workspaces
 
-## How to Run
+## Running the app
 
-```
-pnpm install
-pnpm --filter @workspace/dropmylink run dev
-```
-
-Or use the **Start application** workflow in Replit (runs on port 24929).
-
-## Project Structure
+The frontend dev server starts automatically via the **Start application** workflow:
 
 ```
-artifacts/dropmylink/      # Main frontend app
-  src/
-    App.jsx                # Main app component (all tabs/pages)
-    data/                  # Static JSON data (airdrops, news, tools, etc.)
-    lib/data.ts            # Zod-validated data loaders
-    pages/                 # Additional page components
-docs/                      # UI improvement plans (01–04)
-lib/api-client-react/      # Shared API client library
-artifacts/api-server/      # Backend API server (Express/TypeScript)
+PORT=24929 pnpm --filter @workspace/dropmylink run dev
 ```
 
-## UI Improvement Plans
+Visit the preview pane to see the app at `/`.
 
-The `docs/` folder contains 4 planned UI improvements, designed to be applied one at a time:
+To start the API server separately:
+```
+pnpm --filter @workspace/api-server run dev
+```
 
-1. `docs/01-landing-page.md` — Strengthen the Intro tab as a proper landing page
-2. `docs/02-bookmark-management.md` — Rename bookmark lists + color legend
-3. `docs/03-status-badge-legend.md` — Badge status consistency
-4. `docs/04-responsive-desktop.md` — Responsive layout for desktop
+## Project structure
 
-## User Preferences
+```
+artifacts/
+  dropmylink/     # React frontend (main PWA)
+  api-server/     # Express API backend
+lib/
+  api-client-react/  # Shared API client library
+docs/             # UI/UX improvement plans (4 tasks, apply one at a time)
+```
 
-- Keep existing project structure and stack
-- Apply docs/ improvement plans one at a time, not all at once
+## UI/UX improvement plans
+
+The `docs/` folder contains a 4-part plan to improve the UI/UX:
+
+1. `01-landing-page.md` — Strengthen the Intro tab as a proper landing page
+2. `02-bookmark-management.md` — Rename bookmark list + color legend
+3. `03-status-badge-legend.md` — Badge status consistency
+4. `04-responsive-desktop.md` — Responsive layout for non-mobile screens
+
+Apply them one at a time as prompts to the agent.
+
+## User preferences
+
+- Keep existing project structure — do not restructure or migrate
+- Apply UI/UX docs one file at a time (not all at once)
