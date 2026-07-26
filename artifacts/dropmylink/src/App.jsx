@@ -1051,14 +1051,21 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
 }
 
 // ─── AIRDROP SCREEN ───────────────────────────────────────────
+const CONFIRM_TABS = [
+  { id: "all",       label: "All" },
+  { id: "confirmed", label: "Confirmed" },
+  { id: "rumored",   label: "Rumored" },
+];
+
 function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
-  const [search, setSearch]         = useState("");
-  const [activeTag, setActiveTag]   = useState("All");
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [expandedId, setExpandedId] = useState(null);
+  const [search, setSearch]           = useState("");
+  const [activeTag, setActiveTag]     = useState("All");
+  const [filterOpen, setFilterOpen]   = useState(false);
+  const [confirmTab, setConfirmTab]   = useState("all");
+  const [expandedId, setExpandedId]   = useState(null);
   const [guideOpenId, setGuideOpenId] = useState(null);
-  const [copiedId, setCopiedId]     = useState(null);
-  const [burstId, setBurstId]       = useState(null);
+  const [copiedId, setCopiedId]       = useState(null);
+  const [burstId, setBurstId]         = useState(null);
 
   function handleToggleBookmark(id) {
     onToggleBookmark(id);
@@ -1066,17 +1073,34 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
     setTimeout(() => setBurstId(null), 450);
   }
 
+  function handleConfirmTab(id) {
+    setConfirmTab(id);
+    setSearch("");
+    setActiveTag("All");
+    setExpandedId(null);
+    setGuideOpenId(null);
+    setFilterOpen(false);
+  }
+
+  // Base list: filtered by confirmation sub-tab
+  const baseList = useMemo(()=>{
+    if (confirmTab === "all") return airdrops;
+    return airdrops.filter(a => a.confirmationStatus === confirmTab);
+  }, [confirmTab, airdrops]);
+
+  // Tags derived from current sub-tab's base list
   const allTags = useMemo(()=>{
     const t=new Set();
-    airdrops.forEach(a=>(a.tags||[]).forEach(tag=>t.add(tag)));
+    baseList.forEach(a=>(a.tags||[]).forEach(tag=>t.add(tag)));
     return ["All",...Array.from(t)];
-  },[airdrops]);
+  },[baseList]);
 
-  const filtered = useMemo(()=>airdrops.filter(item=>{
+  // Final filtered list: search + tag applied within the sub-tab
+  const filtered = useMemo(()=>baseList.filter(item=>{
     const matchTag = activeTag==="All"||(item.tags||[]).includes(activeTag);
     const q=search.toLowerCase();
     return matchTag&&(!q||item.title.toLowerCase().includes(q)||(item.description||"").toLowerCase().includes(q));
-  }),[search,activeTag,airdrops]);
+  }),[search,activeTag,baseList]);
 
   function copyUrl(item) {
     navigator.clipboard.writeText(`https://${item.url}`).catch(()=>{});
@@ -1091,13 +1115,37 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
         <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
       </div>
 
-      {/* ── STICKY SEARCH BAR ── */}
+      {/* ── STICKY CONTROLS ── */}
       <div className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md pb-3 px-5 pt-1 border-b border-white/[0.05]">
+
+        {/* Sub-tabs: All / Confirmed / Rumored */}
+        <div className="flex border-b border-white/[0.06] mb-3">
+          {CONFIRM_TABS.map(({id, label})=>{
+            const count = id === "all"
+              ? airdrops.length
+              : airdrops.filter(a => a.confirmationStatus === id).length;
+            const active = confirmTab === id;
+            return (
+              <button key={id} onClick={()=>handleConfirmTab(id)}
+                className={`flex-1 pb-2.5 pt-1 text-xs font-bold transition-all border-b-2 -mb-px
+                  ${active ? "border-blue-400 text-white" : "border-transparent text-white/35 hover:text-white/60"}`}>
+                {label}
+                <span className={`ml-1 text-[9px] font-semibold ${active ? "text-blue-400" : "text-white/20"}`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Search bar */}
         <div className="relative mb-2.5">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400/50 pointer-events-none"/>
           <input type="search" placeholder="Cari airdrop..." value={search} onChange={e=>setSearch(e.target.value)}
             className="w-full bg-blue-500/[0.08] ring-1 ring-blue-500/25 rounded-2xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 outline-none focus:ring-blue-400/50 transition-all"/>
         </div>
+
+        {/* Filter Tag */}
         <div>
           <button onClick={()=>setFilterOpen(!filterOpen)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold ring-1 transition-all ${activeTag!=="All"?"bg-blue-500/20 ring-blue-400/40 text-blue-300":"bg-blue-500/[0.08] ring-blue-500/20 text-white/60"}`}>
@@ -1120,7 +1168,11 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark }) {
 
       <div className="px-5 pt-3">
         <StatusLegend />
-        <p className="text-[11px] text-white/25 mb-3">{filtered.length} hasil{activeTag!=="All"&&<> untuk <span className="text-blue-400">{activeTag}</span></>}</p>
+        <p className="text-[11px] text-white/25 mb-3">
+          {filtered.length} hasil
+          {confirmTab !== "all" && <> · <span className="text-blue-400/70">{confirmTab === "confirmed" ? "Confirmed" : "Rumored"}</span></>}
+          {activeTag !== "All" && <> · <span className="text-blue-400">{activeTag}</span></>}
+        </p>
         <div className="flex flex-col gap-3">
           {filtered.map(item=>{
             const expanded = expandedId===item.id;
