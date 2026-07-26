@@ -688,11 +688,6 @@ function IntroScreen({ airdrops = [], calendar = [] }) {
       {/* ── BRAND PROFILE CARD ── */}
       <div className="px-5 mb-4">
         <div className="rounded-2xl bg-gradient-to-br from-blue-600/20 to-blue-900/10 border border-blue-500/25 p-5">
-          <div className="mb-3">
-            <span className="inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full bg-green-500/15 text-green-400 ring-1 ring-green-500/25">
-              <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse"/> AKTIF
-            </span>
-          </div>
           <p className="text-xs text-white/50 leading-relaxed">
             Platform kurasi informasi airdrop, campaign, dan tips Web3 untuk komunitas crypto Indonesia. Kami menyajikan info terkini secara mandiri dan tidak berafiliasi dengan proyek mana pun.
           </p>
