@@ -78,6 +78,12 @@ export const AirdropSchema = z.object({
   confirmationStatus:  z.enum(["confirmed", "rumored"], {
     errorMap: () => ({ message: 'confirmationStatus wajib diisi dengan "confirmed" atau "rumored".' }),
   }),
+  // Optional: potensi reward / worth-it airdrop ini
+  // S = funding besar, TGE hampir pasti
+  // A = potensi bagus, sebagian faktor belum pasti
+  // B = solid tapi biasa
+  // C = spekulatif tinggi
+  potentialTier:       z.enum(["S", "A", "B", "C"]).optional(),
 });
 
 export const AdSchema = z.object({

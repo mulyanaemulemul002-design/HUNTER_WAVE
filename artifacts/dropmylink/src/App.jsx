@@ -111,6 +111,15 @@ const BADGE_ALL = {
 // Alias ringkas untuk Airdrop list (tetap pakai ring)
 const STATUS_STYLE = BADGE_ALL;
 
+// Tier Potensi — TERPISAH dari difficulty (difficulty = effort, tier = potensi hasil)
+// Warna sengaja berbeda dari palet BADGE_ALL agar tidak membingungkan
+const TIER_STYLE = {
+  S: { bg:"bg-amber-400/25",  text:"text-amber-200",  ring:"ring-amber-400/55",  label:"Gold — Funding besar, TGE hampir pasti" },
+  A: { bg:"bg-orange-500/20", text:"text-orange-200", ring:"ring-orange-500/45", label:"Potensi bagus, faktor belum sepenuhnya pasti" },
+  B: { bg:"bg-teal-500/18",   text:"text-teal-300",   ring:"ring-teal-500/35",   label:"Solid, potensi standar" },
+  C: { bg:"bg-zinc-500/18",   text:"text-zinc-400",   ring:"ring-zinc-500/30",   label:"Spekulatif tinggi" },
+};
+
 // section:"cepat" → Info Cepat carousel | section:"teknis" → Info Teknis carousel
 const QINFO_BOARDS = [
   { id:"garapan",    label:"Garapan Baru", icon:Rocket,     accent:"text-sky-400",    color:"from-sky-500/20 to-sky-900/10",     ring:"ring-sky-500/25",    section:"cepat"  },
@@ -134,6 +143,17 @@ const NEWS_COLORS = [
 function TagChip({ tag }) {
   const c = TAG_COLORS[tag] || DEF_TAG;
   return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 ${c.text} ${c.bg} ${c.ring}`}>{tag}</span>;
+}
+
+// Compact tier chip — lebih kecil dari status badge, pojok kanan atas card
+function TierChip({ tier }) {
+  if (!tier) return null;
+  const s = TIER_STYLE[tier];
+  return (
+    <span className={`inline-flex items-center gap-0.5 px-1.5 py-[2px] rounded text-[9px] font-black tracking-wide ring-1 ${s.bg} ${s.text} ${s.ring}`}>
+      ◆{tier}
+    </span>
+  );
 }
 
 function Favicon({ url, customImage, size = 24 }) {
@@ -303,24 +323,46 @@ const LEGEND_ITEMS = [
   { status:"Rumored",     desc:"Masih rumor" },
   { status:"Distributed", desc:"Token sudah dibagikan" },
 ];
+const TIER_LEGEND = [
+  { tier:"S", desc:"Funding besar · TGE hampir pasti" },
+  { tier:"A", desc:"Potensi bagus · sebagian faktor belum pasti" },
+  { tier:"B", desc:"Solid · potensi standar" },
+  { tier:"C", desc:"Spekulatif tinggi" },
+];
 function StatusLegend() {
   const [open, setOpen] = useState(false);
   return (
     <div className="mb-3">
       <button onClick={()=>setOpen(o=>!o)}
         className="flex items-center gap-1.5 text-[10px] text-white/35 hover:text-white/60 transition-colors">
-        <span>📖 Keterangan Badge Status</span>
+        <span>📖 Keterangan Badge</span>
         {open ? <ChevronUp className="w-3 h-3"/> : <ChevronDown className="w-3 h-3"/>}
       </button>
       {open && (
-        <div className="mt-2 p-3 rounded-xl glass-card">
-          <div className="flex flex-wrap gap-x-3 gap-y-2">
-            {LEGEND_ITEMS.map(({status,desc})=>(
-              <div key={status} className="flex items-center gap-1.5">
-                <StatusBadge status={status}/>
-                <span className="text-[9px] text-white/35">{desc}</span>
-              </div>
-            ))}
+        <div className="mt-2 p-3 rounded-xl glass-card space-y-3">
+          {/* Status badges */}
+          <div>
+            <p className="text-[9px] font-bold text-white/25 uppercase tracking-widest mb-2">Status</p>
+            <div className="flex flex-wrap gap-x-3 gap-y-2">
+              {LEGEND_ITEMS.map(({status,desc})=>(
+                <div key={status} className="flex items-center gap-1.5">
+                  <StatusBadge status={status}/>
+                  <span className="text-[9px] text-white/35">{desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Tier badges */}
+          <div className="pt-2.5 border-t border-white/[0.06]">
+            <p className="text-[9px] font-bold text-white/25 uppercase tracking-widest mb-2">Tier Potensi</p>
+            <div className="flex flex-wrap gap-x-3 gap-y-2">
+              {TIER_LEGEND.map(({tier,desc})=>(
+                <div key={tier} className="flex items-center gap-1.5">
+                  <TierChip tier={tier}/>
+                  <span className="text-[9px] text-white/35">{desc}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -1325,6 +1367,7 @@ const CONFIRM_TABS = [
 function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId }) {
   const [search, setSearch]           = useState("");
   const [activeTag, setActiveTag]     = useState("All");
+  const [activeTier, setActiveTier]   = useState("All");
   const [filterOpen, setFilterOpen]   = useState(false);
   const [confirmTab, setConfirmTab]   = useState("all");
   const [expandedId, setExpandedId]   = useState(null);
@@ -1350,6 +1393,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
     setConfirmTab(id);
     setSearch("");
     setActiveTag("All");
+    setActiveTier("All");
     setExpandedId(null);
     setGuideOpenId(null);
     setFilterOpen(false);
@@ -1368,12 +1412,13 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
     return ["All",...Array.from(t)];
   },[baseList]);
 
-  // Final filtered list: search + tag applied within the sub-tab
+  // Final filtered list: search + tag + tier applied within the sub-tab
   const filtered = useMemo(()=>baseList.filter(item=>{
-    const matchTag = activeTag==="All"||(item.tags||[]).includes(activeTag);
+    const matchTag  = activeTag==="All"||(item.tags||[]).includes(activeTag);
+    const matchTier = activeTier==="All"||item.potentialTier===activeTier;
     const q=search.toLowerCase();
-    return matchTag&&(!q||item.title.toLowerCase().includes(q)||(item.description||"").toLowerCase().includes(q));
-  }),[search,activeTag,baseList]);
+    return matchTag&&matchTier&&(!q||item.title.toLowerCase().includes(q)||(item.description||"").toLowerCase().includes(q));
+  }),[search,activeTag,activeTier,baseList]);
 
   function copyUrl(item) {
     navigator.clipboard.writeText(`https://${item.url}`).catch(()=>{});
@@ -1418,33 +1463,55 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
             className="w-full bg-blue-500/[0.08] ring-1 ring-blue-500/25 rounded-2xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 outline-none focus:ring-blue-400/50 transition-all"/>
         </div>
 
-        {/* Filter Tag */}
-        <div>
-          <button onClick={()=>setFilterOpen(!filterOpen)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold ring-1 transition-all ${activeTag!=="All"?"bg-blue-500/20 ring-blue-400/40 text-blue-300":"bg-blue-500/[0.08] ring-blue-500/20 text-white/60"}`}>
-            <SlidersHorizontal className="w-3.5 h-3.5"/>
-            {activeTag!=="All"?`Filter: ${activeTag}`:"Filter Tag"}
-            {filterOpen?<ChevronUp className="w-3.5 h-3.5"/>:<ChevronDown className="w-3.5 h-3.5"/>}
-          </button>
-          {filterOpen && (
-            <div className="mt-2.5 glass-card rounded-2xl p-3 flex flex-wrap gap-2">
-              {allTags.map(tag=>(
-                <button key={tag} onClick={()=>{setActiveTag(tag);setFilterOpen(false);}}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${activeTag===tag?"bg-blue-500 border-blue-500 text-white":"bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/80"}`}>
-                  {tag}
+        {/* Filter Tag + Tier */}
+        <div className="flex flex-wrap items-start gap-2">
+          {/* Tag filter */}
+          <div>
+            <button onClick={()=>setFilterOpen(!filterOpen)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold ring-1 transition-all ${activeTag!=="All"?"bg-blue-500/20 ring-blue-400/40 text-blue-300":"bg-blue-500/[0.08] ring-blue-500/20 text-white/60"}`}>
+              <SlidersHorizontal className="w-3 h-3"/>
+              {activeTag!=="All"?`Tag: ${activeTag}`:"Filter Tag"}
+              {filterOpen?<ChevronUp className="w-3 h-3"/>:<ChevronDown className="w-3 h-3"/>}
+            </button>
+            {filterOpen && (
+              <div className="mt-2 glass-card rounded-2xl p-3 flex flex-wrap gap-2 absolute z-10 left-5 right-5">
+                {allTags.map(tag=>(
+                  <button key={tag} onClick={()=>{setActiveTag(tag);setFilterOpen(false);}}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${activeTag===tag?"bg-blue-500 border-blue-500 text-white":"bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/80"}`}>
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          {/* Tier filter */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[9px] text-white/25 font-semibold">Tier:</span>
+            {["All","S","A","B","C"].map(t => {
+              const active = activeTier === t;
+              const ts = t !== "All" ? TIER_STYLE[t] : null;
+              return (
+                <button key={t} onClick={()=>setActiveTier(t)}
+                  className={`px-2 py-1 rounded-md text-[10px] font-black ring-1 transition-all
+                    ${active
+                      ? t==="All" ? "bg-white/10 ring-white/20 text-white"
+                                  : `${ts.bg} ${ts.text} ${ts.ring}`
+                      : "bg-white/[0.03] ring-white/[0.07] text-white/35 hover:text-white/65"}`}>
+                  {t==="All" ? "All" : `◆${t}`}
                 </button>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
         </div>
       </div>
 
       <div className="px-5 pt-3">
         <StatusLegend />
-        <p className="text-[11px] text-white/25 mb-3">
-          {filtered.length} hasil
-          {confirmTab !== "all" && <> · <span className="text-blue-400/70">{confirmTab === "confirmed" ? "Confirmed" : "Rumored"}</span></>}
-          {activeTag !== "All" && <> · <span className="text-blue-400">{activeTag}</span></>}
+        <p className="text-[11px] text-white/25 mb-3 flex items-center flex-wrap gap-1">
+          <span>{filtered.length} hasil</span>
+          {confirmTab !== "all" && <><span>·</span><span className="text-blue-400/70">{confirmTab === "confirmed" ? "Confirmed" : "Rumored"}</span></>}
+          {activeTag !== "All" && <><span>·</span><span className="text-blue-400">{activeTag}</span></>}
+          {activeTier !== "All" && <><span>·</span><TierChip tier={activeTier}/></>}
         </p>
         <div className="flex flex-col gap-3">
           {filtered.map(item=>{
@@ -1457,9 +1524,10 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
                     {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-sm font-semibold text-white">{item.title}</span>
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${STATUS_STYLE[item.status]||STATUS_STYLE.Active}`}>{item.status}</span>
+                      {item.potentialTier && <TierChip tier={item.potentialTier}/>}
                     </div>
                   </div>
                   <button
