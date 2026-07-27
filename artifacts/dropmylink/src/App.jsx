@@ -1451,7 +1451,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
             const expanded = expandedId===item.id;
             const bmLevel = bookmarks.get(String(item.id)) || 0;
             return (
-              <div key={item.id} className={`card-shimmer rounded-2xl transition-all duration-300 ${expanded?"glass-card-blue":"glass-card hover:border-white/[0.18]"}`}>
+              <div key={item.id} className={`card-shimmer rounded-2xl transition-all duration-300 ${expanded?"glass-card-blue":"glass-card"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:item.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
@@ -1679,7 +1679,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
             const open      = expandedItem === tool.id;
             const saved     = toolBookmarks && toolBookmarks.has(String(tool.id));
             return (
-              <div key={tool.id} className={`card-shimmer rounded-2xl transition-all duration-300 ${open?"glass-card-blue":"glass-card hover:border-white/[0.18]"}`}>
+              <div key={tool.id} className={`card-shimmer rounded-2xl transition-all duration-300 ${open?"glass-card-blue":"glass-card"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedItem(open?null:tool.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     <Favicon url={tool.url} customImage={tool.customImage}/>
