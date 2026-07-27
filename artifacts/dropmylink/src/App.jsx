@@ -8,6 +8,7 @@ import {
   X, Shield, MessageCircle, Heart,
   Rocket, TrendingUp, BarChart2, Bookmark, AlertTriangle,
   Landmark, Phone, Send,
+  Plus, Settings, Pencil, Trash2, Download, Upload, Globe,
 } from "lucide-react";
 
 // ─── DONATE & FEEDBACK ────────────────────────────────────────
@@ -799,16 +800,14 @@ function InfoTerkiniScreen({ news, qinfo }) {
 function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBookmarks, onToggleToolBookmark }) {
   const [section, setSection]               = useState("list1");
   const [expandedId, setExpandedId]         = useState(null);
+  const [expandedCustomId, setExpandedCustomId] = useState(null);
   const [copiedId, setCopiedId]             = useState(null);
   const [expandedToolId, setExpandedToolId] = useState(null);
   const [copiedToolId, setCopiedToolId]     = useState(null);
 
-  // ── Custom list names (localStorage) ──
+  // ── Custom list names ──
   const [listNames, setListNames] = useState(() => {
-    try {
-      const raw = localStorage.getItem("hw_bookmark_names");
-      return raw ? JSON.parse(raw) : {};
-    } catch { return {}; }
+    try { const r = localStorage.getItem("hw_bookmark_names"); return r ? JSON.parse(r) : {}; } catch { return {}; }
   });
   const [editingName, setEditingName] = useState(null);
   const [tempName, setTempName]       = useState("");
@@ -822,129 +821,233 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
     setEditingName(null);
   }
 
+  // ── Custom airdrops (hw_custom_airdrops) ──
+  const [customAirdrops, setCustomAirdrops] = useState(() => {
+    try { const r = localStorage.getItem("hw_custom_airdrops"); return r ? JSON.parse(r) : []; } catch { return []; }
+  });
+
+  function saveCustom(arr) {
+    setCustomAirdrops(arr);
+    try { localStorage.setItem("hw_custom_airdrops", JSON.stringify(arr)); } catch {}
+  }
+
+  // ── Add / Edit form ──
+  const [showAddForm, setShowAddForm]     = useState(false);
+  const [editingCustom, setEditingCustom] = useState(null); // null = add mode
+  const [formTitle, setFormTitle]         = useState("");
+  const [formUrl, setFormUrl]             = useState("");
+  const [formDesc, setFormDesc]           = useState("");
+  const [formList, setFormList]           = useState("list1");
+
+  function openAddForm(listId = section !== "platform" ? section : "list1") {
+    setEditingCustom(null);
+    setFormTitle(""); setFormUrl(""); setFormDesc(""); setFormList(listId);
+    setShowAddForm(true);
+  }
+  function openEditForm(ca) {
+    setEditingCustom(ca);
+    setFormTitle(ca.title); setFormUrl(ca.url || ""); setFormDesc(ca.description || ""); setFormList(ca.listId);
+    setShowAddForm(true);
+  }
+  function closeForm() { setShowAddForm(false); setEditingCustom(null); }
+
+  function handleSaveCustom() {
+    if (!formTitle.trim()) return;
+    const clean = { title: formTitle.trim(), url: formUrl.trim().replace(/^https?:\/\//, ""), description: formDesc.trim(), listId: formList };
+    if (editingCustom) {
+      saveCustom(customAirdrops.map(a => a.id === editingCustom.id ? { ...a, ...clean } : a));
+    } else {
+      saveCustom([...customAirdrops, { id: `c_${Date.now()}`, addedAt: Date.now(), ...clean }]);
+    }
+    closeForm();
+  }
+
+  function deleteCustom(id) {
+    if (!window.confirm("Hapus airdrop manual ini?")) return;
+    saveCustom(customAirdrops.filter(a => a.id !== id));
+    if (expandedCustomId === id) setExpandedCustomId(null);
+  }
+
+  // ── Settings / Export / Import ──
+  const [showSettings, setShowSettings] = useState(false);
+  const [importError, setImportError]   = useState("");
+  const fileInputRef = useRef(null);
+
+  function handleExport() {
+    const bms = {};
+    bookmarks.forEach((v, k) => { if (v > 0) bms[k] = v; });
+    const payload = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      bookmarks: bms,
+      bookmarkNames: listNames,
+      customAirdrops,
+      toolBookmarks: toolBookmarks ? [...toolBookmarks] : [],
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `hunterwave_backup_${Date.now()}.json`; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function handleImportFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportError("");
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const raw = JSON.parse(ev.target.result);
+        // Validate structure
+        if (raw.version !== 1) throw new Error("Versi file tidak dikenali (harus version: 1).");
+        if (typeof raw.bookmarks !== "object" || Array.isArray(raw.bookmarks)) throw new Error("Field 'bookmarks' harus berupa objek.");
+        if (!Array.isArray(raw.customAirdrops)) throw new Error("Field 'customAirdrops' harus berupa array.");
+        // Validate each custom airdrop
+        for (const ca of raw.customAirdrops) {
+          if (typeof ca.id !== "string") throw new Error(`customAirdrops: setiap item harus punya field 'id' (string).`);
+          if (typeof ca.title !== "string" || !ca.title.trim()) throw new Error(`customAirdrops: item "${ca.id}" tidak punya 'title' yang valid.`);
+          if (!["list1","list2","list3"].includes(ca.listId)) throw new Error(`customAirdrops: item "${ca.id}" punya listId tidak valid ("${ca.listId}").`);
+        }
+        if (raw.toolBookmarks && !Array.isArray(raw.toolBookmarks)) throw new Error("Field 'toolBookmarks' harus berupa array.");
+        // Apply
+        try { localStorage.setItem("hw_bookmarks_v2", JSON.stringify(raw.bookmarks)); } catch {}
+        if (raw.bookmarkNames) { setListNames(raw.bookmarkNames); try { localStorage.setItem("hw_bookmark_names", JSON.stringify(raw.bookmarkNames)); } catch {} }
+        saveCustom(raw.customAirdrops);
+        if (raw.toolBookmarks) { try { localStorage.setItem("hw_tool_bookmarks", JSON.stringify(raw.toolBookmarks)); } catch {} }
+        alert("✅ Import berhasil! Reload halaman untuk menerapkan semua perubahan bookmark.");
+        setShowSettings(false);
+      } catch (err) {
+        setImportError(`❌ ${err.message}`);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
+  const DEFAULT_NAMES = { list1:"Daftar 1", list2:"Daftar 2", list3:"Daftar 3" };
+  const GROUPS = [
+    { id:"list1", level:1, label: listNames.list1||"Daftar 1",
+      underline:"#facc15", activeBorder:"border-yellow-500/30", btn:"bg-yellow-500/20 ring-yellow-500/40", icon:"text-yellow-400 fill-yellow-400", activeText:"text-yellow-300" },
+    { id:"list2", level:2, label: listNames.list2||"Daftar 2",
+      underline:"#60a5fa", activeBorder:"border-blue-500/30",   btn:"bg-blue-500/20 ring-blue-500/40",   icon:"text-blue-400 fill-blue-400",   activeText:"text-blue-300" },
+    { id:"list3", level:3, label: listNames.list3||"Daftar 3",
+      underline:"#f87171", activeBorder:"border-red-500/30",    btn:"bg-red-500/20 ring-red-500/40",     icon:"text-red-400 fill-red-400",     activeText:"text-red-300" },
+    { id:"platform", level:0, label:"Platform", emoji:"🔧",
+      underline:"#34d399", activeBorder:"border-emerald-500/30",btn:"bg-emerald-500/20 ring-emerald-500/40",icon:"text-emerald-400 fill-emerald-400",activeText:"text-emerald-300" },
+  ];
+
+  function countGroup(g) {
+    if (g.id === "platform") return toolBookmarks ? toolBookmarks.size : 0;
+    const ref = airdrops.filter(a => bookmarks.get(String(a.id)) === g.level).length;
+    const custom = customAirdrops.filter(a => a.listId === g.id).length;
+    return ref + custom;
+  }
+
+  function copyUrl(url) {
+    navigator.clipboard.writeText(`https://${url}`).catch(()=>{});
+    setCopiedId(url);
+    setTimeout(()=>setCopiedId(null), 2000);
+  }
   function copyToolUrl(tool) {
     navigator.clipboard.writeText(tool.targetUrl || `https://${tool.url}`).catch(()=>{});
     setCopiedToolId(tool.id);
     setTimeout(()=>setCopiedToolId(null), 2000);
   }
 
-  const DEFAULT_NAMES = { list1:"Daftar 1", list2:"Daftar 2", list3:"Daftar 3" };
-  const GROUPS = [
-    { id:"list1", level:1, label: listNames.list1 || "Daftar 1", emoji:"",
-      activePill:"bg-yellow-500 text-white ring-yellow-500",
-      activeBorder:"border-yellow-500/30",
-      btn:"bg-yellow-500/20 ring-yellow-500/40",
-      icon:"text-yellow-400 fill-yellow-400" },
-    { id:"list2", level:2, label: listNames.list2 || "Daftar 2", emoji:"",
-      activePill:"bg-blue-500 text-white ring-blue-500",
-      activeBorder:"border-blue-500/30",
-      btn:"bg-blue-500/20 ring-blue-500/40",
-      icon:"text-blue-400 fill-blue-400" },
-    { id:"list3", level:3, label: listNames.list3 || "Daftar 3", emoji:"",
-      activePill:"bg-red-500 text-white ring-red-500",
-      activeBorder:"border-red-500/30",
-      btn:"bg-red-500/20 ring-red-500/40",
-      icon:"text-red-400 fill-red-400" },
-    { id:"platform", level:0, label:"Platform", emoji:"🔧",
-      activePill:"bg-emerald-500 text-white ring-emerald-500",
-      activeBorder:"border-emerald-500/30",
-      btn:"bg-emerald-500/20 ring-emerald-500/40",
-      icon:"text-emerald-400 fill-emerald-400" },
-  ];
-
-  function copyUrl(item) {
-    navigator.clipboard.writeText(`https://${item.url}`).catch(()=>{});
-    setCopiedId(item.id);
-    setTimeout(()=>setCopiedId(null), 2000);
-  }
-
-  const totalSaved      = [...bookmarks.values()].filter(v=>v>0).length;
-  const totalToolSaved  = toolBookmarks ? toolBookmarks.size : 0;
-  const activeGroup     = GROUPS.find(g => g.id === section);
-  const activeItems     = section === "platform"
-    ? []
-    : airdrops.filter(a => bookmarks.get(String(a.id)) === activeGroup.level);
-  const savedTools      = section === "platform" && tools && toolBookmarks
-    ? tools.filter(t => toolBookmarks.has(String(t.id)))
-    : [];
+  const totalSaved     = [...bookmarks.values()].filter(v=>v>0).length + customAirdrops.length;
+  const totalToolSaved = toolBookmarks ? toolBookmarks.size : 0;
+  const activeGroup    = GROUPS.find(g => g.id === section);
+  const refItems       = section !== "platform" ? airdrops.filter(a => bookmarks.get(String(a.id)) === activeGroup.level) : [];
+  const customItems    = section !== "platform" ? customAirdrops.filter(a => a.listId === section) : [];
+  const savedTools     = section === "platform" && tools && toolBookmarks ? tools.filter(t => toolBookmarks.has(String(t.id))) : [];
+  const hasAny         = section !== "platform" ? (refItems.length + customItems.length > 0) : savedTools.length > 0;
 
   return (
     <div className="pb-32">
-      {/* Header */}
-      <div className="px-5 pt-6 mb-5">
-        <div className="flex items-center justify-between mb-2">
+      {/* ── HEADER ── */}
+      <div className="px-5 pt-6 mb-4">
+        <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-2">
             <Bookmark className="w-5 h-5 text-blue-400"/>
             <h1 className="text-lg font-bold text-white">Bookmark</h1>
           </div>
           <div className="flex items-center gap-2">
             {(totalSaved + totalToolSaved) > 0 && (
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20 font-bold">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20 font-bold">
                 {totalSaved + totalToolSaved} tersimpan
               </span>
             )}
+            <button onClick={() => setShowSettings(true)}
+              className="w-7 h-7 rounded-lg bg-white/[0.05] ring-1 ring-white/[0.10] flex items-center justify-center hover:bg-white/[0.09] active:scale-90 transition-all"
+              title="Backup & Restore">
+              <Settings className="w-3.5 h-3.5 text-white/40"/>
+            </button>
+            <button onClick={() => openAddForm()}
+              className="w-7 h-7 rounded-lg bg-blue-500/15 ring-1 ring-blue-500/30 flex items-center justify-center hover:bg-blue-500/25 active:scale-90 transition-all"
+              title="Tambah Airdrop Manual">
+              <Plus className="w-3.5 h-3.5 text-blue-400"/>
+            </button>
           </div>
         </div>
-        <p className="text-xs text-white/30">1× kuning · 2× biru · 3× merah · 4× hapus — ketuk nama daftar untuk ganti nama</p>
+        <p className="text-[10px] text-white/25">1× kuning · 2× biru · 3× merah · 4× hapus · ketuk nama aktif untuk rename</p>
       </div>
 
-      {/* Sub-tabs dengan rename */}
-      <div className="flex gap-2 px-5 mb-5 overflow-x-auto" style={{scrollbarWidth:"none"}}>
-        {GROUPS.map(g => {
-          const count = g.id === "platform"
-            ? (toolBookmarks ? toolBookmarks.size : 0)
-            : airdrops.filter(a => bookmarks.get(String(a.id)) === g.level).length;
-          const isActive = section === g.id;
-          const isEditing = editingName === g.id && g.id !== "platform";
-          return (
-            <div key={g.id} className={`flex-none flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold ring-1 transition-all
-              ${isActive ? g.activePill : "bg-blue-500/[0.08] ring-blue-500/20 text-white/50 hover:text-white/80"}`}>
-              <span>{g.emoji}</span>
-              {isEditing ? (
-                <input
-                  autoFocus
-                  value={tempName}
-                  onChange={e=>setTempName(e.target.value)}
-                  onBlur={()=>commitName(g.id, DEFAULT_NAMES[g.id]||g.label)}
-                  onKeyDown={e=>{if(e.key==="Enter")commitName(g.id,DEFAULT_NAMES[g.id]||g.label);if(e.key==="Escape")setEditingName(null);}}
-                  className="bg-transparent border-b border-white/40 outline-none w-20 text-xs"
-                  maxLength={18}
-                />
-              ) : (
-                <button
-                  onClick={()=>{
-                    if(isActive && g.id!=="platform") { startEditName(g.id, g.label); }
-                    else { setSection(g.id); setExpandedId(null); }
+      {/* ── UNDERLINE SUB-TABS ── */}
+      <div className="overflow-x-auto border-b border-white/[0.06] mb-4" style={{scrollbarWidth:"none"}}>
+        <div className="flex px-5" style={{width:"max-content",minWidth:"100%"}}>
+          {GROUPS.map(g => {
+            const isActive = section === g.id;
+            const count = countGroup(g);
+            const isEditing = editingName === g.id && g.id !== "platform";
+            return (
+              <div key={g.id} className="relative flex-none">
+                <div
+                  className="flex items-center gap-1 px-3 py-2.5 cursor-pointer select-none"
+                  onClick={() => {
+                    if (isActive && g.id !== "platform") { startEditName(g.id, g.label); }
+                    else { setSection(g.id); setExpandedId(null); setExpandedCustomId(null); }
                   }}>
-                  {g.label}
-                </button>
-              )}
-              {count > 0 && !isEditing && (
-                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold
-                  ${isActive?"bg-white/20 text-white":"bg-white/10 text-white/50"}`}>
-                  {count}
-                </span>
-              )}
-            </div>
-          );
-        })}
+                  {g.emoji && <span className="text-sm">{g.emoji}</span>}
+                  {isEditing ? (
+                    <input autoFocus value={tempName}
+                      onChange={e=>setTempName(e.target.value)}
+                      onBlur={()=>commitName(g.id,DEFAULT_NAMES[g.id]||g.label)}
+                      onKeyDown={e=>{if(e.key==="Enter")commitName(g.id,DEFAULT_NAMES[g.id]||g.label);if(e.key==="Escape")setEditingName(null);}}
+                      className="bg-transparent border-b border-white/40 outline-none w-20 text-xs font-bold text-white"
+                      maxLength={18}
+                      onClick={e=>e.stopPropagation()}/>
+                  ) : (
+                    <span className={`text-xs font-bold transition-colors duration-200 ${isActive?"text-white":"text-white/35 hover:text-white/60"}`}>
+                      {g.label}
+                    </span>
+                  )}
+                  {count > 0 && !isEditing && (
+                    <sup className={`text-[8px] font-bold ml-0.5 transition-colors duration-200 ${isActive?"text-white/70":"text-white/20"}`}>
+                      {count}
+                    </sup>
+                  )}
+                </div>
+                {/* Underline indicator */}
+                <span
+                  className="absolute bottom-0 left-0 right-0 h-[2px] rounded-t-full transition-all duration-200"
+                  style={{backgroundColor: isActive ? g.underline : "transparent"}}/>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Content per tab */}
+      {/* ── CONTENT ── */}
       <div className="px-5">
-        {/* Platform tab — saved tools */}
+
+        {/* Platform tab */}
         {section === "platform" && (
           savedTools.length === 0 ? (
             <div className="rounded-2xl glass-card border-dashed p-10 flex flex-col items-center gap-3 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.08] flex items-center justify-center">
-                <span className="text-2xl">🔧</span>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white/50">Platform kosong</p>
-                <p className="text-xs text-white/25 mt-1 leading-relaxed">
-                  Belum ada platform tersimpan.<br/>Ketuk ikon bookmark di Discover → Platform & Tools.
-                </p>
-              </div>
+              <span className="text-2xl">🔧</span>
+              <p className="text-sm font-semibold text-white/50">Platform kosong</p>
+              <p className="text-xs text-white/25 leading-relaxed">Belum ada platform tersimpan.<br/>Ketuk ikon bookmark di Discover → Platform & Tools.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-2.5">
@@ -992,26 +1095,29 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
             </div>
           )
         )}
+
         {/* Airdrop daftar tabs */}
-        {section !== "platform" && activeItems.length === 0 ? (
+        {section !== "platform" && !hasAny && (
           <div className="rounded-2xl glass-card border-dashed p-10 flex flex-col items-center gap-3 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.08] flex items-center justify-center">
-              <span className="text-2xl">{activeGroup.emoji}</span>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white/50">{activeGroup.label} kosong</p>
-              <p className="text-xs text-white/25 mt-1 leading-relaxed">
-                Belum ada airdrop di daftar ini.<br/>Ketuk ikon bookmark di tab Airdrop.
-              </p>
-            </div>
+            <span className="text-3xl">🪂</span>
+            <p className="text-sm font-semibold text-white/50">{activeGroup.label} kosong</p>
+            <p className="text-xs text-white/25 leading-relaxed">Bookmark airdrop dari tab Airdrop,<br/>atau tambah manual dengan tombol + di atas.</p>
+            <button onClick={() => openAddForm(section)}
+              className="mt-1 flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-500/15 ring-1 ring-blue-500/30 text-blue-300 text-xs font-bold hover:bg-blue-500/25 transition-all">
+              <Plus className="w-3.5 h-3.5"/> Tambah Manual
+            </button>
           </div>
-        ) : section !== "platform" && (
+        )}
+
+        {section !== "platform" && hasAny && (
           <div className="flex flex-col gap-2.5">
-            {activeItems.map(item => {
-              const expanded = expandedId === item.id;
+
+            {/* ── Ref items (Dari Channel) ── */}
+            {refItems.map(item => {
+              const expanded = expandedId === `r_${item.id}`;
               return (
-                <div key={item.id} className={`rounded-2xl border bg-[#1E1E1E] transition-all duration-300 ${expanded ? activeGroup.activeBorder : "border-white/[0.06] hover:border-white/[0.14]"}`}>
-                  <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:item.id)}>
+                <div key={`r_${item.id}`} className={`rounded-2xl border bg-[#1E1E1E] transition-all duration-300 ${expanded ? activeGroup.activeBorder : "border-white/[0.06] hover:border-white/[0.14]"}`}>
+                  <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:`r_${item.id}`)}>
                     <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                       {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
                     </div>
@@ -1019,10 +1125,10 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-semibold text-white">{item.title}</span>
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${STATUS_STYLE[item.status]||STATUS_STYLE.Active}`}>{item.status}</span>
+                        <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400/60 ring-1 ring-blue-500/15">Dari Channel</span>
                       </div>
                     </div>
-                    <button
-                      onClick={e=>{e.stopPropagation();onToggleBookmark(item.id);}}
+                    <button onClick={e=>{e.stopPropagation();onToggleBookmark(item.id);}}
                       className={`w-8 h-8 rounded-xl flex items-center justify-center ring-1 transition-all flex-shrink-0 ${activeGroup.btn}`}>
                       <Bookmark className={`w-3.5 h-3.5 ${activeGroup.icon}`}/>
                     </button>
@@ -1041,9 +1147,9 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
                           className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold active:scale-95 transition-all">
                           <ExternalLink className="w-3.5 h-3.5"/> Buka Website
                         </button>
-                        <button onClick={()=>copyUrl(item)}
+                        <button onClick={()=>copyUrl(item.url)}
                           className="w-11 h-11 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/20 transition-all">
-                          {copiedId===item.id?<Check className="w-4 h-4 text-green-400"/>:<Copy className="w-4 h-4 text-blue-400/60"/>}
+                          {copiedId===item.url?<Check className="w-4 h-4 text-green-400"/>:<Copy className="w-4 h-4 text-blue-400/60"/>}
                         </button>
                       </div>
                     </div>
@@ -1051,9 +1157,160 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
                 </div>
               );
             })}
+
+            {/* ── Custom items (Manual) ── */}
+            {customItems.map(ca => {
+              const expanded = expandedCustomId === ca.id;
+              return (
+                <div key={ca.id} className={`rounded-2xl border bg-[#1E1E1E] transition-all duration-300 ${expanded ? "border-purple-500/40" : "border-purple-500/15 hover:border-purple-500/30"}`}>
+                  <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedCustomId(expanded?null:ca.id)}>
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-500/10 ring-1 ring-purple-500/20 flex items-center justify-center overflow-hidden">
+                      {ca.url ? <Favicon url={ca.url}/> : <Globe className="w-4 h-4 text-purple-400/50"/>}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-semibold text-white">{ca.title}</span>
+                        <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-300/80 ring-1 ring-purple-500/25">Manual</span>
+                      </div>
+                      {ca.url && <p className="text-[10px] text-white/25 font-mono truncate mt-0.5">{ca.url}</p>}
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <button onClick={e=>{e.stopPropagation();openEditForm(ca);}}
+                        className="w-7 h-7 rounded-lg bg-white/[0.05] ring-1 ring-white/[0.08] flex items-center justify-center hover:bg-white/[0.10] transition-all">
+                        <Pencil className="w-3 h-3 text-white/40"/>
+                      </button>
+                      <button onClick={e=>{e.stopPropagation();deleteCustom(ca.id);}}
+                        className="w-7 h-7 rounded-lg bg-red-500/10 ring-1 ring-red-500/20 flex items-center justify-center hover:bg-red-500/20 transition-all">
+                        <Trash2 className="w-3 h-3 text-red-400/60"/>
+                      </button>
+                    </div>
+                  </div>
+                  {expanded && (
+                    <div className="px-4 pb-4 pt-3 border-t border-purple-500/[0.10]">
+                      {ca.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{ca.description}</p>}
+                      {ca.url && (
+                        <div className="flex gap-2">
+                          <button onClick={()=>window.open(`https://${ca.url}`,"_blank","noopener,noreferrer")}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 text-xs font-bold active:scale-95 transition-all">
+                            <ExternalLink className="w-3.5 h-3.5"/> Buka Website
+                          </button>
+                          <button onClick={()=>copyUrl(ca.url)}
+                            className="w-11 h-11 rounded-xl bg-purple-500/10 ring-1 ring-purple-500/20 flex items-center justify-center hover:bg-purple-500/20 transition-all">
+                            {copiedId===ca.url?<Check className="w-4 h-4 text-green-400"/>:<Copy className="w-4 h-4 text-purple-400/60"/>}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
           </div>
         )}
       </div>
+
+      {/* ── ADD / EDIT FORM MODAL ── */}
+      {showAddForm && (
+        <div className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center px-0 sm:px-5">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={closeForm}/>
+          <div className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl bg-[#131313] border border-white/[0.08] p-6 pb-20 sm:pb-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-5">
+              <p className="text-sm font-bold text-white">{editingCustom ? "Edit Airdrop Manual" : "Tambah Airdrop Manual"}</p>
+              <button onClick={closeForm} className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center hover:bg-white/10">
+                <X className="w-3.5 h-3.5 text-white/50"/>
+              </button>
+            </div>
+            <div className="space-y-3">
+              {/* Nama */}
+              <div>
+                <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-1">Nama Airdrop <span className="text-red-400">*</span></label>
+                <input value={formTitle} onChange={e=>setFormTitle(e.target.value)}
+                  className="w-full bg-white/[0.06] ring-1 ring-white/[0.10] focus:ring-blue-400/50 rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-all"
+                  placeholder="Contoh: Project X"/>
+              </div>
+              {/* URL */}
+              <div>
+                <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-1">Link / Website</label>
+                <input value={formUrl} onChange={e=>setFormUrl(e.target.value)}
+                  className="w-full bg-white/[0.06] ring-1 ring-white/[0.10] focus:ring-blue-400/50 rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-all"
+                  placeholder="projectx.xyz"/>
+              </div>
+              {/* Deskripsi */}
+              <div>
+                <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-1">Deskripsi <span className="text-white/20">(opsional)</span></label>
+                <textarea value={formDesc} onChange={e=>setFormDesc(e.target.value)} rows={2}
+                  className="w-full bg-white/[0.06] ring-1 ring-white/[0.10] focus:ring-blue-400/50 rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-all resize-none"
+                  placeholder="Catatan singkat tentang airdrop ini..."/>
+              </div>
+              {/* Pilih daftar */}
+              <div>
+                <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Simpan ke Daftar</label>
+                <div className="flex gap-2">
+                  {["list1","list2","list3"].map(lid => {
+                    const g = GROUPS.find(g=>g.id===lid);
+                    const active = formList === lid;
+                    return (
+                      <button key={lid} onClick={()=>setFormList(lid)}
+                        className={`flex-1 py-2 rounded-xl text-xs font-bold ring-1 transition-all
+                          ${active ? g.btn+" text-white" : "bg-white/[0.04] ring-white/[0.08] text-white/40 hover:text-white/70"}`}>
+                        {listNames[lid] || DEFAULT_NAMES[lid]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-2.5 mt-5">
+              <button onClick={closeForm}
+                className="flex-1 py-2.5 rounded-xl bg-white/[0.05] ring-1 ring-white/[0.10] text-white/60 text-sm font-semibold hover:bg-white/[0.09] transition-all">
+                Batal
+              </button>
+              <button onClick={handleSaveCustom} disabled={!formTitle.trim()}
+                className="flex-1 py-2.5 rounded-xl bg-blue-500 text-white text-sm font-bold hover:bg-blue-400 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                {editingCustom ? "Simpan Perubahan" : "Tambah"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── SETTINGS / BACKUP MODAL ── */}
+      {showSettings && (
+        <div className="fixed inset-0 z-[300] flex items-end sm:items-center justify-center px-0 sm:px-5">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={()=>{setShowSettings(false);setImportError("");}}/>
+          <div className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl bg-[#131313] border border-white/[0.08] p-6 pb-20 sm:pb-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-5">
+              <p className="text-sm font-bold text-white">⚙️ Backup & Restore</p>
+              <button onClick={()=>{setShowSettings(false);setImportError("");}} className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center hover:bg-white/10">
+                <X className="w-3.5 h-3.5 text-white/50"/>
+              </button>
+            </div>
+            <p className="text-[11px] text-white/30 leading-relaxed mb-4">
+              Export menggabungkan semua bookmark referensi, airdrop manual, nama daftar, dan bookmark platform dalam satu file JSON.
+            </p>
+            {/* Export */}
+            <button onClick={handleExport}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-500/15 ring-1 ring-blue-500/30 text-blue-300 text-sm font-bold hover:bg-blue-500/25 active:scale-95 transition-all mb-3">
+              <Download className="w-4 h-4"/> Export JSON
+            </button>
+            {/* Import */}
+            <button onClick={()=>fileInputRef.current?.click()}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white/[0.05] ring-1 ring-white/[0.10] text-white/60 text-sm font-bold hover:bg-white/[0.09] active:scale-95 transition-all">
+              <Upload className="w-4 h-4"/> Import JSON
+            </button>
+            <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleImportFile}/>
+            {importError && (
+              <div className="mt-3 p-3 rounded-xl bg-red-500/10 ring-1 ring-red-500/25">
+                <p className="text-[11px] text-red-300/80 leading-relaxed">{importError}</p>
+              </div>
+            )}
+            <p className="text-[10px] text-white/20 text-center mt-4 leading-relaxed">
+              Import akan menimpa data yang ada setelah reload. Validasi otomatis — data lama aman jika file tidak valid.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
