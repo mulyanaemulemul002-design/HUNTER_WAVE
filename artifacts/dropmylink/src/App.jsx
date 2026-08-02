@@ -675,19 +675,22 @@ function IntroScreen({ airdrops = [], calendar = [] }) {
         <p className="relative text-sm text-white/45 mt-2.5 leading-relaxed max-w-xs">
           Info airdrop, campaign, dan tools Web3 terkurasi untuk komunitas crypto Indonesia.
         </p>
-        <button
-          onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
-          className="relative mt-5 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-xl shadow-blue-500/30 btn-glow">
-          <IconTelegram className="w-4 h-4 text-white"/>
-          <span className="text-sm font-bold text-white">Bergabung di Telegram</span>
-        </button>
+        {/* Telegram join button — sementara dinonaktifkan */}
+        {false && (
+          <button
+            onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
+            className="relative mt-5 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-xl shadow-blue-500/30 btn-glow">
+            <IconTelegram className="w-4 h-4 text-white"/>
+            <span className="text-sm font-bold text-white">Bergabung di Telegram</span>
+          </button>
+        )}
       </div>
 
       {/* ── SOCIAL PROOF ── */}
       <div className="px-5 mb-5">
         <div className="grid grid-cols-3 gap-3">
           {[
-            { value:"2K+",            label:"Member Telegram", icon:"👥" },
+            { value:"N/A",             label:"Member Telegram", icon:"👥" },
             { value:airdrops.length,  label:"Proyek Airdrop",  icon:"🪂" },
             { value:calendar.length,  label:"Event Kalender",  icon:"📅" },
           ].map(({value,label,icon})=>(
@@ -1585,6 +1588,10 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
 
       {section==="p2p" && (
         <div className="px-5 flex flex-col gap-3">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-purple-500/10 ring-1 ring-purple-500/20">
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-500/25 text-purple-300 ring-1 ring-purple-500/30 tracking-wider uppercase">Example</span>
+            <p className="text-[11px] text-purple-300/70 leading-relaxed">Data ini adalah contoh. Belum ada listing P2P aktif.</p>
+          </div>
           <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-amber-500/10 ring-1 ring-amber-500/20">
             <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0"/>
             <p className="text-[11px] text-amber-300/80 leading-relaxed">Lakukan transaksi dengan hati-hati. Platform tidak bertanggung jawab atas risiko P2P deal.</p>
@@ -1667,6 +1674,10 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
 
       {section==="calendar" && (
         <div className="px-5 flex flex-col gap-3">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-purple-500/10 ring-1 ring-purple-500/20">
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-500/25 text-purple-300 ring-1 ring-purple-500/30 tracking-wider uppercase">Example</span>
+            <p className="text-[11px] text-purple-300/70 leading-relaxed">Data ini adalah contoh. Belum ada event kalender aktif.</p>
+          </div>
           <StatusLegend />
           {calendar.map(e=>(
             <div key={e.id} className="rounded-2xl glass-card p-4 flex items-center gap-4">
