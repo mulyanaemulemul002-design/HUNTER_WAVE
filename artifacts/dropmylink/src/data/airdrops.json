@@ -10,6 +10,7 @@
     "status": "Active",
     "difficulty": "Medium",
     "confirmationStatus": "confirmed",
+    "addedAt": "2026-01-15",
     "howToGuide": [
       "Kunjungi layerzero.network dan hubungkan wallet (MetaMask / Rabby).",
       "Bridge aset minimal 3–5 kali antar chain berbeda (misal ETH → Polygon → Arbitrum).",
@@ -28,7 +29,8 @@
     "description": "ZK-EVM L2 by Matter Labs. Farm via bridge, swap di dApp, dan mint NFT di mainnet.",
     "status": "Active",
     "difficulty": "Easy",
-    "confirmationStatus": "confirmed"
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-02-10"
   },
   {
     "id": 3,
@@ -40,7 +42,8 @@
     "description": "ZK-EVM equivalent L2. Bridge dan gunakan dApp di Scroll mainnet untuk eligibility.",
     "status": "Active",
     "difficulty": "Easy",
-    "confirmationStatus": "confirmed"
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-03-05"
   },
   {
     "id": 4,
@@ -52,7 +55,8 @@
     "description": "High-performance EVM-compatible L1. 10,000 TPS dengan parallel execution.",
     "status": "Testnet",
     "difficulty": "Hard",
-    "confirmationStatus": "rumored"
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-04-20"
   },
   {
     "id": 5,
@@ -64,7 +68,8 @@
     "description": "EVM-identical L1 dengan Proof of Liquidity. Provide likuiditas untuk farming BERA.",
     "status": "Active",
     "difficulty": "Medium",
-    "confirmationStatus": "confirmed"
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-05-15"
   },
   {
     "id": 6,
@@ -76,6 +81,7 @@
     "description": "Interwoven L1 dengan native L2 ecosystem. Farm via testnet dan aktivitas Discord.",
     "status": "Testnet",
     "difficulty": "Easy",
-    "confirmationStatus": "rumored"
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-06-10"
   }
 ]

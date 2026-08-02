@@ -965,7 +965,9 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
   const totalToolSaved = toolBookmarks ? toolBookmarks.size : 0;
   const activeGroup    = GROUPS.find(g => g.id === section);
   const refItems       = section !== "platform" ? airdrops.filter(a => bookmarks.get(String(a.id)) === activeGroup.level) : [];
-  const customItems    = section !== "platform" ? customAirdrops.filter(a => a.listId === section) : [];
+  const customItems    = section !== "platform"
+    ? [...customAirdrops.filter(a => a.listId === section)].sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0))
+    : [];
   const savedTools     = section === "platform" && tools && toolBookmarks ? tools.filter(t => toolBookmarks.has(String(t.id))) : [];
   const hasAny         = section !== "platform" ? (refItems.length + customItems.length > 0) : savedTools.length > 0;
 
@@ -1360,10 +1362,12 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
     setFilterOpen(false);
   }
 
-  // Base list: filtered by confirmation sub-tab
+  // Base list: filtered by confirmation sub-tab, sorted newest-first by addedAt
   const baseList = useMemo(()=>{
-    if (confirmTab === "all") return airdrops;
-    return airdrops.filter(a => a.confirmationStatus === confirmTab);
+    const list = confirmTab === "all"
+      ? [...airdrops]
+      : airdrops.filter(a => a.confirmationStatus === confirmTab);
+    return list.sort((a, b) => b.addedAt.localeCompare(a.addedAt));
   }, [confirmTab, airdrops]);
 
   // Tags derived from current sub-tab's base list
