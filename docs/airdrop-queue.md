@@ -30,10 +30,10 @@ Salin blok `### [ ]` dan isi fieldnya. Tandai `[x]` kalau sudah diproses.
 ### [ ] CONTOH — Hapus setelah dibaca
 
 ```
-title: Nama Proyek
-url: domain.io
+title: unich
+url: https://freedom-api.unich.com/invite?code=2RESZA
 icon: 🔷
-tags: Layer1, DeFi
+tags: OTC,SOCIAL,MINE
 description: Deskripsi singkat 1–2 kalimat tentang proyek ini.
 status: Active
 difficulty: Medium
