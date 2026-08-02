@@ -83,5 +83,347 @@
     "difficulty": "Easy",
     "confirmationStatus": "rumored",
     "addedAt": "2026-06-10T09:00:00"
+  },
+  {
+    "id": 7,
+    "icon": "",
+    "title": "Grass (Stage 3)",
+    "url": "app.grass.io/register?referralCode=GUWaq6RrBIo4LYf",
+    "customImage": "",
+    "tags": ["DePIN", "Solana", "Extension"],
+    "description": "Jaringan DePIN terdesentralisasi yang memanfaatkan sisa bandwidth internet pengguna untuk melatih model AI.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-08-02T10:01:00",
+    "howToGuide": [
+      "Kunjungi website dan daftarkan akun baru menggunakan kode referral.",
+      "Unduh ekstensi browser Grass atau jalankan Desktop Node untuk mulai mengumpulkan poin otomatis.",
+      "Selesaikan quest harian di dashboard dan pantau pembaruan klaim token reward."
+    ]
+  },
+  {
+    "id": 8,
+    "icon": "",
+    "title": "Unich Network",
+    "url": "freedom-api.unich.com/invite?code=2RESZAZY",
+    "customImage": "",
+    "tags": ["SocialFi", "OTC", "Point System"],
+    "description": "Platform ekosistem perdagangan OTC terdesentralisasi dan SocialFi yang mengusung reward poin Freedom (FD).",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-08-02T10:02:00",
+    "howToGuide": [
+      "Buat akun di portal Unich menggunakan kode referral.",
+      "Hubungkan akun media sosial dan verifikasi profil untuk mengklaim poin awal.",
+      "Kerjakan tugas sosial harian dan bagikan kode undangan untuk mengumpulkan poin FD."
+    ]
+  },
+  {
+    "id": 9,
+    "icon": "",
+    "title": "Datahive AI",
+    "url": "datahive.ai?invite=qmrwjhq",
+    "customImage": "",
+    "tags": ["DePIN", "AI", "Extension"],
+    "description": "Jaringan AI terdesentralisasi yang mengumpulkan data publik berkualitas tinggi untuk pelatihan AI melalui browser pengguna.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-08-02T10:03:00",
+    "howToGuide": [
+      "Masuk ke platform Datahive AI dengan kode undangan khusus.",
+      "Pasang ekstensi browser resmi dan pastikan status koneksi aktif saat browsing.",
+      "Kunjungi tab task untuk menyelesaikan tugas sosial dan pantau perolehan poin harian."
+    ]
+  },
+  {
+    "id": 10,
+    "icon": "",
+    "title": "Allscale",
+    "url": "app.allscale.io/s/VDTqnEA",
+    "customImage": "",
+    "tags": ["TON", "Stablecoin", "DeFi"],
+    "description": "Protokol pembayaran dan faktur otomatis berbasis stablecoin yang berjalan di ekosistem TON dan Telegram Mini App.",
+    "status": "Active",
+    "difficulty": "Medium",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:04:00",
+    "howToGuide": [
+      "Akses dApp Allscale dan hubungkan TON Wallet (misal: TONkeeper/MyTonWallet).",
+      "Lakukan uji coba fitur pembuatan link pembayaran atau simulasi transaksi invoicing.",
+      "Kerjakan task di Telegram Mini App mereka untuk mengamankan alokasi early user."
+    ]
+  },
+  {
+    "id": 11,
+    "icon": "",
+    "title": "Stobix",
+    "url": "stobix.com/invite/cz24dn",
+    "customImage": "",
+    "tags": ["Wallet", "AI Trading", "Multichain"],
+    "description": "Wallet non-custodial yang dilengkapi dengan fitur bot AI untuk menganalisis tren chart dan pergerakan pasar Web3.",
+    "status": "Active",
+    "difficulty": "Medium",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:05:00",
+    "howToGuide": [
+      "Buka platform Stobix dan buat wallet baru atau impor akun melalui link referral.",
+      "Lakukan aktivitas internal seperti swap, transfer antar chain, atau uji coba fitur analisis bot AI.",
+      "Simpan seed phrase dengan aman dan pantau quest/badge pengguna awal di dashboard."
+    ]
+  },
+  {
+    "id": 12,
+    "icon": "",
+    "title": "GoalChain (GoalManager)",
+    "url": "goalmanager.io",
+    "customImage": "",
+    "tags": ["Tap-to-Earn", "Sports", "GameFi"],
+    "description": "Game manajemen olahraga berbasis Web3 yang memadukan mekanisme penambangan poin harian dengan ekosistem GameFi.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:06:00",
+    "howToGuide": [
+      "Buka situs GoalManager dan daftarkan akun baru.",
+      "Lakukan klaim poin harian (check-in) dan selesaikan misi interaktif atau mini game.",
+      "Undang teman menggunakan link referral untuk melipatgandakan kecepatan produksi poin."
+    ]
+  },
+  {
+    "id": 13,
+    "icon": "",
+    "title": "OptimAI Network",
+    "url": "node.optimai.network/register?ref=1C93CB8E",
+    "customImage": "",
+    "tags": ["DePIN", "AI", "Node Infrastructure"],
+    "description": "Jaringan node terdesentralisasi ringan yang memproses data komputasi untuk mendukung infrastruktur Agentic AI.",
+    "status": "Active",
+    "difficulty": "Medium",
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-08-02T10:07:00",
+    "howToGuide": [
+      "Registrasi akun di portal OptimAI menggunakan kode referal.",
+      "Jalankan node browser atau ekstensi ringan agar komputasi tetap terhubung secara berkala.",
+      "Pantau statistik uptime node di dashboard untuk memastikan poin reward terus mengalir."
+    ]
+  },
+  {
+    "id": 14,
+    "icon": "",
+    "title": "Rax Finance",
+    "url": "app.rax.finance/waitlist/?ref=d9hziurh",
+    "customImage": "",
+    "tags": ["RWA", "AI Compute", "DeFi"],
+    "description": "Protokol DeFi yang memfokuskan pada tokenisasi aset komputasi GPU dan pusat data untuk ekosistem AI.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-08-02T10:08:00",
+    "howToGuide": [
+      "Masuk ke portal Rax Finance dan hubungkan Web3 wallet.",
+      "Daftarkan alamat wallet ke daftar tunggu (Waitlist) / Rax Forge campaign.",
+      "Selesaikan task Galxe/Zealy yang tertaut di platform untuk meningkatkan peringkat leaderboard."
+    ]
+  },
+  {
+    "id": 15,
+    "icon": "",
+    "title": "Knidos",
+    "url": "testnet.knidos.xyz/dashboard",
+    "customImage": "",
+    "tags": ["DeFi", "Automated Yield", "Testnet"],
+    "description": "Protokol DeFi otomatisasi yield dan strategi trading yang saat ini sedang membuka fase testnet berinsentif.",
+    "status": "Testnet",
+    "difficulty": "Medium",
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-08-02T10:09:00",
+    "howToGuide": [
+      "Buka dashboard testnet Knidos dan hubungkan wallet (sesuaikan jaringan ke Sepolia/Base Testnet).",
+      "Ambil faucet token dari saluran resmi atau bot yang disediakan.",
+      "Cobalah fitur utama seperti deposit vault, swap testnet, dan klaim yield harian minimal seminggu sekali."
+    ]
+  },
+  {
+    "id": 16,
+    "icon": "",
+    "title": "X1 EcoChain (X1T)",
+    "url": "t.x1eco.com/?rcode=5sm1S0U8",
+    "customImage": "",
+    "tags": ["Layer1", "Testnet", "EVM"],
+    "description": "Jaringan blockchain Layer 1 berefisiensi tinggi yang menghadirkan ekosistem testnet dan bot tugas harian.",
+    "status": "Testnet",
+    "difficulty": "Medium",
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-08-02T10:10:00",
+    "howToGuide": [
+      "Masuk ke portal atau bot X1 EcoChain dengan referral code.",
+      "Minta token faucet testnet lalu lakukan transaksi kirim token atau deploy smart contract sederhana.",
+      "Jalankan tugas rutin seperti klaim poin harian dan interaksi di testnet dApp resmi."
+    ]
+  },
+  {
+    "id": 17,
+    "icon": "",
+    "title": "Stabilizer Finance",
+    "url": "app.stabilizer.finance",
+    "customImage": "",
+    "tags": ["DeFi", "Stablecoin", "Yield"],
+    "description": "Protokol penstabil yield otomatis untuk aset stablecoin guna memaksimalkan hasil di berbagai pool DeFi.",
+    "status": "Active",
+    "difficulty": "Medium",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:11:00",
+    "howToGuide": [
+      "Buka aplikasi Stabilizer Finance dan sambungkan Web3 wallet.",
+      "Cobalah menyetor sebagian kecil dana uji coba/testnet ke vault yang tersedia.",
+      "Lakukan klaim reward hasil yield secara berkala dan ikuti kampanye sosial resmi mereka."
+    ]
+  },
+  {
+    "id": 18,
+    "icon": "",
+    "title": "Oreum",
+    "url": "play.google.com/store/apps/details?id=com.mine.oreum",
+    "customImage": "",
+    "tags": ["Mobile Mining", "Android App", "App Rewards"],
+    "description": "Aplikasi mobile mining ringan berbasis Android yang memberikan reward poin dari klaim harian pengguna.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:12:00",
+    "howToGuide": [
+      "Unduh dan pasang aplikasi Oreum secara resmi melalui Google Play Store.",
+      "Buat akun baru, lalu aktifkan sesi penambangan harian setiap 24 jam sekali.",
+      "Selesaikan tugas bonus seperti menonton iklan singkat atau mengundang pengguna baru."
+    ]
+  },
+  {
+    "id": 19,
+    "icon": "",
+    "title": "Krybon Exchange",
+    "url": "krybon.com/auth/signup?ref=ABAB52C0",
+    "customImage": "",
+    "tags": ["DEX", "Hybrid CEX", "Trading"],
+    "description": "Platform bursa kripto hybrid yang menawarkan insentif pendaftaran awal dan program rujukan trading.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:13:00",
+    "howToGuide": [
+      "Masuk ke halaman pendaftaran Krybon Exchange dan daftarkan email/wallet.",
+      "Verifikasi akun sesuai instruksi dan selesaikan onboarding awal di dashboard.",
+      "Bagikan link referral untuk mendapatkan alokasi poin atau potongan biaya transaksi saat mainnet."
+    ]
+  },
+  {
+    "id": 20,
+    "icon": "",
+    "title": "Oxin Chain",
+    "url": "play.google.com/store/apps/details?id=com.oxinapp.oxinchain&referrer=SBI9CIL0",
+    "customImage": "",
+    "tags": ["Layer1", "Mobile Mining", "Android App"],
+    "description": "Jaringan Layer 1 yang memanfaatkan aplikasi ponsel cerdas untuk mendistribusikan poin reward penambangan.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:14:00",
+    "howToGuide": [
+      "Unduh aplikasi Oxin Chain dari Play Store dan masukkan referrer ID saat pendaftaran.",
+      "Klik tombol Start Mining setiap 24 jam untuk menjalankan alokasi poin.",
+      "Kerjakan misi harian di dalam aplikasi untuk menambah tingkat kecepatan penambangan."
+    ]
+  },
+  {
+    "id": 21,
+    "icon": "",
+    "title": "Trezhunt",
+    "url": "trezhunt.io/?ref=DR7MPB",
+    "customImage": "",
+    "tags": ["Gamified Web3", "Quest", "NFT"],
+    "description": "Platform petualangan berburu harta karun on-chain di mana pengguna menyelesaikan misi untuk reward digital.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:15:00",
+    "howToGuide": [
+      "Buka situs web Trezhunt dan sambungkan Web3 wallet atau akun sosial.",
+      "Pilih peta quest yang tersedia dan selesaikan petunjuk atau misi matematika/sosial yang diberikan.",
+      "Kumpulkan item/poin harta karun dan pantau papan peringkat (leaderboard) secara berkala."
+    ]
+  },
+  {
+    "id": 22,
+    "icon": "",
+    "title": "SafeVano Wallet",
+    "url": "safevano.com/ref/90KFXZ5O",
+    "customImage": "",
+    "tags": ["Wallet", "Security", "Airdrop Referral"],
+    "description": "Wallet Web3 non-custodial berbasis keamanan tinggi yang mengadakan program insentif poin bagi pengguna awal.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:16:00",
+    "howToGuide": [
+      "Akses platform SafeVano Wallet melalui tautan referral dan selesaikan registrasi akun/wallet.",
+      "Lakukan verifikasi keamanan dasar dan simpan seed phrase secara aman.",
+      "Bagikan kode rujukan unik dan lakukan aktivitas dasar seperti menyimpan atau mentransfer aset."
+    ]
+  },
+  {
+    "id": 23,
+    "icon": "",
+    "title": "Xreign",
+    "url": "xreign.app/login?ref=3UIZTDP",
+    "customImage": "",
+    "tags": ["SocialFi", "Twitter/X", "Prediction"],
+    "description": "Platform analisis dan prediksi tren Twitter/X yang memberikan token $REIGN berdasarkan aktivitas akun media sosial.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-08-02T10:17:00",
+    "howToGuide": [
+      "Login menggunakan akun Twitter/X aktif di situs web Xreign.",
+      "Lakukan pemindaian akun (scan account) untuk melihat estimasi reward awal atau klaim Crown Pass.",
+      "Selesaikan tugas interaksi media sosial sehari-hari untuk memperbesar alokasi airdrop sebelum snapshot."
+    ]
+  },
+  {
+    "id": 24,
+    "icon": "",
+    "title": "Orbinum Network",
+    "url": "app.orbinum.network/community?ref=ORB-2DHTQS",
+    "customImage": "",
+    "tags": ["Web3 Infra", "Community Node", "Point System"],
+    "description": "Jaringan infrastruktur komunitas terdesentralisasi yang memberikan poin berdasarkan partisipasi anggota.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:18:00",
+    "howToGuide": [
+      "Buka dApp Orbinum Network dan sambungkan wallet melalui link referral.",
+      "Bergabunglah dengan saluran komunitas resmi dan selesaikan tugas-tugas onboarding awal.",
+      "Lakukan check-in harian di portal komunitas untuk mengumpulkan saldo poin Orbinum."
+    ]
+  },
+  {
+    "id": 25,
+    "icon": "",
+    "title": "Orbition Network",
+    "url": "airdrop.orbition.network?ref=9231685894",
+    "customImage": "",
+    "tags": ["Node Farming", "Airdrop Portal", "Early Access"],
+    "description": "Portal distribusi airdrop dan node farming baru yang fokus pada pengumpulan poin rujukan pengguna awal.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-02T10:19:00",
+    "howToGuide": [
+      "Kunjungi portal Airdrop Orbition Network dan hubungkan akun Web3 / Email.",
+      "Verifikasi pendaftaran dan klaim Welcome Bonus poin pertama.",
+      "Jalankan tugas-tugas sosial yang tersedia dan undang pengguna lain untuk memaksimalkan peringkat alokasi."
+    ]
   }
 ]
