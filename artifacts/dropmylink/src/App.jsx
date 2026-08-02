@@ -111,14 +111,6 @@ const BADGE_ALL = {
 // Alias ringkas untuk Airdrop list (tetap pakai ring)
 const STATUS_STYLE = BADGE_ALL;
 
-// Tier Potensi — TERPISAH dari difficulty (difficulty = effort, tier = potensi hasil)
-// Warna sengaja berbeda dari palet BADGE_ALL agar tidak membingungkan
-const TIER_STYLE = {
-  S: { bg:"bg-amber-400/25",  text:"text-amber-200",  ring:"ring-amber-400/55",  label:"Gold — Funding besar, TGE hampir pasti" },
-  A: { bg:"bg-orange-500/20", text:"text-orange-200", ring:"ring-orange-500/45", label:"Potensi bagus, faktor belum sepenuhnya pasti" },
-  B: { bg:"bg-teal-500/18",   text:"text-teal-300",   ring:"ring-teal-500/35",   label:"Solid, potensi standar" },
-  C: { bg:"bg-zinc-500/18",   text:"text-zinc-400",   ring:"ring-zinc-500/30",   label:"Spekulatif tinggi" },
-};
 
 // section:"cepat" → Info Cepat carousel | section:"teknis" → Info Teknis carousel
 const QINFO_BOARDS = [
@@ -145,16 +137,6 @@ function TagChip({ tag }) {
   return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 ${c.text} ${c.bg} ${c.ring}`}>{tag}</span>;
 }
 
-// Compact tier chip — lebih kecil dari status badge, pojok kanan atas card
-function TierChip({ tier }) {
-  if (!tier) return null;
-  const s = TIER_STYLE[tier];
-  return (
-    <span className={`inline-flex items-center gap-0.5 px-1.5 py-[2px] rounded text-[9px] font-black tracking-wide ring-1 ${s.bg} ${s.text} ${s.ring}`}>
-      ◆{tier}
-    </span>
-  );
-}
 
 function Favicon({ url, customImage, size = 24 }) {
   const src = customImage || `https://www.google.com/s2/favicons?domain=${url}&sz=64`;
@@ -323,12 +305,6 @@ const LEGEND_ITEMS = [
   { status:"Rumored",     desc:"Masih rumor" },
   { status:"Distributed", desc:"Token sudah dibagikan" },
 ];
-const TIER_LEGEND = [
-  { tier:"S", desc:"Funding besar · TGE hampir pasti" },
-  { tier:"A", desc:"Potensi bagus · sebagian faktor belum pasti" },
-  { tier:"B", desc:"Solid · potensi standar" },
-  { tier:"C", desc:"Spekulatif tinggi" },
-];
 function StatusLegend() {
   const [open, setOpen] = useState(false);
   return (
@@ -347,18 +323,6 @@ function StatusLegend() {
               {LEGEND_ITEMS.map(({status,desc})=>(
                 <div key={status} className="flex items-center gap-1.5">
                   <StatusBadge status={status}/>
-                  <span className="text-[9px] text-white/35">{desc}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Tier badges */}
-          <div className="pt-2.5 border-t border-white/[0.06]">
-            <p className="text-[9px] font-bold text-white/25 uppercase tracking-widest mb-2">Tier Potensi</p>
-            <div className="flex flex-wrap gap-x-3 gap-y-2">
-              {TIER_LEGEND.map(({tier,desc})=>(
-                <div key={tier} className="flex items-center gap-1.5">
-                  <TierChip tier={tier}/>
                   <span className="text-[9px] text-white/35">{desc}</span>
                 </div>
               ))}
@@ -1181,7 +1145,6 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
                       {item.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{item.description}</p>}
                       <div className="flex flex-wrap gap-1.5 mb-4">
                         {(item.tags||[]).map(tag=><TagChip key={tag} tag={tag}/>)}
-                        {item.reward && <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 text-blue-300 bg-blue-500/15 ring-blue-500/25">{item.reward}</span>}
                         {item.difficulty && <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 ${item.difficulty==="Easy"?"bg-green-500/15 text-green-400 ring-green-500/25":item.difficulty==="Hard"?"bg-red-500/15 text-red-400 ring-red-500/25":"bg-yellow-500/15 text-yellow-400 ring-yellow-500/25"}`}>{item.difficulty}</span>}
                       </div>
                       <div className="flex gap-2">
@@ -1204,15 +1167,15 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
             {customItems.map(ca => {
               const expanded = expandedCustomId === ca.id;
               return (
-                <div key={ca.id} className={`rounded-2xl border bg-[#1E1E1E] transition-all duration-300 ${expanded ? "border-purple-500/40" : "border-purple-500/15 hover:border-purple-500/30"}`}>
+                <div key={ca.id} className={`rounded-2xl border bg-[#1E1E1E] transition-all duration-300 ${expanded ? "border-slate-500/40" : "border-slate-600/20 hover:border-slate-500/30"}`}>
                   <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedCustomId(expanded?null:ca.id)}>
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-500/10 ring-1 ring-purple-500/20 flex items-center justify-center overflow-hidden">
-                      {ca.url ? <Favicon url={ca.url}/> : <Globe className="w-4 h-4 text-purple-400/50"/>}
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-slate-500/10 ring-1 ring-slate-500/20 flex items-center justify-center overflow-hidden">
+                      {ca.url ? <Favicon url={ca.url}/> : <Globe className="w-4 h-4 text-slate-400/50"/>}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-semibold text-white">{ca.title}</span>
-                        <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-purple-500/15 text-purple-300/80 ring-1 ring-purple-500/25">Manual</span>
+                        <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-slate-500/15 text-slate-300/70 ring-1 ring-slate-500/25">Manual</span>
                       </div>
                       {ca.url && <p className="text-[10px] text-white/25 font-mono truncate mt-0.5">{ca.url}</p>}
                     </div>
@@ -1367,7 +1330,6 @@ const CONFIRM_TABS = [
 function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId }) {
   const [search, setSearch]           = useState("");
   const [activeTag, setActiveTag]     = useState("All");
-  const [activeTier, setActiveTier]   = useState("All");
   const [filterOpen, setFilterOpen]   = useState(false);
   const [confirmTab, setConfirmTab]   = useState("all");
   const [expandedId, setExpandedId]   = useState(null);
@@ -1393,7 +1355,6 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
     setConfirmTab(id);
     setSearch("");
     setActiveTag("All");
-    setActiveTier("All");
     setExpandedId(null);
     setGuideOpenId(null);
     setFilterOpen(false);
@@ -1412,13 +1373,12 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
     return ["All",...Array.from(t)];
   },[baseList]);
 
-  // Final filtered list: search + tag + tier applied within the sub-tab
+  // Final filtered list: search + tag applied within the sub-tab
   const filtered = useMemo(()=>baseList.filter(item=>{
     const matchTag  = activeTag==="All"||(item.tags||[]).includes(activeTag);
-    const matchTier = activeTier==="All"||item.potentialTier===activeTier;
     const q=search.toLowerCase();
-    return matchTag&&matchTier&&(!q||item.title.toLowerCase().includes(q)||(item.description||"").toLowerCase().includes(q));
-  }),[search,activeTag,activeTier,baseList]);
+    return matchTag&&(!q||item.title.toLowerCase().includes(q)||(item.description||"").toLowerCase().includes(q));
+  }),[search,activeTag,baseList]);
 
   function copyUrl(item) {
     navigator.clipboard.writeText(`https://${item.url}`).catch(()=>{});
@@ -1463,9 +1423,8 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
             className="w-full bg-blue-500/[0.08] ring-1 ring-blue-500/25 rounded-2xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 outline-none focus:ring-blue-400/50 transition-all"/>
         </div>
 
-        {/* Filter Tag + Tier */}
+        {/* Filter Tag */}
         <div className="flex flex-wrap items-start gap-2">
-          {/* Tag filter */}
           <div>
             <button onClick={()=>setFilterOpen(!filterOpen)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold ring-1 transition-all ${activeTag!=="All"?"bg-blue-500/20 ring-blue-400/40 text-blue-300":"bg-blue-500/[0.08] ring-blue-500/20 text-white/60"}`}>
@@ -1474,7 +1433,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
               {filterOpen?<ChevronUp className="w-3 h-3"/>:<ChevronDown className="w-3 h-3"/>}
             </button>
             {filterOpen && (
-              <div className="mt-2 glass-card rounded-2xl p-3 flex flex-wrap gap-2 absolute z-10 left-5 right-5">
+              <div className="mt-2 bg-[#131313] border border-white/[0.10] rounded-2xl p-3 flex flex-wrap gap-2 absolute z-10 left-5 right-5">
                 {allTags.map(tag=>(
                   <button key={tag} onClick={()=>{setActiveTag(tag);setFilterOpen(false);}}
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${activeTag===tag?"bg-blue-500 border-blue-500 text-white":"bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/80"}`}>
@@ -1483,24 +1442,6 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
                 ))}
               </div>
             )}
-          </div>
-          {/* Tier filter */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[9px] text-white/25 font-semibold">Tier:</span>
-            {["All","S","A","B","C"].map(t => {
-              const active = activeTier === t;
-              const ts = t !== "All" ? TIER_STYLE[t] : null;
-              return (
-                <button key={t} onClick={()=>setActiveTier(t)}
-                  className={`px-2 py-1 rounded-md text-[10px] font-black ring-1 transition-all
-                    ${active
-                      ? t==="All" ? "bg-white/10 ring-white/20 text-white"
-                                  : `${ts.bg} ${ts.text} ${ts.ring}`
-                      : "bg-white/[0.03] ring-white/[0.07] text-white/35 hover:text-white/65"}`}>
-                  {t==="All" ? "All" : `◆${t}`}
-                </button>
-              );
-            })}
           </div>
         </div>
       </div>
@@ -1511,7 +1452,6 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
           <span>{filtered.length} hasil</span>
           {confirmTab !== "all" && <><span>·</span><span className="text-blue-400/70">{confirmTab === "confirmed" ? "Confirmed" : "Rumored"}</span></>}
           {activeTag !== "All" && <><span>·</span><span className="text-blue-400">{activeTag}</span></>}
-          {activeTier !== "All" && <><span>·</span><TierChip tier={activeTier}/></>}
         </p>
         <div className="flex flex-col gap-3">
           {filtered.map(item=>{
@@ -1527,7 +1467,6 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-sm font-semibold text-white">{item.title}</span>
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${STATUS_STYLE[item.status]||STATUS_STYLE.Active}`}>{item.status}</span>
-                      {item.potentialTier && <TierChip tier={item.potentialTier}/>}
                     </div>
                   </div>
                   <button
@@ -1550,7 +1489,6 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
                     {item.description && <p className="text-xs text-white/50 leading-relaxed mb-3">{item.description}</p>}
                     <div className="flex flex-wrap gap-1.5 mb-4">
                       {(item.tags||[]).map(tag=><TagChip key={tag} tag={tag}/>)}
-                      {item.reward && <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 text-blue-300 bg-blue-500/15 ring-blue-500/25">{item.reward}</span>}
                       {item.difficulty && <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ring-1 ${item.difficulty==="Easy"?"bg-green-500/15 text-green-400 ring-green-500/25":item.difficulty==="Hard"?"bg-red-500/15 text-red-400 ring-red-500/25":"bg-yellow-500/15 text-yellow-400 ring-yellow-500/25"}`}>{item.difficulty}</span>}
                     </div>
                     <div className="flex gap-2">
@@ -1853,7 +1791,7 @@ function buildCorpus(airdrops, p2p, calendar, tools) {
       _type: "airdrop", _id: a.id,
       title: a.title,
       body: a.description || "",
-      meta: [(a.tags||[]).join(" "), a.reward||"", a.status||""].join(" "),
+      meta: [(a.tags||[]).join(" "), a.status||""].join(" "),
     })),
     ...tools.map(t => ({
       _type: "tool", _id: t.id,
