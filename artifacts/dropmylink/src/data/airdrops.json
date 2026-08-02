@@ -10,7 +10,7 @@
     "status": "Active",
     "difficulty": "Medium",
     "confirmationStatus": "confirmed",
-    "addedAt": "2026-01-15",
+    "addedAt": "2026-01-15T09:00:00",
     "howToGuide": [
       "Kunjungi layerzero.network dan hubungkan wallet (MetaMask / Rabby).",
       "Bridge aset minimal 3–5 kali antar chain berbeda (misal ETH → Polygon → Arbitrum).",
@@ -30,7 +30,7 @@
     "status": "Active",
     "difficulty": "Easy",
     "confirmationStatus": "confirmed",
-    "addedAt": "2026-02-10"
+    "addedAt": "2026-02-10T09:00:00"
   },
   {
     "id": 3,
@@ -43,7 +43,7 @@
     "status": "Active",
     "difficulty": "Easy",
     "confirmationStatus": "confirmed",
-    "addedAt": "2026-03-05"
+    "addedAt": "2026-03-05T09:00:00"
   },
   {
     "id": 4,
@@ -56,7 +56,7 @@
     "status": "Testnet",
     "difficulty": "Hard",
     "confirmationStatus": "rumored",
-    "addedAt": "2026-04-20"
+    "addedAt": "2026-04-20T09:00:00"
   },
   {
     "id": 5,
@@ -69,7 +69,7 @@
     "status": "Active",
     "difficulty": "Medium",
     "confirmationStatus": "confirmed",
-    "addedAt": "2026-05-15"
+    "addedAt": "2026-05-15T09:00:00"
   },
   {
     "id": 6,
@@ -82,6 +82,6 @@
     "status": "Testnet",
     "difficulty": "Easy",
     "confirmationStatus": "rumored",
-    "addedAt": "2026-06-10"
+    "addedAt": "2026-06-10T09:00:00"
   }
 ]

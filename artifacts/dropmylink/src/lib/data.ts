@@ -107,10 +107,12 @@ export const AirdropSchema = z.object({
   confirmationStatus: z.enum(["confirmed", "rumored"], {
     errorMap: () => ({ message: 'confirmationStatus wajib diisi dengan "confirmed" atau "rumored".' }),
   }),
-  // Wajib diisi — tanggal airdrop ini ditambahkan, format ISO: "YYYY-MM-DD"
+  // Wajib diisi — datetime airdrop ini ditambahkan, format ISO: "YYYY-MM-DDTHH:mm:ss"
   // Digunakan untuk mengurutkan tampilan: yang paling baru muncul paling atas.
+  // Gunakan datetime penuh (bukan hanya tanggal) supaya saat menambahkan banyak
+  // airdrop sekaligus di hari yang sama, urutan tampil bisa dikontrol lewat jam/menit.
   // Id TIDAK perlu urut — cukup unik. Urutan ditentukan oleh addedAt, bukan id.
-  addedAt:            z.string().min(1, { message: 'addedAt wajib diisi dengan format "YYYY-MM-DD", misal "2026-07-27".' }),
+  addedAt:            z.string().min(1, { message: 'addedAt wajib diisi dengan format "YYYY-MM-DDTHH:mm:ss", misal "2026-07-27T10:05:00".' }),
 });
 
 export const AdSchema = z.object({
