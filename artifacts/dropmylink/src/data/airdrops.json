@@ -1,90 +1,5 @@
 [
   {
-    "id": 1,
-    "icon": "",
-    "title": "LayerZero",
-    "url": "layerzero.network",
-    "customImage": "",
-    "tags": ["Cross-chain", "DeFi"],
-    "description": "Omnichain interoperability protocol menghubungkan 30+ blockchain. Eligible via bridging & penggunaan dApp.",
-    "status": "Active",
-    "difficulty": "Medium",
-    "confirmationStatus": "confirmed",
-    "addedAt": "2026-01-15T09:00:00",
-    "howToGuide": [
-      "Kunjungi layerzero.network dan hubungkan wallet (MetaMask / Rabby).",
-      "Bridge aset minimal 3–5 kali antar chain berbeda (misal ETH → Polygon → Arbitrum).",
-      "Gunakan dApp berbasis LayerZero seperti Stargate Finance untuk swap cross-chain.",
-      "Pastikan interaksi dari minimal 2–3 chain berbeda agar eligible.",
-      "Pantau pengumuman snapshot di Twitter/X resmi @LayerZero_Core."
-    ]
-  },
-  {
-    "id": 2,
-    "icon": "",
-    "title": "zkSync Era",
-    "url": "zksync.io",
-    "customImage": "",
-    "tags": ["ZK", "Layer2"],
-    "description": "ZK-EVM L2 by Matter Labs. Farm via bridge, swap di dApp, dan mint NFT di mainnet.",
-    "status": "Active",
-    "difficulty": "Easy",
-    "confirmationStatus": "confirmed",
-    "addedAt": "2026-02-10T09:00:00"
-  },
-  {
-    "id": 3,
-    "icon": "",
-    "title": "Scroll",
-    "url": "scroll.io",
-    "customImage": "",
-    "tags": ["ZK", "Layer2"],
-    "description": "ZK-EVM equivalent L2. Bridge dan gunakan dApp di Scroll mainnet untuk eligibility.",
-    "status": "Active",
-    "difficulty": "Easy",
-    "confirmationStatus": "confirmed",
-    "addedAt": "2026-03-05T09:00:00"
-  },
-  {
-    "id": 4,
-    "icon": "",
-    "title": "Monad",
-    "url": "monad.xyz",
-    "customImage": "",
-    "tags": ["Layer1", "DeFi"],
-    "description": "High-performance EVM-compatible L1. 10,000 TPS dengan parallel execution.",
-    "status": "Testnet",
-    "difficulty": "Hard",
-    "confirmationStatus": "rumored",
-    "addedAt": "2026-04-20T09:00:00"
-  },
-  {
-    "id": 5,
-    "icon": "",
-    "title": "Berachain",
-    "url": "berachain.com",
-    "customImage": "",
-    "tags": ["Layer1", "DeFi"],
-    "description": "EVM-identical L1 dengan Proof of Liquidity. Provide likuiditas untuk farming BERA.",
-    "status": "Active",
-    "difficulty": "Medium",
-    "confirmationStatus": "confirmed",
-    "addedAt": "2026-05-15T09:00:00"
-  },
-  {
-    "id": 6,
-    "icon": "",
-    "title": "Initia",
-    "url": "initia.xyz",
-    "customImage": "",
-    "tags": ["Layer1", "DeFi"],
-    "description": "Interwoven L1 dengan native L2 ecosystem. Farm via testnet dan aktivitas Discord.",
-    "status": "Testnet",
-    "difficulty": "Easy",
-    "confirmationStatus": "rumored",
-    "addedAt": "2026-06-10T09:00:00"
-  },
-  {
     "id": 7,
     "icon": "",
     "title": "Grass (Stage 3)",
@@ -148,7 +63,7 @@
     "description": "Protokol pembayaran dan faktur otomatis berbasis stablecoin yang berjalan di ekosistem TON dan Telegram Mini App.",
     "status": "Active",
     "difficulty": "Medium",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:04:00",
     "howToGuide": [
       "Akses dApp Allscale dan hubungkan TON Wallet (misal: TONkeeper/MyTonWallet).",
@@ -166,7 +81,7 @@
     "description": "Wallet non-custodial yang dilengkapi dengan fitur bot AI untuk menganalisis tren chart dan pergerakan pasar Web3.",
     "status": "Active",
     "difficulty": "Medium",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:05:00",
     "howToGuide": [
       "Buka platform Stobix dan buat wallet baru atau impor akun melalui link referral.",
@@ -184,7 +99,7 @@
     "description": "Game manajemen olahraga berbasis Web3 yang memadukan mekanisme penambangan poin harian dengan ekosistem GameFi.",
     "status": "Active",
     "difficulty": "Easy",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:06:00",
     "howToGuide": [
       "Buka situs GoalManager dan daftarkan akun baru.",
@@ -274,7 +189,7 @@
     "description": "Protokol penstabil yield otomatis untuk aset stablecoin guna memaksimalkan hasil di berbagai pool DeFi.",
     "status": "Active",
     "difficulty": "Medium",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:11:00",
     "howToGuide": [
       "Buka aplikasi Stabilizer Finance dan sambungkan Web3 wallet.",
@@ -292,7 +207,7 @@
     "description": "Aplikasi mobile mining ringan berbasis Android yang memberikan reward poin dari klaim harian pengguna.",
     "status": "Active",
     "difficulty": "Easy",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:12:00",
     "howToGuide": [
       "Unduh dan pasang aplikasi Oreum secara resmi melalui Google Play Store.",
@@ -310,7 +225,7 @@
     "description": "Platform bursa kripto hybrid yang menawarkan insentif pendaftaran awal dan program rujukan trading.",
     "status": "Active",
     "difficulty": "Easy",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:13:00",
     "howToGuide": [
       "Masuk ke halaman pendaftaran Krybon Exchange dan daftarkan email/wallet.",
@@ -328,7 +243,7 @@
     "description": "Jaringan Layer 1 yang memanfaatkan aplikasi ponsel cerdas untuk mendistribusikan poin reward penambangan.",
     "status": "Active",
     "difficulty": "Easy",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:14:00",
     "howToGuide": [
       "Unduh aplikasi Oxin Chain dari Play Store dan masukkan referrer ID saat pendaftaran.",
@@ -346,7 +261,7 @@
     "description": "Platform petualangan berburu harta karun on-chain di mana pengguna menyelesaikan misi untuk reward digital.",
     "status": "Active",
     "difficulty": "Easy",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:15:00",
     "howToGuide": [
       "Buka situs web Trezhunt dan sambungkan Web3 wallet atau akun sosial.",
@@ -364,7 +279,7 @@
     "description": "Wallet Web3 non-custodial berbasis keamanan tinggi yang mengadakan program insentif poin bagi pengguna awal.",
     "status": "Active",
     "difficulty": "Easy",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:16:00",
     "howToGuide": [
       "Akses platform SafeVano Wallet melalui tautan referral dan selesaikan registrasi akun/wallet.",
@@ -400,7 +315,7 @@
     "description": "Jaringan infrastruktur komunitas terdesentralisasi yang memberikan poin berdasarkan partisipasi anggota.",
     "status": "Active",
     "difficulty": "Easy",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:18:00",
     "howToGuide": [
       "Buka dApp Orbinum Network dan sambungkan wallet melalui link referral.",
@@ -418,12 +333,30 @@
     "description": "Portal distribusi airdrop dan node farming baru yang fokus pada pengumpulan poin rujukan pengguna awal.",
     "status": "Active",
     "difficulty": "Easy",
-    "confirmationStatus": "rumored",
+    "confirmationStatus": "confirmed",
     "addedAt": "2026-08-02T10:19:00",
     "howToGuide": [
       "Kunjungi portal Airdrop Orbition Network dan hubungkan akun Web3 / Email.",
       "Verifikasi pendaftaran dan klaim Welcome Bonus poin pertama.",
       "Jalankan tugas-tugas sosial yang tersedia dan undang pengguna lain untuk memaksimalkan peringkat alokasi."
+    ]
+  },
+  {
+    "id": 26,
+    "icon": "",
+    "title": "Beldex",
+    "url": "quest.beldex.io/loyalty?referral_code=II6J7GGR",
+    "customImage": "",
+    "tags": ["Privacy", "Layer1", "DePIN", "Loyalty Quest"],
+    "description": "Ekosistem blockchain Layer-1 berfokus pada privasi & anonimitas yang menyediakan produk dApps seperti BChat, BelNet dVPN, serta kampanye reward poin.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "confirmed",
+    "addedAt": "2026-08-02T14:35:00",
+    "howToGuide": [
+      "Masuk ke portal Quest Beldex melalui link referral dan hubungkan Web3 Wallet atau akun media sosial milik lu.",
+      "Selesaikan misi harian seperti tugas interaksi media sosial (Twitter/X, Discord, Telegram) untuk mengumpulkan Poin Loyalty.",
+      "Pantau papan peringkat (leaderboard) dan cek kampanye rutin untuk klaim badge atau bonus alokasi reward di masa mendatang."
     ]
   }
 ]
