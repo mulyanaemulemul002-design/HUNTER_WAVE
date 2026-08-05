@@ -139,9 +139,22 @@ function TagChip({ tag }) {
 
 
 function Favicon({ url, customImage, size = 24 }) {
+  const [failed, setFailed] = useState(false);
   const src = customImage || `https://www.google.com/s2/favicons?domain=${url}&sz=64`;
-  return <img src={src} alt="" width={size} height={size} className="rounded-sm object-contain"
-    onError={e => { e.currentTarget.style.display = "none"; }} />;
+  if (failed) {
+    return (
+      <span
+        className="flex items-center justify-center w-full h-full text-blue-400/30 select-none"
+        style={{ fontSize: Math.round(size * 0.72) }}
+        aria-hidden="true"
+      >🪂</span>
+    );
+  }
+  return (
+    <img src={src} alt="" width={size} height={size}
+      className="rounded-sm object-contain"
+      onError={() => setFailed(true)} />
+  );
 }
 
 function FormInput({ label, ...props }) {
@@ -596,6 +609,73 @@ function TickerBanner({ texts = [] }) {
       <div className="w-full overflow-hidden border-b border-white/[0.06] py-2" style={{background:"linear-gradient(90deg,#080810,#0D0D1C,#080810)"}}>
         <div className="hw-ticker-track text-[12px] tracking-wide font-bold" style={{color:"rgba(147,197,253,0.92)"}}>
           {display}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── AIRDROP ICON STRIP (quick-navigation, hanya di tab Airdrop) ──
+function AirdropIconStrip({ airdrops }) {
+  const [paused, setPaused] = useState(false);
+  const resumeTimer = useRef(null);
+
+  function pauseStrip() {
+    setPaused(true);
+    clearTimeout(resumeTimer.current);
+    resumeTimer.current = setTimeout(() => setPaused(false), 2000);
+  }
+
+  function handleIconClick(id) {
+    pauseStrip();
+    const el = document.getElementById(`airdrop-card-${id}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Duplikat untuk seamless infinite loop
+  const items = [...airdrops, ...airdrops];
+
+  return (
+    <>
+      <style>{`
+        @keyframes hw-icon-scroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .hw-icon-scroll-track {
+          animation: hw-icon-scroll 28s linear infinite;
+          display: flex;
+          align-items: center;
+          width: max-content;
+          will-change: transform;
+          gap: 5px;
+          padding: 3px 6px;
+        }
+        .hw-icon-scroll-track.hw-paused {
+          animation-play-state: paused;
+        }
+      `}</style>
+      <div
+        className="w-full overflow-hidden border-b border-white/[0.06]"
+        style={{ background: "linear-gradient(90deg,#080810,#0D0D1C,#080810)" }}
+        onMouseEnter={pauseStrip}
+        onMouseLeave={() => { clearTimeout(resumeTimer.current); setPaused(false); }}
+        onTouchStart={pauseStrip}
+      >
+        <div className={`hw-icon-scroll-track${paused ? " hw-paused" : ""}`}>
+          {items.map((a, i) => (
+            <button
+              key={`${a.id}-${i}`}
+              onClick={() => handleIconClick(a.id)}
+              title={a.title}
+              className="flex-none w-[30px] h-[30px] rounded-full overflow-hidden bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center hover:ring-blue-400/50 active:scale-90 transition-all"
+            >
+              {a.icon
+                ? <span className="text-sm leading-none">{a.icon}</span>
+                : <Favicon url={a.url} customImage={a.customImage} size={22} />
+              }
+            </button>
+          ))}
         </div>
       </div>
     </>
@@ -1465,7 +1545,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
             const expanded = expandedId===item.id;
             const bmLevel = bookmarks.get(String(item.id)) || 0;
             return (
-              <div key={item.id} className={`card-shimmer rounded-2xl transition-all duration-300 ${expanded?"glass-card-blue":"glass-card"}`}>
+              <div key={item.id} id={`airdrop-card-${item.id}`} className={`card-shimmer rounded-2xl transition-all duration-300 ${expanded?"glass-card-blue":"glass-card"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:item.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
@@ -2119,9 +2199,12 @@ export default function App() {
           </div>
         </div>
 
-        {/* Ticker — fixed di semua layar: di bawah header (mobile) atau paling atas (desktop) */}
+        {/* Ticker / Quick-nav strip — fixed di semua layar: di bawah header (mobile) atau paling atas (desktop) */}
         <div className="fixed top-[52px] left-0 right-0 lg:top-0 lg:left-56 z-[39]">
-          <TickerBanner texts={ticker} />
+          {tab === "airdrops"
+            ? <AirdropIconStrip airdrops={airdrops} />
+            : <TickerBanner texts={ticker} />
+          }
         </div>
 
         {/* Loading overlay */}
