@@ -59,16 +59,16 @@
     "title": "Allscale",
     "url": "app.allscale.io/s/VDTqnEA",
     "customImage": "",
-    "tags": ["TON", "Stablecoin", "DeFi"],
-    "description": "Protokol pembayaran dan faktur otomatis berbasis stablecoin yang berjalan di ekosistem TON dan Telegram Mini App.",
+    "tags": ["EVM", "Payment", "Stablecoin", "DeFi"],
+    "description": "Platform pembayaran & payout stablecoin (USDT/USDC) di jaringan EVM (BNB, Base, Polygon, Arbitrum) dengan fitur Claim Link tanpa gas fee dan auto-yield.",
     "status": "Active",
-    "difficulty": "Medium",
-    "confirmationStatus": "confirmed",
+    "difficulty": "Easy",
+    "confirmationStatus": "rumored",
     "addedAt": "2026-08-02T10:04:00",
     "howToGuide": [
-      "Akses dApp Allscale dan hubungkan TON Wallet (misal: TONkeeper/MyTonWallet).",
-      "Lakukan uji coba fitur pembuatan link pembayaran atau simulasi transaksi invoicing.",
-      "Kerjakan task di Telegram Mini App mereka untuk mengamankan alokasi early user."
+      "Akses dApp Allscale melalui link referral dan hubungkan EVM Wallet (MetaMask, OKX, atau via Passkey/Email).",
+      "Coba buat atau terima transaksi Claim Link/Invoicing stablecoin untuk menguji fitur instant payout di EVM.",
+      "Selesaikan task di dashboard atau Telegram Mini App resmi mereka untuk mengamankan poin/alokasi reward pengguna awal."
     ]
   },
   {
@@ -358,5 +358,18 @@
       "Selesaikan misi harian seperti tugas interaksi media sosial (Twitter/X, Discord, Telegram) untuk mengumpulkan Poin Loyalty.",
       "Pantau papan peringkat (leaderboard) dan cek kampanye rutin untuk klaim badge atau bonus alokasi reward di masa mendatang."
     ]
+  },
+  {
+    "id": 27,
+    "icon": "",
+    "title": "Nullfee",
+    "url": "nullfee.app/register?ref=otgboysur",
+    "customImage": "",
+    "tags": ["DeFi", "DEX", "EVM"],
+    "description": "DEX lintas-chain pemberontak. Nol biaya. Chain tanpa batas. Trading dengan sungguh-sungguh.",
+    "status": "Active",
+    "difficulty": "Easy",
+    "confirmationStatus": "rumored",
+    "addedAt": "2026-08-05T16:00:00"
   }
 ]
