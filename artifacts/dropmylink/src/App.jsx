@@ -629,7 +629,20 @@ function AirdropIconStrip({ airdrops }) {
   function handleIconClick(id) {
     pauseStrip();
     const el = document.getElementById(`airdrop-card-${id}`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!el) return;
+
+    // Hitung offset sticky: fixed header + strip + sticky controls di AirdropScreen
+    // Mobile: 52px (header) + 36px (strip) + 130px (sub-tab+search+filter) + 8px gap = 226px
+    // Desktop ≥1024px: 36px (strip) + 130px (sticky controls) + 8px gap = 174px
+    const stickyOffset = window.innerWidth >= 1024 ? 174 : 226;
+    const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset;
+    window.scrollTo({ top, behavior: "smooth" });
+
+    // Glow effect: tambah class setelah scroll selesai (~600ms), hapus setelah 3 detik
+    setTimeout(() => {
+      el.classList.add("hw-card-glow");
+      setTimeout(() => el.classList.remove("hw-card-glow"), 3000);
+    }, 650);
   }
 
   // Duplikat untuk seamless infinite loop
@@ -653,6 +666,15 @@ function AirdropIconStrip({ airdrops }) {
         }
         .hw-icon-scroll-track.hw-paused {
           animation-play-state: paused;
+        }
+        @keyframes hw-card-glow-anim {
+          0%   { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 0 0 rgba(59,130,246,0); }
+          15%  { box-shadow: 0 0 0 2px rgba(59,130,246,0.7), 0 0 24px rgba(59,130,246,0.35); }
+          60%  { box-shadow: 0 0 0 2px rgba(59,130,246,0.45), 0 0 18px rgba(59,130,246,0.2); }
+          100% { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 0 0 rgba(59,130,246,0); }
+        }
+        .hw-card-glow {
+          animation: hw-card-glow-anim 3s ease-out forwards !important;
         }
       `}</style>
       <div
