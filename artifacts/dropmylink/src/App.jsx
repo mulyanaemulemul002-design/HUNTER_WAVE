@@ -350,7 +350,7 @@ function StatusLegend() {
 // ─── SIDEBAR NAV (desktop ≥ 1024px) ───────────────────────────
 function SidebarNav({ active, onSelect, onOpenSearch }) {
   const tabs = [
-    { id:"intro",    label:"Intro",        icon:Home },
+    // { id:"intro",    label:"Intro",        icon:Home },  // sementara dinonaktifkan
     { id:"info",     label:"Info Terkini", icon:Zap },
     { id:"airdrops", label:"Airdrop",      icon:LayoutGrid },
     { id:"bookmark", label:"Bookmark",     icon:Bookmark },
@@ -1830,7 +1830,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
 function BottomNav({ active, onSelect }) {
   const [poppedId, setPoppedId] = useState(null);
   const tabs = [
-    { id:"intro",    label:"Intro",       icon:Home },
+    // { id:"intro",    label:"Intro",       icon:Home },  // sementara dinonaktifkan
     { id:"info",     label:"Info Terkini",icon:Zap },
     { id:"airdrops", label:"Airdrop",     icon:LayoutGrid },
     { id:"bookmark", label:"Bookmark",    icon:Bookmark },
@@ -2097,7 +2097,8 @@ function GlobalSearch({ open, onClose, airdrops, p2p, calendar, tools, onNavigat
 
 // ─── MAIN APP ─────────────────────────────────────────────────
 export default function App() {
-  const [tab, setTab]             = useState("intro");
+  // Tab "intro" sementara dinonaktifkan — default ke "airdrops"
+  const [tab, setTab]             = useState("airdrops");
   const [searchOpen, setSearchOpen]     = useState(false);
   const [globalExpandId, setGlobalExpandId] = useState(null);
   const [discoverSection, setDiscoverSection] = useState(null);
