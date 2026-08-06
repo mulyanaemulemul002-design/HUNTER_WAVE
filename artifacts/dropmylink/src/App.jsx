@@ -683,9 +683,12 @@ function ToolsIconStrip({ tools }) {
     pauseStrip();
     const el = document.getElementById(`tool-card-${id}`);
     if (!el) return;
-    // Mobile: 52px header + 34px ticker + 37px tool-strip + 52px section-tabs + 8px buffer = 183px
-    // Desktop: 34px ticker + 37px tool-strip + 52px section-tabs + 8px buffer = 131px
-    const stickyOffset = window.innerWidth >= 1024 ? 131 : 183;
+    // Hitung offset dari DOM secara dinamis
+    // Fixed layer: mobile = 52px (logo bar) + 34px (ticker) = 86px | desktop = 34px (ticker)
+    const fixedHeight = window.innerWidth >= 1024 ? 34 : 86;
+    const stickyEl = document.getElementById("discover-sticky-header");
+    const stickyHeight = stickyEl ? stickyEl.offsetHeight : 0;
+    const stickyOffset = fixedHeight + stickyHeight + 12; // 12px breathing room
     const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset;
     window.scrollTo({ top, behavior: "smooth" });
     setTimeout(() => {
@@ -715,6 +718,15 @@ function ToolsIconStrip({ tools }) {
           padding: 3px 6px;
         }
         .hw-tool-scroll-track.hw-paused { animation-play-state: paused; }
+        @keyframes hw-card-glow-anim {
+          0%   { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 0 0 rgba(59,130,246,0); }
+          15%  { box-shadow: 0 0 0 2px rgba(59,130,246,0.7), 0 0 24px rgba(59,130,246,0.35); }
+          60%  { box-shadow: 0 0 0 2px rgba(59,130,246,0.45), 0 0 18px rgba(59,130,246,0.2); }
+          100% { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 0 0 rgba(59,130,246,0); }
+        }
+        .hw-card-glow {
+          animation: hw-card-glow-anim 3s ease-out forwards !important;
+        }
       `}</style>
       <div
         className="relative w-full overflow-x-hidden border-b border-white/[0.06] py-1.5"
@@ -1713,7 +1725,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
       </div>
 
       {/* ── STICKY: TOOL STRIP (tools tab) + SECTION TABS ── */}
-      <div className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]">
+      <div id="discover-sticky-header" className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]">
         {section === "tools" && <ToolsIconStrip tools={tools} />}
         <div className="bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
           <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
