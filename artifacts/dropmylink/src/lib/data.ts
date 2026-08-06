@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import rawAirdrops  from "../data/airdrops.json";
-import rawAds       from "../data/ads.json";
 import rawNews      from "../data/news.json";
 import rawQinfo     from "../data/qinfo.json";
 import rawTools     from "../data/tools.json";
@@ -115,17 +114,6 @@ export const AirdropSchema = z.object({
   addedAt:            z.string().min(1, { message: 'addedAt wajib diisi dengan format "YYYY-MM-DDTHH:mm:ss", misal "2026-07-27T10:05:00".' }),
 });
 
-export const AdSchema = z.object({
-  id:         z.number().int().positive(),
-  title:      z.string().min(1),
-  subtitle:   z.string().default(""),
-  imageUrl:   z.string().default(""),
-  imageRatio: z.string().default("16:9"),
-  buttonText: z.string().default(""),
-  targetUrl:  z.string().default(""),
-  active:     z.boolean().default(false),
-});
-
 export const NewsSchema = z.object({
   id:          z.number().int().positive(),
   title:       z.string().min(1),
@@ -181,7 +169,6 @@ export const CalendarSchema = z.object({
 // ─── INFERRED TYPES ───────────────────────────────────────────
 
 export type Airdrop  = z.infer<typeof AirdropSchema>;
-export type Ad       = z.infer<typeof AdSchema>;
 export type News     = z.infer<typeof NewsSchema>;
 export type Qinfo    = z.infer<typeof QinfoSchema>;
 export type Tool     = z.infer<typeof ToolSchema>;
@@ -191,7 +178,6 @@ export type Calendar = z.infer<typeof CalendarSchema>;
 // ─── ARRAY SCHEMAS (dengan validasi ID independen per file) ───
 
 const AirdropsArray  = z.array(AirdropSchema).superRefine(validateAirdropIds);
-const AdsArray       = z.array(AdSchema).superRefine(validateIds("ads.json"));
 const NewsArray      = z.array(NewsSchema).superRefine(validateIds("news.json"));
 const QinfoArray     = z.array(QinfoSchema).superRefine(validateIds("qinfo.json"));
 const ToolsArray     = z.array(ToolSchema).superRefine(validateIds("tools.json"));
@@ -205,15 +191,6 @@ export function getAirdrops(): Airdrop[] {
   if (!result.success) {
     console.error("[data] airdrops.json invalid:", result.error.flatten());
     throw new Error("airdrops.json validation failed — check console for details.");
-  }
-  return result.data;
-}
-
-export function getAds(): Ad[] {
-  const result = AdsArray.safeParse(rawAds);
-  if (!result.success) {
-    console.error("[data] ads.json invalid:", result.error.flatten());
-    throw new Error("ads.json validation failed — check console for details.");
   }
   return result.data;
 }

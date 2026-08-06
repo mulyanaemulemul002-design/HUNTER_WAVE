@@ -112,12 +112,11 @@ const BADGE_ALL = {
 const STATUS_STYLE = BADGE_ALL;
 
 
-// section:"cepat" → Info Cepat carousel | section:"teknis" → Info Teknis carousel
 const QINFO_BOARDS = [
-  { id:"garapan",    label:"Garapan Baru", icon:Rocket,     accent:"text-sky-400",    color:"from-sky-500/20 to-sky-900/10",     ring:"ring-sky-500/25",    section:"cepat"  },
-  { id:"tge",        label:"TGE",          icon:Zap,        accent:"text-amber-400",  color:"from-amber-500/20 to-amber-900/10", ring:"ring-amber-500/25",   section:"teknis" },
-  { id:"presale",    label:"Presale",      icon:TrendingUp, accent:"text-green-400",  color:"from-green-500/20 to-green-900/10", ring:"ring-green-500/25",   section:"teknis" },
-  { id:"tokenomics", label:"Tokenomics",   icon:BarChart2,  accent:"text-blue-300",   color:"from-blue-500/20 to-blue-900/10",  ring:"ring-blue-500/25",    section:"teknis" },
+  { id:"garapan",    label:"Garapan Baru", icon:Rocket,     accent:"text-sky-400",    color:"from-sky-500/20 to-sky-900/10",     ring:"ring-sky-500/25"   },
+  { id:"tge",        label:"TGE",          icon:Zap,        accent:"text-amber-400",  color:"from-amber-500/20 to-amber-900/10", ring:"ring-amber-500/25"  },
+  { id:"presale",    label:"Presale",      icon:TrendingUp, accent:"text-green-400",  color:"from-green-500/20 to-green-900/10", ring:"ring-green-500/25"  },
+  { id:"tokenomics", label:"Tokenomics",   icon:BarChart2,  accent:"text-blue-300",   color:"from-blue-500/20 to-blue-900/10",  ring:"ring-blue-500/25"   },
 ];
 
 const STATUS_OPTIONS   = ["Active","Upcoming","Testnet","Mainnet","Distributed"];
@@ -478,54 +477,17 @@ function QinfoBoardCard({ board, items }) {
   );
 }
 
-// ─── INFO CEPAT CAROUSEL (16:9 — Garapan Baru) ───────────────
-function InfoCepatCarousel({ qinfo }) {
-  const boards = QINFO_BOARDS.filter(b => b.section === "cepat");
+// ─── HIGHLIGHTS & RADAR CAROUSEL (16:9 — semua board gabungan) ──
+function HighlightsCarousel({ qinfo }) {
+  const boards = QINFO_BOARDS;
   const [idx, setIdx] = useCarousel(boards.length);
   if (!boards.length) return null;
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between px-5 mb-3">
-        <h2 className="text-sm font-bold text-white">🚀 Info Cepat</h2>
-        <CarouselDots count={boards.length} idx={idx} onSelect={setIdx} />
-      </div>
-      <div className="px-5">
-        <div className="relative overflow-hidden rounded-2xl">
-          <div className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${idx * 100}%)` }}>
-            {boards.map(board => (
-              <div key={board.id} className="flex-none w-full">
-                <QinfoBoardCard board={board} items={qinfo.filter(q => q.board === board.id)} />
-              </div>
-            ))}
-          </div>
-          {boards.length > 1 && <>
-            <button onClick={() => setIdx(i => (i - 1 + boards.length) % boards.length)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/15 flex items-center justify-center">
-              <ChevronLeft className="w-3.5 h-3.5 text-white/70"/>
-            </button>
-            <button onClick={() => setIdx(i => (i + 1) % boards.length)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/15 flex items-center justify-center">
-              <ChevronRight className="w-3.5 h-3.5 text-white/70"/>
-            </button>
-          </>}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── INFO TEKNIS CAROUSEL (16:9 — TGE / Presale / Tokenomics) ─
-function InfoTeknisCarousel({ qinfo }) {
-  const boards = QINFO_BOARDS.filter(b => b.section === "teknis");
-  const [idx, setIdx] = useCarousel(boards.length);
-  if (!boards.length) return null;
-  return (
-    <div className="mb-2">
-      <div className="flex items-center justify-between px-5 mb-3">
-        <h2 className="text-sm font-bold text-white">📊 Info Teknis</h2>
+        <h2 className="text-sm font-bold text-white">📌 Highlights & Radar Project</h2>
         <div className="flex items-center gap-1.5">
-          <span className="text-[10px] text-blue-400/50">{boards[idx]?.label}</span>
+          <span className="text-[10px] text-white/30">{boards[idx]?.label}</span>
           <CarouselDots count={boards.length} idx={idx} onSelect={setIdx} />
         </div>
       </div>
@@ -977,12 +939,11 @@ function InfoTerkiniScreen({ news, qinfo }) {
           <Zap className="w-5 h-5 text-blue-400"/>
           <h1 className="text-lg font-bold text-white">Info Terkini</h1>
         </div>
-        <p className="text-xs text-white/30 mt-1">Berita, iklan, dan update teknis terbaru</p>
+        <p className="text-xs text-white/30 mt-1">Radar project, berita, dan update terbaru</p>
       </div>
 
+      <HighlightsCarousel qinfo={qinfo} />
       <NewsCarousel news={news} />
-      <InfoCepatCarousel qinfo={qinfo} />
-      <InfoTeknisCarousel qinfo={qinfo} />
     </div>
   );
 }
