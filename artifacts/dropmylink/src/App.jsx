@@ -2231,7 +2231,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0A0A] text-white relative">
 
       {/* ── SIDEBAR NAV (desktop ≥ 1024px) ── */}
       <SidebarNav active={tab} onSelect={setTab} onOpenSearch={() => setSearchOpen(true)} />
