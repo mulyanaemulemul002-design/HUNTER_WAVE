@@ -681,9 +681,9 @@ function ToolsIconStrip({ tools }) {
     pauseStrip();
     const el = document.getElementById(`tool-card-${id}`);
     if (!el) return;
-    // Mobile: 52px header + 34px ticker + 50px section-tabs + 8px buffer = 144px
-    // Desktop: 34px ticker + 50px section-tabs + 8px buffer = 92px
-    const stickyOffset = window.innerWidth >= 1024 ? 92 : 144;
+    // Mobile: 52px header + 34px ticker + 37px tool-strip + 52px section-tabs + 8px buffer = 183px
+    // Desktop: 34px ticker + 37px tool-strip + 52px section-tabs + 8px buffer = 131px
+    const stickyOffset = window.innerWidth >= 1024 ? 131 : 183;
     const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset;
     window.scrollTo({ top, behavior: "smooth" });
     setTimeout(() => {
@@ -693,16 +693,18 @@ function ToolsIconStrip({ tools }) {
   }
 
   const items = [...tools, ...tools];
+  // Sesuaikan durasi agar kecepatan px/s sama dengan AirdropIconStrip (21 items, 28s)
+  const duration = Math.max(10, Math.round((tools.length / 21) * 28));
 
   return (
     <>
       <style>{`
-        @keyframes hw-icon-scroll {
+        @keyframes hw-tool-scroll {
           0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
-        .hw-icon-scroll-track {
-          animation: hw-icon-scroll 28s linear infinite;
+        .hw-tool-scroll-track {
+          animation: hw-tool-scroll ${duration}s linear infinite;
           display: flex;
           align-items: center;
           width: max-content;
@@ -710,23 +712,21 @@ function ToolsIconStrip({ tools }) {
           gap: 5px;
           padding: 3px 6px;
         }
-        .hw-icon-scroll-track.hw-paused { animation-play-state: paused; }
-        @keyframes hw-card-glow-anim {
-          0%   { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 0 0 rgba(59,130,246,0); }
-          15%  { box-shadow: 0 0 0 2px rgba(59,130,246,0.7), 0 0 24px rgba(59,130,246,0.35); }
-          60%  { box-shadow: 0 0 0 2px rgba(59,130,246,0.45), 0 0 18px rgba(59,130,246,0.2); }
-          100% { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 0 0 rgba(59,130,246,0); }
-        }
-        .hw-card-glow { animation: hw-card-glow-anim 3s ease-out forwards !important; }
+        .hw-tool-scroll-track.hw-paused { animation-play-state: paused; }
       `}</style>
       <div
-        className="w-full overflow-x-hidden border-b border-white/[0.06] py-1.5"
+        className="relative w-full overflow-x-hidden border-b border-white/[0.06] py-1.5"
         style={{ background: "linear-gradient(90deg,#080810,#0D0D1C,#080810)" }}
         onMouseEnter={pauseStrip}
         onMouseLeave={() => { clearTimeout(resumeTimer.current); setPaused(false); }}
         onTouchStart={pauseStrip}
       >
-        <div className={`hw-icon-scroll-track${paused ? " hw-paused" : ""}`}>
+        {/* Fade edges — pointer-events:none agar klik ikon tetap bisa */}
+        <div className="absolute left-0 top-0 bottom-0 w-10 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to right, #080810 0%, transparent 100%)" }} />
+        <div className="absolute right-0 top-0 bottom-0 w-10 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to left, #080810 0%, transparent 100%)" }} />
+        <div className={`hw-tool-scroll-track${paused ? " hw-paused" : ""}`}>
           {items.map((t, i) => (
             <button
               key={`${t.id}-${i}`}
@@ -1704,15 +1704,18 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
         <p className="text-xs text-white/30 mt-0.5">P2P, Kalender, dan Platform Tools</p>
       </div>
 
-      {/* ── STICKY SECTION TABS ── */}
-      <div className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
-        <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
-          {[{id:"p2p",label:"P2P Seller",icon:Users},{id:"calendar",label:"Kalender",icon:Calendar},{id:"tools",label:"Platform & Tools",icon:Lightbulb}].map(({id,label,icon:Icon})=>(
-            <button key={id} onClick={()=>setSection(id)}
-              className={`flex-none flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold ring-1 transition-all ${section===id?"bg-blue-500 text-white ring-blue-500":"bg-blue-500/[0.08] ring-blue-500/20 text-white/50 hover:text-blue-300"}`}>
-              <Icon className="w-3.5 h-3.5"/>{label}
-            </button>
-          ))}
+      {/* ── STICKY: TOOL STRIP (tools tab) + SECTION TABS ── */}
+      <div className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]">
+        {section === "tools" && <ToolsIconStrip tools={tools} />}
+        <div className="bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
+          <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
+            {[{id:"p2p",label:"P2P Seller",icon:Users},{id:"calendar",label:"Kalender",icon:Calendar},{id:"tools",label:"Platform & Tools",icon:Lightbulb}].map(({id,label,icon:Icon})=>(
+              <button key={id} onClick={()=>setSection(id)}
+                className={`flex-none flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold ring-1 transition-all ${section===id?"bg-blue-500 text-white ring-blue-500":"bg-blue-500/[0.08] ring-blue-500/20 text-white/50 hover:text-blue-300"}`}>
+                <Icon className="w-3.5 h-3.5"/>{label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -1826,7 +1829,6 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
 
       {section==="tools" && (
         <div>
-          <ToolsIconStrip tools={tools} />
           <div className="px-5 flex flex-col gap-3 pt-3">
           {tools.map(tool=>{
             const open      = expandedItem === tool.id;
