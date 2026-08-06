@@ -593,10 +593,11 @@ function AirdropIconStrip({ airdrops }) {
     const el = document.getElementById(`airdrop-card-${id}`);
     if (!el) return;
 
-    // Hitung offset sticky: fixed header + strip + sticky controls di AirdropScreen
-    // Mobile: 52px (header) + 36px (strip) + 130px (sub-tab+search+filter) + 8px gap = 226px
-    // Desktop ≥1024px: 36px (strip) + 130px (sticky controls) + 8px gap = 174px
-    const stickyOffset = window.innerWidth >= 1024 ? 174 : 226;
+    // Hitung offset sticky: fixed header + strip + sticky container (title + controls)
+    // Judul (~65px) sekarang ikut sticky bersama controls (~130px)
+    // Mobile: 52px (header) + 36px (strip) + 65px (title) + 130px (controls) + 8px gap = 291px
+    // Desktop ≥1024px: 36px (strip) + 65px (title) + 130px (controls) + 8px gap = 239px
+    const stickyOffset = window.innerWidth >= 1024 ? 239 : 291;
     const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset;
     window.scrollTo({ top, behavior: "smooth" });
 
@@ -1538,14 +1539,19 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
 
   return (
     <div className="pb-32">
-      <div className="px-5 pt-6 mb-4">
-        <h1 className="text-lg font-bold text-white">🪂 Airdrop List</h1>
-        <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
-      </div>
 
-      {/* ── CONTROLS — sticky di bawah icon strip ── */}
+      {/* ── STICKY CONTAINER — title + controls semua dikunci bersama ── */}
       {/* Mobile: header(52) + strip(34) = top-86 | Desktop: strip(34) = top-34 */}
-      <div className="sticky top-[86px] lg:top-[34px] z-[30] bg-[#0A0A0A] pb-3 px-5 pt-1 border-b border-white/[0.05]">
+      <div className="sticky top-[86px] lg:top-[34px] z-40 bg-[#0a0b0d] border-b border-white/[0.05]">
+
+        {/* Judul */}
+        <div className="px-5 pt-4 pb-2">
+          <h1 className="text-lg font-bold text-white">🪂 Airdrop List</h1>
+          <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
+        </div>
+
+        {/* Controls: tabs + search + filter */}
+        <div className="pb-3 px-5 pt-1">
 
         {/* Sub-tabs: All / Confirmed / Rumored */}
         <div className="flex border-b border-white/[0.06] mb-3">
@@ -1595,7 +1601,8 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
             )}
           </div>
         </div>
-      </div>
+        </div>{/* end controls */}
+      </div>{/* end sticky container */}
 
       <div className="px-5 pt-3">
         <p className="text-[11px] text-white/25 mb-3 flex items-center flex-wrap gap-1">
