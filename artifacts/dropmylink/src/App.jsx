@@ -1543,8 +1543,9 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
         <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
       </div>
 
-      {/* ── CONTROLS ── */}
-      <div className="bg-[#0A0A0A] pb-3 px-5 pt-1 border-b border-white/[0.05]">
+      {/* ── CONTROLS — sticky di bawah icon strip ── */}
+      {/* Mobile: header(52) + strip(34) = top-86 | Desktop: strip(34) = top-34 */}
+      <div className="sticky top-[86px] lg:top-[34px] z-[30] bg-[#0A0A0A] pb-3 px-5 pt-1 border-b border-white/[0.05]">
 
         {/* Sub-tabs: All / Confirmed / Rumored */}
         <div className="flex border-b border-white/[0.06] mb-3">
