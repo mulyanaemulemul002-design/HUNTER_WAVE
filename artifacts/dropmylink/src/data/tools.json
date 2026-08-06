@@ -7,7 +7,7 @@
     "customImage": "",
     "category": "Quest Platform",
     "description": "Platform quest & campaign Web3 terbesar. Selesaikan task on-chain/off-chain untuk earn points, NFT, dan token. Banyak proyek besar pakai Galxe untuk distribusi airdrop.",
-    "targetUrl": "https://galxe.com"
+    "targetUrl": "https://app.galxe.com/hub/invite?code=GICyJr43Nj1NK3WggE4v70avag_HIhSGJPkkOBNBTw="
   },
   {
     "id": 2,
@@ -32,11 +32,81 @@
   {
     "id": 4,
     "icon": "",
+    "title": "Onchain Daily",
+    "url": "onchaindaily.io",
+    "customImage": "",
+    "category": "Quest Platform",
+    "description": "Platform quest dan daily check-in Web3 untuk membangun rekam jejak on-chain history, mengumpulkan poin harian, dan memperbesar peluang airdrop.",
+    "targetUrl": "https://www.onchaindaily.io?ref=O79BYS"
+  },
+  {
+    "id": 5,
+    "icon": "",
+    "title": "Superboard",
+    "url": "superboard.xyz",
+    "customImage": "",
+    "category": "Quest Platform",
+    "description": "Platform eksplorasi Web3 dan quest interaktif untuk mempelajari berbagai ekosistem blockchain, menyelesaikan misi on-chain, dan mendapatkan badge serta reward.",
+    "targetUrl": "https://www.superboard.xyz/"
+  },
+  {
+    "id": 6,
+    "icon": "",
+    "title": "Arkada GG",
+    "url": "arkada.gg",
+    "customImage": "",
+    "category": "Quest Platform",
+    "description": "Platform gamified quest dan engagement Web3. Selesaikan misi game dan sosial untuk mengumpulkan poin serta hadiah eksklusif.",
+    "targetUrl": "https://app.arkada.gg/?ref=GLK9P"
+  },
+  {
+    "id": 7,
+    "icon": "",
+    "title": "Nomis Score",
+    "url": "nomis.cc",
+    "customImage": "",
+    "category": "Tools",
+    "description": "Protokol identitas dan wallet reputation scoring multichain. Membantu mengukur keaktifan wallet, skor reputasi on-chain, serta kelayakan airdrop Sybil-resistant.",
+    "targetUrl": "https://nomis.cc/scores/multichain?ref=chlIEOdMWg"
+  },
+  {
+    "id": 8,
+    "icon": "",
     "title": "Onchain GM",
-    "url": "onchaingm.io",
+    "url": "onchaingm.com",
     "customImage": "",
     "category": "Dashboard",
-    "description": "Tool untuk cek aktivitas on-chain harian. Kirim GM on-chain setiap hari untuk build streak dan meningkatkan eligibility airdrop berbasis aktivitas.",
-    "targetUrl": "https://onchaingm.io"
+    "description": "Dashboard daily check-in dan tracker aktivitas on-chain harian. Bangun streak interaksi smart contract kamu di berbagai jaringan blockchain.",
+    "targetUrl": "https://onchaingm.com?ref=0xfb0792130e2218FA7bEf32eB5a023366F8B5D644"
+  },
+  {
+    "id": 9,
+    "icon": "",
+    "title": "ZNS Connect",
+    "url": "zns.bio",
+    "customImage": "",
+    "category": "Tools",
+    "description": "Layanan nama domain terdesentralisasi (Web3 Domain & Bio) untuk membuat identitas digital on-chain dan profil Web3 personal.",
+    "targetUrl": "https://zns.bio/?ref=MzBmNzkyZG"
+  },
+  {
+    "id": 10,
+    "icon": "",
+    "title": "Merkl",
+    "url": "merkl.xyz",
+    "customImage": "",
+    "category": "Tools",
+    "description": "Platform distribusi reward DeFi yang mengoptimalkan alokasi yield dan incentive liquidity provider secara efisien dan transparan.",
+    "targetUrl": "https://app.merkl.xyz"
+  },
+  {
+    "id": 11,
+    "icon": "",
+    "title": "Layer3",
+    "url": "layer3.xyz",
+    "customImage": "",
+    "category": "Quest Platform",
+    "description": "Platform edukasi dan quest interaktif terpopuler di Web3. Selesaikan jalur pembelajaran (quests) on-chain untuk mengeksplorasi ekosistem baru dan klaim CUBE/reward.",
+    "targetUrl": "https://app.layer3.xyz"
   }
 ]

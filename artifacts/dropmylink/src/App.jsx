@@ -704,6 +704,86 @@ function AirdropIconStrip({ airdrops }) {
   );
 }
 
+// ─── TOOLS ICON STRIP (quick-navigation, khusus Platform & Tools) ──
+function ToolsIconStrip({ tools }) {
+  const [paused, setPaused] = useState(false);
+  const resumeTimer = useRef(null);
+
+  function pauseStrip() {
+    setPaused(true);
+    clearTimeout(resumeTimer.current);
+    resumeTimer.current = setTimeout(() => setPaused(false), 2000);
+  }
+
+  function handleIconClick(id) {
+    pauseStrip();
+    const el = document.getElementById(`tool-card-${id}`);
+    if (!el) return;
+    // Mobile: 52px header + 34px ticker + 50px section-tabs + 8px buffer = 144px
+    // Desktop: 34px ticker + 50px section-tabs + 8px buffer = 92px
+    const stickyOffset = window.innerWidth >= 1024 ? 92 : 144;
+    const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset;
+    window.scrollTo({ top, behavior: "smooth" });
+    setTimeout(() => {
+      el.classList.add("hw-card-glow");
+      setTimeout(() => el.classList.remove("hw-card-glow"), 3000);
+    }, 650);
+  }
+
+  const items = [...tools, ...tools];
+
+  return (
+    <>
+      <style>{`
+        @keyframes hw-icon-scroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .hw-icon-scroll-track {
+          animation: hw-icon-scroll 28s linear infinite;
+          display: flex;
+          align-items: center;
+          width: max-content;
+          will-change: transform;
+          gap: 5px;
+          padding: 3px 6px;
+        }
+        .hw-icon-scroll-track.hw-paused { animation-play-state: paused; }
+        @keyframes hw-card-glow-anim {
+          0%   { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 0 0 rgba(59,130,246,0); }
+          15%  { box-shadow: 0 0 0 2px rgba(59,130,246,0.7), 0 0 24px rgba(59,130,246,0.35); }
+          60%  { box-shadow: 0 0 0 2px rgba(59,130,246,0.45), 0 0 18px rgba(59,130,246,0.2); }
+          100% { box-shadow: 0 0 0 0 rgba(59,130,246,0), 0 0 0 rgba(59,130,246,0); }
+        }
+        .hw-card-glow { animation: hw-card-glow-anim 3s ease-out forwards !important; }
+      `}</style>
+      <div
+        className="w-full overflow-x-hidden border-b border-white/[0.06] py-1.5"
+        style={{ background: "linear-gradient(90deg,#080810,#0D0D1C,#080810)" }}
+        onMouseEnter={pauseStrip}
+        onMouseLeave={() => { clearTimeout(resumeTimer.current); setPaused(false); }}
+        onTouchStart={pauseStrip}
+      >
+        <div className={`hw-icon-scroll-track${paused ? " hw-paused" : ""}`}>
+          {items.map((t, i) => (
+            <button
+              key={`${t.id}-${i}`}
+              onClick={() => handleIconClick(t.id)}
+              title={t.title}
+              className="flex-none w-[30px] h-[30px] rounded-full overflow-hidden bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center hover:ring-blue-400/50 active:scale-90 transition-all"
+            >
+              {t.icon
+                ? <span className="text-sm leading-none">{t.icon}</span>
+                : <Favicon url={t.url} customImage={t.customImage} size={22} />
+              }
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ─── INTRO SCREEN ─────────────────────────────────────────────
 const DYOR_TEXT = `Airdrop bersifat spekulatif tidak ada jaminan proyek bakal TGE, apalagi worth farming dalam jangka panjang. Prosesnya bisa makan waktu berbulan-bulan sampai tahunan, dan proyek bisa aja shutdown di tengah jalan tanpa distribusi apa pun.
 Jangan jadikan airdrop sebagai sumber penghasilan utama. Disarankan fokus di lebih dari 5+ proyek sekaligus biar waktu dan effort lu gak kebagi terlalu tipis. Platform tidak bertanggung jawab atas kerugian waktu maupun aset yang timbul.`;
@@ -1783,12 +1863,14 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
       )}
 
       {section==="tools" && (
-        <div className="px-5 flex flex-col gap-3">
+        <div>
+          <ToolsIconStrip tools={tools} />
+          <div className="px-5 flex flex-col gap-3 pt-3">
           {tools.map(tool=>{
             const open      = expandedItem === tool.id;
             const saved     = toolBookmarks && toolBookmarks.has(String(tool.id));
             return (
-              <div key={tool.id} className={`card-shimmer rounded-2xl transition-all duration-300 ${open?"glass-card-blue":"glass-card"}`}>
+              <div key={tool.id} id={`tool-card-${tool.id}`} className={`card-shimmer rounded-2xl transition-all duration-300 ${open?"glass-card-blue":"glass-card"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedItem(open?null:tool.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
                     <Favicon url={tool.url} customImage={tool.customImage}/>
@@ -1828,6 +1910,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
               </div>
             );
           })}
+          </div>
         </div>
       )}
     </div>
