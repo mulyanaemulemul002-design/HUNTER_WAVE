@@ -121,7 +121,7 @@ const QINFO_BOARDS = [
 ];
 
 const STATUS_OPTIONS   = ["Active","Upcoming","Testnet","Mainnet","Distributed"];
-const QINFO_STATUS     = ["Soon","Confirmed","Active","Upcoming","New","Rumored"];
+const QINFO_STATUS     = ["Soon","Confirmed","Active","Upcoming","New","Potensial"];
 const DIFFICULTY_OPTIONS = ["Easy","Medium","Hard"];
 const NEWS_COLORS = [
   { label:"Biru Tua",  value:"from-blue-700/40 to-blue-900/20" },
@@ -678,7 +678,7 @@ function AirdropIconStrip({ airdrops }) {
         }
       `}</style>
       <div
-        className="w-full overflow-hidden border-b border-white/[0.06]"
+        className="w-full overflow-x-hidden border-b border-white/[0.06] py-1.5"
         style={{ background: "linear-gradient(90deg,#080810,#0D0D1C,#080810)" }}
         onMouseEnter={pauseStrip}
         onMouseLeave={() => { clearTimeout(resumeTimer.current); setPaused(false); }}
@@ -1431,7 +1431,7 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
 const CONFIRM_TABS = [
   { id: "all",       label: "All" },
   { id: "confirmed", label: "Confirmed" },
-  { id: "rumored",   label: "Rumored" },
+  { id: "rumored",   label: "Potensial" },
 ];
 
 function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId }) {
@@ -1502,8 +1502,8 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
         <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
       </div>
 
-      {/* ── STICKY CONTROLS ── */}
-      <div className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]/90 backdrop-blur-md pb-3 px-5 pt-1 border-b border-white/[0.05]">
+      {/* ── CONTROLS ── */}
+      <div className="bg-[#0A0A0A] pb-3 px-5 pt-1 border-b border-white/[0.05]">
 
         {/* Sub-tabs: All / Confirmed / Rumored */}
         <div className="flex border-b border-white/[0.06] mb-3">
@@ -1556,10 +1556,9 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
       </div>
 
       <div className="px-5 pt-3">
-        <StatusLegend />
         <p className="text-[11px] text-white/25 mb-3 flex items-center flex-wrap gap-1">
           <span>{filtered.length} hasil</span>
-          {confirmTab !== "all" && <><span>·</span><span className="text-blue-400/70">{confirmTab === "confirmed" ? "Confirmed" : "Rumored"}</span></>}
+          {confirmTab !== "all" && <><span>·</span><span className="text-blue-400/70">{confirmTab === "confirmed" ? "Confirmed" : "Potensial"}</span></>}
           {activeTag !== "All" && <><span>·</span><span className="text-blue-400">{activeTag}</span></>}
         </p>
         <div className="flex flex-col gap-3">
@@ -1578,19 +1577,6 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-1 ${STATUS_STYLE[item.status]||STATUS_STYLE.Active}`}>{item.status}</span>
                     </div>
                   </div>
-                  <button
-                    onClick={e=>{e.stopPropagation();handleToggleBookmark(item.id);}}
-                    className={`w-8 h-8 rounded-xl flex items-center justify-center ring-1 transition-all flex-shrink-0
-                      ${bmLevel===0?"bg-white/[0.04] ring-white/[0.08] hover:bg-white/[0.08]":
-                        bmLevel===1?"bg-yellow-500/20 ring-yellow-500/40":
-                        bmLevel===2?"bg-blue-500/20 ring-blue-500/40":
-                        "bg-red-500/20 ring-red-500/40"}`}>
-                    <Bookmark className={`w-3.5 h-3.5 transition-all ${burstId===item.id?"bm-burst":""}
-                      ${bmLevel===0?"text-white/25":
-                        bmLevel===1?"text-yellow-400 fill-yellow-400":
-                        bmLevel===2?"text-blue-400 fill-blue-400":
-                        "text-red-400 fill-red-400"}`}/>
-                  </button>
                 </div>
                 {expanded && (
                   <div className="px-4 pb-4 pt-3 border-t border-blue-500/[0.12]">
