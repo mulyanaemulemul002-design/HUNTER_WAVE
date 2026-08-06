@@ -593,11 +593,12 @@ function AirdropIconStrip({ airdrops }) {
     const el = document.getElementById(`airdrop-card-${id}`);
     if (!el) return;
 
-    // Hitung offset sticky: fixed header + strip + sticky container (title + controls)
-    // Judul (~65px) sekarang ikut sticky bersama controls (~130px)
-    // Mobile: 52px (header) + 36px (strip) + 65px (title) + 130px (controls) + 8px gap = 291px
-    // Desktop ≥1024px: 36px (strip) + 65px (title) + 130px (controls) + 8px gap = 239px
-    const stickyOffset = window.innerWidth >= 1024 ? 239 : 291;
+    // Hitung offset dari DOM secara dinamis supaya akurat meski tinggi header berubah
+    // Fixed layer: mobile = 52px (logo bar) + 34px (strip) = 86px | desktop = 34px (strip)
+    const fixedHeight = window.innerWidth >= 1024 ? 34 : 86;
+    const stickyEl = document.getElementById("airdrop-sticky-header");
+    const stickyHeight = stickyEl ? stickyEl.offsetHeight : 0;
+    const stickyOffset = fixedHeight + stickyHeight + 12; // 12px breathing room
     const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset;
     window.scrollTo({ top, behavior: "smooth" });
 
@@ -1542,7 +1543,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
 
       {/* ── STICKY CONTAINER — title + controls semua dikunci bersama ── */}
       {/* Mobile: header(52) + strip(34) = top-86 | Desktop: strip(34) = top-34 */}
-      <div className="sticky top-[86px] lg:top-[34px] z-40 bg-[#0a0b0d] border-b border-white/[0.05]">
+      <div id="airdrop-sticky-header" className="sticky top-[86px] lg:top-[34px] z-40 bg-[#0a0b0d] border-b border-white/[0.05]">
 
         {/* Judul */}
         <div className="px-5 pt-4 pb-2">
