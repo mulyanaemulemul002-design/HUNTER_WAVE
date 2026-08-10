@@ -577,6 +577,26 @@ function TickerBanner({ texts = [] }) {
   );
 }
 
+// ─── SHARED CARD NAVIGATION ────────────────────────────────────
+// Icon strips and Global Search use the same scroll/highlight behavior.
+function scrollToCard({ id, cardPrefix, stickyId }) {
+  const el = document.getElementById(`${cardPrefix}-${String(id)}`);
+  if (!el) return false;
+
+  const fixedHeight = window.innerWidth >= 1024 ? 34 : 86;
+  const stickyEl = document.getElementById(stickyId);
+  const stickyHeight = stickyEl ? stickyEl.offsetHeight : 0;
+  const stickyOffset = fixedHeight + stickyHeight + 12;
+  const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset;
+  window.scrollTo({ top, behavior: "smooth" });
+
+  setTimeout(() => {
+    el.classList.add("hw-card-glow");
+    setTimeout(() => el.classList.remove("hw-card-glow"), 3000);
+  }, 650);
+  return true;
+}
+
 // ─── AIRDROP ICON STRIP (quick-navigation, hanya di tab Airdrop) ──
 function AirdropIconStrip({ airdrops }) {
   const [paused, setPaused] = useState(false);
@@ -590,23 +610,7 @@ function AirdropIconStrip({ airdrops }) {
 
   function handleIconClick(id) {
     pauseStrip();
-    const el = document.getElementById(`airdrop-card-${id}`);
-    if (!el) return;
-
-    // Hitung offset dari DOM secara dinamis supaya akurat meski tinggi header berubah
-    // Fixed layer: mobile = 52px (logo bar) + 34px (strip) = 86px | desktop = 34px (strip)
-    const fixedHeight = window.innerWidth >= 1024 ? 34 : 86;
-    const stickyEl = document.getElementById("airdrop-sticky-header");
-    const stickyHeight = stickyEl ? stickyEl.offsetHeight : 0;
-    const stickyOffset = fixedHeight + stickyHeight + 12; // 12px breathing room
-    const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset;
-    window.scrollTo({ top, behavior: "smooth" });
-
-    // Glow effect: tambah class setelah scroll selesai (~600ms), hapus setelah 3 detik
-    setTimeout(() => {
-      el.classList.add("hw-card-glow");
-      setTimeout(() => el.classList.remove("hw-card-glow"), 3000);
-    }, 650);
+    scrollToCard({ id, cardPrefix: "airdrop-card", stickyId: "airdrop-sticky-header" });
   }
 
   // Duplikat untuk seamless infinite loop
@@ -681,20 +685,7 @@ function ToolsIconStrip({ tools }) {
 
   function handleIconClick(id) {
     pauseStrip();
-    const el = document.getElementById(`tool-card-${id}`);
-    if (!el) return;
-    // Hitung offset dari DOM secara dinamis
-    // Fixed layer: mobile = 52px (logo bar) + 34px (ticker) = 86px | desktop = 34px (ticker)
-    const fixedHeight = window.innerWidth >= 1024 ? 34 : 86;
-    const stickyEl = document.getElementById("discover-sticky-header");
-    const stickyHeight = stickyEl ? stickyEl.offsetHeight : 0;
-    const stickyOffset = fixedHeight + stickyHeight + 12; // 12px breathing room
-    const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset;
-    window.scrollTo({ top, behavior: "smooth" });
-    setTimeout(() => {
-      el.classList.add("hw-card-glow");
-      setTimeout(() => el.classList.remove("hw-card-glow"), 3000);
-    }, 650);
+    scrollToCard({ id, cardPrefix: "tool-card", stickyId: "discover-sticky-header" });
   }
 
   const items = [...tools, ...tools];
@@ -1489,7 +1480,7 @@ const CONFIRM_TABS = [
   { id: "rumored",   label: "Potensial" },
 ];
 
-function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId }) {
+function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget }) {
   const [search, setSearch]           = useState("");
   const [activeTag, setActiveTag]     = useState("All");
   const [filterOpen, setFilterOpen]   = useState(false);
@@ -1499,13 +1490,31 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
   const [copiedId, setCopiedId]       = useState(null);
   const [burstId, setBurstId]         = useState(null);
 
-  // Auto-expand card navigated from Global Search
+  // Expand the requested card after navigation. Scrolling is deliberately in
+  // a second effect so it runs against the mounted card DOM.
   useEffect(() => {
-    if (initialExpandId) {
-      setExpandedId(initialExpandId);
+    if (navigationTarget?.type === "airdrop") {
+      setSearch("");
+      setActiveTag("All");
+      setFilterOpen(false);
+      setGuideOpenId(null);
+      const matchingItem = airdrops.find(item => String(item.id) === String(navigationTarget.id));
+      setExpandedId(matchingItem?.id ?? navigationTarget.id);
       setConfirmTab("all");
     }
-  }, [initialExpandId]);
+  }, [navigationTarget, airdrops]);
+
+  useEffect(() => {
+    if (navigationTarget?.type !== "airdrop") return;
+    const frame = requestAnimationFrame(() => {
+      scrollToCard({
+        id: navigationTarget.id,
+        cardPrefix: "airdrop-card",
+        stickyId: "airdrop-sticky-header",
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [navigationTarget, confirmTab, search, activeTag]);
 
   function handleToggleBookmark(id) {
     onToggleBookmark(id);
@@ -1553,20 +1562,14 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
   return (
     <div className="pb-32">
 
-      {/* ── STICKY CONTAINER — title + controls semua dikunci bersama ── */}
-      {/* Mobile: header(52) + strip(34) = top-86 | Desktop: strip(34) = top-34 */}
-      <div id="airdrop-sticky-header" className="sticky top-[86px] lg:top-[34px] z-40 bg-[#0a0b0d] border-b border-white/[0.05]">
-
-        {/* Judul */}
-        <div className="px-5 pt-4 pb-2">
-          <h1 className="text-lg font-bold text-white">🪂 Airdrop List</h1>
-          <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
-        </div>
-
-        {/* Controls: tabs + search + filter */}
-        <div className="pb-3 px-5 pt-1">
+      {/* Judul tetap berada di document flow dan ikut scroll ke atas. */}
+      <div className="px-5 pt-4 pb-2">
+        <h1 className="text-lg font-bold text-white">🪂 Airdrop List</h1>
+        <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
+      </div>
 
         {/* Sub-tabs: All / Confirmed / Rumored */}
+      <div className="px-5 pt-1">
         <div className="flex border-b border-white/[0.06] mb-3">
           {CONFIRM_TABS.map(({id, label})=>{
             const count = id === "all"
@@ -1585,7 +1588,12 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
             );
           })}
         </div>
+      </div>
 
+      {/* Hanya search + filter yang sticky: mobile top = header + strip,
+          desktop = strip. Judul dan sub-tabs tetap ikut scroll normal. */}
+      <div id="airdrop-sticky-header" className="sticky top-[86px] lg:top-[34px] z-40 bg-[#0a0b0d] border-b border-white/[0.05]">
+        <div className="pb-3 px-5 pt-1">
         {/* Search bar */}
         <div className="relative mb-2.5">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400/50 pointer-events-none"/>
@@ -1614,8 +1622,8 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
             )}
           </div>
         </div>
-        </div>{/* end controls */}
-      </div>{/* end sticky container */}
+      </div>
+      </div>
 
       <div className="px-5 pt-3">
         <p className="text-[11px] text-white/25 mb-3 flex items-center flex-wrap gap-1">
@@ -1702,7 +1710,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, initialExpandId 
 }
 
 // ─── DISCOVER SCREEN ──────────────────────────────────────────
-function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookmark, requestSection }) {
+function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookmark, requestSection, navigationTarget }) {
   const [section, setSection]       = useState(requestSection || "p2p");
   const [expandedItem, setExpandedItem] = useState(null);
   const [copiedToolId, setCopiedToolId] = useState(null);
@@ -1711,6 +1719,20 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
   useEffect(() => {
     if (requestSection) setSection(requestSection);
   }, [requestSection]);
+
+  // Wait for the requested Discover subsection to become active and render
+  // before using the same scroll/highlight handler as the tools icon strip.
+  useEffect(() => {
+    if (navigationTarget?.type !== "tool" || section !== "tools") return;
+    const frame = requestAnimationFrame(() => {
+      scrollToCard({
+        id: navigationTarget.id,
+        cardPrefix: "tool-card",
+        stickyId: "discover-sticky-header",
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [navigationTarget, section]);
 
   function copyToolUrl(tool) {
     navigator.clipboard.writeText(tool.targetUrl || `https://${tool.url}`).catch(()=>{});
@@ -2175,7 +2197,7 @@ export default function App() {
   // Tab "intro" sementara dinonaktifkan — default ke "airdrops"
   const [tab, setTab]             = useState("airdrops");
   const [searchOpen, setSearchOpen]     = useState(false);
-  const [globalExpandId, setGlobalExpandId] = useState(null);
+  const [navigationTarget, setNavigationTarget] = useState(null);
   const [discoverSection, setDiscoverSection] = useState(null);
   const [airdrops, setAirdrops] = useState(DEF_AIRDROPS);
   const [news, setNews]         = useState(DEF_NEWS);
@@ -2229,12 +2251,10 @@ export default function App() {
 
   // ─── GLOBAL SEARCH NAVIGATION ─────────────────────────────
   const handleSearchNavigate = useCallback(({ tab: destTab, type, id, discoverSection: ds }) => {
+    // Update the destination first. The destination component owns the
+    // post-render scroll effect, so this handler never queries the DOM early.
     setTab(destTab);
-    if (type === "airdrop") {
-      setGlobalExpandId(id);
-      // Clear after a tick so AirdropScreen's useEffect can fire on re-navigate to same id
-      setTimeout(() => setGlobalExpandId(null), 500);
-    }
+    setNavigationTarget({ type, id: String(id), requestId: `${type}-${String(id)}-${Date.now()}` });
     if (ds) setDiscoverSection(ds);
   }, []);
 
@@ -2297,9 +2317,9 @@ export default function App() {
         <div className="relative z-10 max-w-xl mx-auto pt-[86px] lg:pt-[34px]">
           {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} />}
           {tab==="info"     && <InfoTerkiniScreen news={news} qinfo={qinfo} />}
-          {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} initialExpandId={globalExpandId} />}
+          {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} navigationTarget={navigationTarget} />}
           {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
-          {tab==="discover" && <DiscoverScreen tools={tools} p2p={p2p} calendar={calendar} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} requestSection={discoverSection} />}
+          {tab==="discover" && <DiscoverScreen tools={tools} p2p={p2p} calendar={calendar} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} requestSection={discoverSection} navigationTarget={navigationTarget} />}
         </div>
 
         <BottomNav active={tab} onSelect={setTab} />
