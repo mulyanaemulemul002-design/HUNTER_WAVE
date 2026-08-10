@@ -1562,15 +1562,17 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
   return (
     <div className="pb-32">
 
-      {/* Judul tetap berada di document flow dan ikut scroll ke atas. */}
-      <div className="px-5 pt-4 pb-2">
-        <h1 className="text-lg font-bold text-white">🪂 Airdrop List</h1>
-        <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
-      </div>
+      {/* Sticky hanya sampai judul + jumlah proyek + tab status.
+          Search dan Filter di bawahnya tetap berada di document flow. */}
+      <div id="airdrop-sticky-header" className="sticky top-[86px] lg:top-[34px] z-40 bg-[#0a0b0d] border-b border-white/[0.05]">
+        <div className="px-5 pt-4 pb-2">
+          <h1 className="text-lg font-bold text-white">🪂 Airdrop List</h1>
+          <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
+        </div>
 
         {/* Sub-tabs: All / Confirmed / Rumored */}
-      <div className="px-5 pt-1">
-        <div className="flex border-b border-white/[0.06] mb-3">
+        <div className="px-5 pt-1">
+          <div className="flex border-b border-white/[0.06]">
           {CONFIRM_TABS.map(({id, label})=>{
             const count = id === "all"
               ? airdrops.length
@@ -1587,13 +1589,12 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
               </button>
             );
           })}
+          </div>
         </div>
       </div>
 
-      {/* Hanya search + filter yang sticky: mobile top = header + strip,
-          desktop = strip. Judul dan sub-tabs tetap ikut scroll normal. */}
-      <div id="airdrop-sticky-header" className="sticky top-[86px] lg:top-[34px] z-40 bg-[#0a0b0d] border-b border-white/[0.05]">
-        <div className="pb-3 px-5 pt-1">
+      {/* Search + Filter normal flow; tidak ikut sticky dan tidak akan terpotong. */}
+      <div className="px-5 pt-3 pb-3">
         {/* Search bar */}
         <div className="relative mb-2.5">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400/50 pointer-events-none"/>
@@ -1623,9 +1624,8 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
           </div>
         </div>
       </div>
-      </div>
 
-      <div className="px-5 pt-3">
+      <div className="px-5">
         <p className="text-[11px] text-white/25 mb-3 flex items-center flex-wrap gap-1">
           <span>{filtered.length} hasil</span>
           {confirmTab !== "all" && <><span>·</span><span className="text-blue-400/70">{confirmTab === "confirmed" ? "Confirmed" : "Potensial"}</span></>}
