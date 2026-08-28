@@ -68,6 +68,43 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
+@keyframes hw-tagline-fade {
+  0% { opacity: 0; transform: translateY(5px); }
+  18%, 78% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-5px); }
+}
+.hw-tagline-word {
+  animation: hw-tagline-fade 2.4s ease-in-out both;
+}
+
+@keyframes hw-home-airdrop-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.hw-home-airdrop-scroll-track {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  padding: 5px 10px;
+  animation: hw-home-airdrop-scroll 28s linear infinite;
+  will-change: transform;
+}
+
+@keyframes hw-home-tools-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.hw-home-tools-scroll-track {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  padding: 2px 10px;
+  animation: hw-home-tools-scroll 24s linear infinite;
+  will-change: transform;
+}
+
 /* ── MICRO-INTERACTIONS ─────────────────────────────────────── */
 
 /* 1. RIPPLE */

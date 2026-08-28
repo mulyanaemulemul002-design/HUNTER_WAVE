@@ -800,7 +800,281 @@ function TermsModal({ onClose }) {
   );
 }
 
-function IntroScreen({ airdrops = [], calendar = [] }) {
+function RotatingTagline() {
+  const words = ["AIRDROP", "WEB3 MEDIA", "FIND", "HUNT", "EARN"];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setIndex(current => (current + 1) % words.length);
+    }, 2400);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="mt-4 flex items-center gap-2" aria-live="polite" data-testid="home-rotating-tagline">
+      <span className="inline-block w-1.5 h-6 rounded-full bg-blue-500 shadow-lg shadow-blue-500/30"/>
+      <span key={words[index]} className="hw-tagline-word text-2xl sm:text-3xl font-black tracking-[0.12em] text-white">
+        {words[index]}
+      </span>
+    </div>
+  );
+}
+
+const HOME_MONTHS = {
+  januari: 1, februari: 2, maret: 3, april: 4, mei: 5, juni: 6,
+  juli: 7, agustus: 8, september: 9, oktober: 10, november: 11, desember: 12,
+};
+
+function homeCalendarSortValue(date) {
+  const match = String(date || "").trim().match(/^([A-Za-z]+)\s+(\d{1,2})/);
+  if (!match) return Number.MAX_SAFE_INTEGER;
+  const month = HOME_MONTHS[match[1].toLowerCase()] || 12;
+  return month * 100 + Number(match[2]);
+}
+
+function HomeAirdropTicker({ airdrops, onSelect }) {
+  const items = [...airdrops, ...airdrops];
+
+  return (
+    <div className="mx-5 rounded-2xl overflow-hidden border border-blue-500/20 bg-gradient-to-r from-blue-950/60 via-[#101426] to-blue-950/60 shadow-lg shadow-blue-950/20" data-testid="home-airdrop-ticker">
+      <div className="flex items-center min-h-[48px]">
+        <div className="flex-shrink-0 flex items-center gap-1.5 px-3 sm:px-4 border-r border-white/10">
+          <span className="text-lg font-black text-blue-300">{airdrops.length}</span>
+          <span className="text-[9px] font-bold uppercase tracking-wider text-white/45">Project</span>
+        </div>
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="hw-home-airdrop-scroll-track">
+            {items.map((item, index) => (
+              <button
+                key={`${item.id}-${index}`}
+                onClick={() => onSelect?.(item.id)}
+                title={item.title}
+                data-testid={`button-home-airdrop-ticker-${item.id}-${index}`}
+                className="flex-none w-8 h-8 rounded-full overflow-hidden bg-[#11192d] ring-1 ring-blue-400/25 flex items-center justify-center hover:ring-blue-300/80 hover:scale-110 active:scale-90 transition-all"
+              >
+                {item.icon
+                  ? <span className="text-sm leading-none">{item.icon}</span>
+                  : <Favicon url={item.url} customImage={item.customImage} size={23} />}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HomeProjectCard({ item, kind, onClick }) {
+  const isEvent = kind === "event";
+  const socialTag = item.tags?.find(tag => /social|community|twitter|discord|telegram/i.test(tag))
+    || item.tags?.[0]
+    || "Community";
+
+  return (
+    <button
+      onClick={onClick}
+      data-testid={`button-home-${kind}-card-${item.id}`}
+      className="w-full text-left rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.025] border border-white/[0.11] p-4 sm:p-5 hover:border-blue-400/45 hover:from-blue-500/[0.12] active:scale-[0.99] transition-all"
+    >
+      <div className="flex items-start gap-3">
+        <div className="w-12 h-12 rounded-2xl bg-[#101a2f] ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0 overflow-hidden">
+          {isEvent
+            ? <Calendar className="w-5 h-5 text-blue-300"/>
+            : item.icon
+              ? <span className="text-xl leading-none">{item.icon}</span>
+              : <Favicon url={item.url} customImage={item.customImage} size={31} />}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-base font-bold text-white truncate">{item.title}</h3>
+            <ChevronRight className="w-4 h-4 flex-shrink-0 text-white/30 mt-0.5"/>
+          </div>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            {isEvent ? (
+              <>
+                <span className="text-[10px] font-bold text-blue-300">{item.date}</span>
+                {item.type && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/25">{item.type}</span>}
+              </>
+            ) : (
+              <>
+                <StatusBadge status={item.status}/>
+                {kind === "hot" && (
+                  <span className="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-300 ring-1 ring-pink-500/25">
+                    <MessageCircle className="w-2.5 h-2.5"/> {socialTag}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+      <p className="text-[11px] text-white/45 leading-relaxed mt-3 line-clamp-2">
+        {isEvent ? `Agenda ${item.type || "Web3"} di ekosistem HUNTER WAVE.` : item.description || "Lihat detail dan mulai hunting proyek ini."}
+      </p>
+      {!isEvent && item.tags?.length > 0 && (
+        <div className="flex gap-1.5 flex-wrap mt-3">
+          {item.tags.slice(0, 3).map(tag => <TagChip key={tag} tag={tag}/>)}
+        </div>
+      )}
+      <div className="flex items-center justify-end gap-1 mt-3 text-[9px] font-bold uppercase tracking-wider text-blue-300/70">
+        <span>{isEvent ? "Lihat kalender" : "Buka detail"}</span>
+        <ExternalLink className="w-3 h-3"/>
+      </div>
+    </button>
+  );
+}
+
+function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const dragStart = useRef(null);
+  const skipClick = useRef(false);
+
+  useEffect(() => {
+    setIndex(current => items.length ? Math.min(current, items.length - 1) : 0);
+  }, [items.length]);
+
+  useEffect(() => {
+    if (paused || items.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setIndex(current => (current + 1) % items.length);
+    }, 4600);
+    return () => window.clearInterval(timer);
+  }, [items.length, paused]);
+
+  function move(direction) {
+    if (!items.length) return;
+    setIndex(current => (current + direction + items.length) % items.length);
+  }
+
+  function handlePointerDown(event) {
+    dragStart.current = event.clientX;
+    skipClick.current = false;
+    setPaused(true);
+  }
+
+  function handlePointerUp(event) {
+    if (dragStart.current !== null) {
+      const distance = event.clientX - dragStart.current;
+      if (Math.abs(distance) > 45) {
+        skipClick.current = true;
+        move(distance < 0 ? 1 : -1);
+      }
+    }
+    dragStart.current = null;
+    setPaused(false);
+  }
+
+  return (
+    <section className="px-5 mb-6" data-testid={`home-carousel-${kind}`}>
+      <div className="flex items-end justify-between mb-2.5">
+        <div>
+          <p className="text-[9px] font-bold tracking-[0.18em] uppercase text-blue-400/70">{eyebrow}</p>
+          <h2 className="text-base font-bold text-white mt-0.5">{title}</h2>
+        </div>
+        {items.length > 0 && (
+          <span className="text-[10px] font-semibold text-white/30">{index + 1} / {items.length}</span>
+        )}
+      </div>
+      {items.length > 0 ? (
+        <div className="relative">
+          <div
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={() => { dragStart.current = null; setPaused(false); }}
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => { dragStart.current = null; setPaused(false); }}
+            style={{ touchAction: "pan-y" }}
+          >
+            <HomeProjectCard
+              item={items[index]}
+              kind={kind}
+              onClick={() => {
+                if (skipClick.current) {
+                  skipClick.current = false;
+                  return;
+                }
+                onSelect?.(items[index]);
+              }}
+            />
+          </div>
+          {items.length > 1 && (
+            <>
+              <button
+                onClick={() => move(-1)}
+                aria-label={`Previous ${title}`}
+                data-testid={`button-home-${kind}-previous`}
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/65 border border-white/15 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/85 transition-all"
+              >
+                <ChevronLeft className="w-4 h-4"/>
+              </button>
+              <button
+                onClick={() => move(1)}
+                aria-label={`Next ${title}`}
+                data-testid={`button-home-${kind}-next`}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/65 border border-white/15 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/85 transition-all"
+              >
+                <ChevronRight className="w-4 h-4"/>
+              </button>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="rounded-2xl glass-card px-4 py-6 text-center">
+          <p className="text-xs font-semibold text-white/45">Belum ada data untuk bagian ini</p>
+          <p className="text-[10px] text-white/25 mt-1">Bagian ini akan terisi saat data tersedia.</p>
+        </div>
+      )}
+      {items.length > 1 && (
+        <div className="flex justify-center gap-1.5 mt-2.5">
+          {items.map((item, dotIndex) => (
+            <button
+              key={`${item.id}-${dotIndex}`}
+              onClick={() => setIndex(dotIndex)}
+              aria-label={`Show ${title} item ${dotIndex + 1}`}
+              data-testid={`button-home-${kind}-dot-${dotIndex}`}
+              className={`rounded-full transition-all ${dotIndex === index ? "w-5 h-1.5 bg-blue-400" : "w-1.5 h-1.5 bg-white/20 hover:bg-white/35"}`}
+            />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function HomeToolsTicker({ tools, onSelect }) {
+  const items = [...tools, ...tools];
+  const duration = Math.max(12, Math.round((tools.length / 21) * 28));
+
+  return (
+    <div className="mx-5 mt-1 mb-5 rounded-xl border border-white/[0.08] bg-white/[0.025] overflow-hidden" data-testid="home-tools-ticker">
+      <div className="flex items-center gap-3 px-3 pt-2">
+        <Lightbulb className="w-3 h-3 text-blue-300/60"/>
+        <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Platform &amp; Tools</span>
+      </div>
+      <div className="overflow-hidden py-1.5">
+        <div className="hw-home-tools-scroll-track" style={{ animationDuration: `${duration}s` }}>
+          {items.map((tool, index) => (
+            <button
+              key={`${tool.id}-${index}`}
+              onClick={() => onSelect?.(tool.id)}
+              title={tool.title}
+              data-testid={`button-home-tool-ticker-${tool.id}-${index}`}
+              className="flex-none w-6 h-6 rounded-full overflow-hidden bg-blue-500/10 ring-1 ring-white/10 flex items-center justify-center hover:ring-blue-300/60 hover:scale-105 active:scale-90 transition-all"
+            >
+              {tool.icon
+                ? <span className="text-xs leading-none">{tool.icon}</span>
+                : <Favicon url={tool.url} customImage={tool.customImage} size={18} />}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = () => {} }) {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms]     = useState(false);
 
@@ -810,47 +1084,87 @@ function IntroScreen({ airdrops = [], calendar = [] }) {
     { label:"TikTok",    Icon:IconTikTok,    url:"https://www.tiktok.com/@airdrophunterwaveid?_r=1&_t=ZS-96oeh8Xs9zB" },
   ];
 
+  const newest = useMemo(
+    () => [...airdrops].sort((a, b) => String(b.addedAt).localeCompare(String(a.addedAt))).slice(0, 5),
+    [airdrops]
+  );
+  const upcoming = useMemo(
+    () => [...calendar].sort((a, b) => homeCalendarSortValue(a.date) - homeCalendarSortValue(b.date)).slice(0, 5),
+    [calendar]
+  );
+  // TODO: Provisional recommendation logic — replace random confirmed-testnet pool when recommendation signals are available.
+  const hot = useMemo(() => {
+    const pool = airdrops.filter(item => item.status === "Testnet" && item.confirmationStatus === "confirmed");
+    return [...pool].sort(() => Math.random() - 0.5).slice(0, 5);
+  }, [airdrops]);
+  const rumored = useMemo(
+    () => [...airdrops]
+      .filter(item => item.confirmationStatus === "rumored" || item.tags?.some(tag => tag.toLowerCase() === "rumored"))
+      .sort((a, b) => String(b.addedAt).localeCompare(String(a.addedAt)))
+      .slice(0, 5),
+    [airdrops]
+  );
+
+  function openAirdrop(item) {
+    onNavigate({ tab: "airdrops", type: "airdrop", id: item.id });
+  }
+
   return (
     <div className="pb-32">
-      {/* ── HERO SECTION ── */}
-      <div className="relative px-5 pt-8 pb-7 mb-2 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/40 via-blue-950/15 to-transparent pointer-events-none"/>
-        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-blue-500/[0.07] blur-3xl pointer-events-none"/>
-        <span className="relative text-[10px] font-bold text-blue-400 tracking-widest uppercase">Web3 Airdrop Hub</span>
-        <h1 className="relative text-3xl font-black text-white leading-tight mt-2">
-          Jadilah Hunter<br/>
-          <span className="text-blue-500">Terdepan</span> di Web3
-        </h1>
-        <p className="relative text-sm text-white/45 mt-2.5 leading-relaxed max-w-xs">
-          Info airdrop, campaign, dan tools Web3 terkurasi untuk komunitas crypto Indonesia.
-        </p>
-        {/* Telegram join button — sementara dinonaktifkan */}
-        {false && (
-          <button
-            onClick={()=>window.open("https://t.me/+mkv5RT1Ov25kZmI1","_blank","noopener,noreferrer")}
-            className="relative mt-5 inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-500 hover:bg-blue-400 active:scale-95 transition-all shadow-xl shadow-blue-500/30 btn-glow">
-            <IconTelegram className="w-4 h-4 text-white"/>
-            <span className="text-sm font-bold text-white">Bergabung di Telegram</span>
-          </button>
-        )}
+      {/* ── NEW HOME HEADER ── */}
+      <div className="relative px-5 pt-5 pb-4 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-950/35 via-blue-950/10 to-transparent pointer-events-none"/>
+        <div className="relative">
+          <p className="text-[10px] font-bold text-blue-400/70 tracking-[0.2em] uppercase">HUNTER WAVE</p>
+          <RotatingTagline />
+          <p className="text-xs text-white/40 mt-2 max-w-xs leading-relaxed">
+            Temukan, buru, dan pantau peluang Web3 pilihan komunitas.
+          </p>
+        </div>
       </div>
 
-      {/* ── SOCIAL PROOF ── */}
-      <div className="px-5 mb-5">
-        <div className="grid grid-cols-3 gap-3">
+      <HomeAirdropTicker airdrops={airdrops} onSelect={id => openAirdrop({ id })}/>
+
+      <div className="pt-6">
+        <HomeCarousel title="New Airdrop" eyebrow="Freshly tracked" items={newest} kind="new" onSelect={openAirdrop}/>
+        <HomeCarousel
+          title="Upcoming Event"
+          eyebrow="Mark your calendar"
+          items={upcoming}
+          kind="event"
+          onSelect={() => onNavigate({ tab: "discover", discoverSection: "calendar" })}
+        />
+        <HomeCarousel title="Rekomen / Hot" eyebrow="Community signal" items={hot} kind="hot" onSelect={openAirdrop}/>
+        <HomeCarousel title="Rumored" eyebrow="Watchlist" items={rumored} kind="rumored" onSelect={openAirdrop}/>
+      </div>
+
+      {/* ── QUICK LINKS ── */}
+      <div className="px-5 mb-6">
+        <div className="flex items-center justify-between mb-2.5">
+          <p className="text-[9px] font-bold tracking-[0.18em] uppercase text-blue-400/70">Quick Links</p>
+          <span className="text-[10px] text-white/25">Tap to explore</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
           {[
-            { value:"N/A",             label:"Member Telegram", icon:"👥" },
-            { value:airdrops.length,  label:"Proyek Airdrop",  icon:"🪂" },
-            { value:calendar.length,  label:"Event Kalender",  icon:"📅" },
-          ].map(({value,label,icon})=>(
-            <div key={label} className="rounded-2xl glass-card p-3 text-center">
-              <div className="text-base mb-0.5">{icon}</div>
-              <p className="text-xl font-black text-white">{value}</p>
-              <p className="text-[9px] text-white/35 mt-0.5 leading-tight">{label}</p>
-            </div>
+            { id:"news", label:"News", hint:"Info", Icon:Zap, action:() => onNavigate({ tab:"info" }) },
+            { id:"save", label:"Save Your Airdrop", hint:"Bookmark", Icon:Bookmark, action:() => onNavigate({ tab:"bookmark" }) },
+            { id:"p2p", label:"P2P", hint:"Seller", Icon:Users, action:() => onNavigate({ tab:"discover", discoverSection:"p2p" }) },
+          ].map(({ id, label, hint, Icon, action }) => (
+            <button
+              key={id}
+              onClick={action}
+              data-testid={`button-home-quick-${id}`}
+              className="min-h-[78px] rounded-2xl bg-white/[0.045] border border-white/[0.09] px-2 py-3 flex flex-col items-center justify-center gap-1.5 hover:bg-blue-500/[0.12] hover:border-blue-400/35 active:scale-95 transition-all"
+            >
+              <Icon className="w-4 h-4 text-blue-300"/>
+              <span className="text-[10px] font-bold text-white/80 leading-tight text-center">{label}</span>
+              <span className="text-[9px] text-white/30">{hint}</span>
+            </button>
           ))}
         </div>
       </div>
+
+      <HomeToolsTicker tools={tools} onSelect={id => onNavigate({ tab: "discover", type: "tool", id, discoverSection: "tools" })}/>
 
       {/* ── BRAND PROFILE CARD ── */}
       <div className="px-5 mb-4">
@@ -2287,6 +2601,17 @@ export default function App() {
     if (ds) setDiscoverSection(ds);
   }, []);
 
+  const handleHomeNavigate = useCallback(({ tab: destTab, type, id, discoverSection: ds }) => {
+    setTab(destTab);
+    window.scrollTo({ top: 0, behavior: "auto" });
+    if (type && id !== undefined && id !== null) {
+      setNavigationTarget({ type, id: String(id), requestId: `home-${type}-${String(id)}-${Date.now()}` });
+    } else {
+      setNavigationTarget(null);
+    }
+    setDiscoverSection(ds || null);
+  }, []);
+
   // Load all data from IndexedDB on mount (tapCount/handleLogoTap sudah dihapus bersama admin panel)
   useEffect(() => {
     idbGetAll().then(([a, n, q, t, p, cal, tick]) => {
@@ -2324,13 +2649,15 @@ export default function App() {
           </div>
         </div>
 
-        {/* Ticker / Quick-nav strip — fixed di semua layar: di bawah header (mobile) atau paling atas (desktop) */}
-        <div className="fixed top-[52px] left-0 right-0 lg:top-0 lg:left-56 z-[39]">
-          {tab === "airdrops"
-            ? <AirdropIconStrip airdrops={airdrops} />
-            : <TickerBanner texts={ticker} />
-          }
-        </div>
+        {/* Ticker / Quick-nav strip — Home has its own combined ticker in the page content. */}
+        {tab !== "intro" && (
+          <div className="fixed top-[52px] left-0 right-0 lg:top-0 lg:left-56 z-[39]">
+            {tab === "airdrops"
+              ? <AirdropIconStrip airdrops={airdrops} />
+              : <TickerBanner texts={ticker} />
+            }
+          </div>
+        )}
 
         {/* Loading overlay */}
         {!loaded && (
@@ -2342,9 +2669,9 @@ export default function App() {
           </div>
         )}
 
-        {/* Content — pt untuk offset header(52) + ticker(34) = 86px mobile, ticker(34) desktop */}
-        <div className="relative z-10 max-w-xl mx-auto pt-[86px] lg:pt-[34px]">
-          {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} />}
+        {/* Content — Home only offsets the fixed mobile logo; other tabs also offset the ticker. */}
+        <div className={`relative z-10 max-w-xl mx-auto ${tab === "intro" ? "pt-[52px] lg:pt-[34px]" : "pt-[86px] lg:pt-[34px]"}`}>
+          {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} tools={tools} onNavigate={handleHomeNavigate} />}
           {tab==="info"     && <InfoTerkiniScreen news={news} qinfo={qinfo} />}
           {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} navigationTarget={navigationTarget} />}
           {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}

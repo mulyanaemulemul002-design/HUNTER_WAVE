@@ -1,0 +1,41 @@
+TASK: Redesign the Home page UI/UX of the HUNTER WAVE app. This is a targeted layout change, not a rebuild — keep all existing data logic, JSON structure, and other pages untouched unless specified below.
+
+STEP 1 — REMOVE
+Delete the current hero block entirely: the "WEB3 AIRDROP HUB" label, the "Jadilah Hunter Terdepan di Web3" heading, its subtext paragraph, and the three stat boxes (Member Telegram N/A, Proyek Airdrop 21, Event Kalender 6).
+Everything below that (the description card, Follow Kami, bottom nav, etc.) stays as-is and simply moves up to fill the gap.
+
+STEP 2 — NEW HEADER AREA (top of Home, replacing what was removed)
+1. Keep the "HUNTER WAVE" logo/title as-is.
+2. Below it, replace the static tagline with a rotating/fading text component that cycles through these words one at a time, looping infinitely: "AIRDROP" → "WEB3 MEDIA" → "FIND" → "HUNT" → "EARN" → repeat. Use a smooth fade or crossfade transition (not a hard cut), ~2–3 seconds per word. Build this as a small reusable component (e.g. RotatingTagline) so timing/words are easy to edit later.
+3. Directly below that, add ONE combined strip (not two separate elements) that merges the project count with the scrolling favicon ticker — e.g. "15 Project │ [continuously auto-scrolling row of airdrop project favicons]". The number should read from the actual total airdrop count in the data source, not be hardcoded. The favicon row auto-scrolls horizontally (marquee-style, infinite loop), and each favicon is clickable, linking to that airdrop's detail page.
+
+STEP 3 — FOUR CAROUSEL SECTIONS (in this order, below the header area)
+Build each as its own labeled section with a single reusable Carousel/Slider component (don't duplicate logic 4x — one component, 4 instances with different data sources). Each carousel:
+- Shows ONE project card at a time
+- Auto-rotates/slides between cards (with manual swipe/drag also enabled)
+- Caps at max 5 items
+- Each card is clickable and routes to that airdrop's detail page
+
+a) "New Airdrop" — data source: the 5 most recently added airdrops (sort by date-added descending, slice 5). When a new airdrop is added to the JSON, the oldest of the current 5 should naturally drop off since it's just a sorted slice.
+
+b) "Upcoming Event" — data source: pull from the same Airdrop Calendar data used in Discover > Kalender. Show the next 5 upcoming events chronologically.
+
+c) "Rekomen / Hot" — data source (temporary logic, mark clearly as placeholder in code comments): randomly select 5 airdrops where status === "confirmed testnet". Within that pool, also factor in/display each item's social tag. Leave a clear TODO comment noting this selection logic is provisional and may change later.
+
+d) "Rumored" — data source: filter airdrops where tag === "rumored", show up to 5, most recent first.
+
+STEP 4 — QUICK LINK ROW
+Keep "News", "Save Your Airdrop", and "P2P" as tappable cards/buttons in a row, same as current design intent, but make sure each one actually navigates: News → Info Terkini page, Save Your Airdrop → Bookmark page, P2P → Discover > P2P Seller page.
+
+STEP 5 — FOOTER STRIP
+Close the Home page with a second running favicon ticker labeled "Platform & Tools", pulling from the Discover > Platform & Tools data. Visually make this strip noticeably smaller/thinner (shorter height, smaller favicon size) than the airdrop favicon ticker from Step 2.3, so it reads as a lighter closing element, not a repeat of the top strip.
+
+DESIGN CONSTRAINTS
+- This is a rough functional spec, not a pixel-exact layout — use good design judgment for spacing, card styling, and section headers.
+- Match the existing dark theme, blue accent color (#1E5EFF-ish blue used in "WAVE" text and buttons), and rounded-card visual language already used elsewhere in the app. Don't introduce a new color palette.
+- Keep typography consistent with the rest of the app (same font family/weight hierarchy).
+- Fully responsive/mobile-first (this is primarily used as a PWA on mobile).
+- Every interactive element (favicons, cards, quick-link buttons) must have a real onClick/navigation — no dead UI.
+- Keep it clean and uncluttered — don't cram all sections tightly; give each section breathing room with clear headers (NEW AIRDROP, UPCOMING EVENT, REKOMEN/HOT, RUMORED).
+
+Do not touch: Info Terkini, Airdrop List, Bookmark, or Discover pages/logic — this task is scoped to the Home page only.
