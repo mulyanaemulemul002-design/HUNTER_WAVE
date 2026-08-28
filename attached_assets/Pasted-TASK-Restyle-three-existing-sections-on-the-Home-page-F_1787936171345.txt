@@ -1,0 +1,19 @@
+TASK: Restyle three existing sections on the Home page (Follow Kami / social links, Dukung via Crypto / donate, and the feedback/founder-contact line). This is a visual-only change — keep them as three separate sections in their current order/position, do not merge them into a single footer block. Do not touch any other page or section.
+
+VISUAL REFERENCE
+Style reference: a footer design using small circular icon badges arranged in a row (icon centered inside a filled circle, evenly spaced, minimal label text). Adopt this circular-badge visual language, but keep HUNTER WAVE's existing dark background + blue accent (#1E5EFF-ish) color theme — do NOT use the green color from the reference, that's layout/style inspiration only, not the palette.
+
+1) FOLLOW KAMI (social links)
+Replace the current 3 separate rectangular cards (X, Instagram, TikTok) with 3 small circular icon badges in a row, centered or left-aligned consistent with the section above it. Each badge: icon only (or icon + small label below, whichever reads cleaner at this size), rounded-full shape, subtle background fill using the app's existing card/surface color, blue icon color or blue on hover/tap. Keep each icon's existing link/onClick behavior — no functional change, just restyle.
+
+2) DUKUNG VIA CRYPTO (donate)
+Keep this as its own section below Follow Kami, same as now. Restyle the header/icon to match the same circular-badge treatment (small circular icon badge next to the "Dukung via Crypto (EVM)" label instead of the current square icon). The wallet address row and "Salin" (copy) button stay fully functional exactly as they are now — do not change the copy-to-clipboard logic, only restyle the surrounding container/icon to match the new visual language (rounded, consistent spacing, same color theme).
+
+3) FEEDBACK / FOUNDER CONTACT
+Keep this as its own section (or same section as donate, whichever it currently is — preserve current placement), restyle its icon into the same small circular badge style, consistent sizing with the social icons and donate icon above. Keep the founder handle link (@otgdontcry) fully clickable/functional as-is.
+
+CONSTRAINTS
+- Purely visual/layout restyle of these 3 sections — no changes to data, links, copy function, or navigation logic.
+- Keep all three sections visually distinct from each other (clear spacing/separation), just unified by using the same circular icon badge style across all three.
+- Match existing dark theme, blue accent, rounded-corner card language already used elsewhere in the app.
+- Keep mobile-first responsive sizing — badges should look proportionate on small screens, not oversized.

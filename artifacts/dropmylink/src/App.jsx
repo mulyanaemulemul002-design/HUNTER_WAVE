@@ -250,11 +250,13 @@ function DonateFeedbackSection() {
     <div className="px-5 mt-6 mb-2">
       <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
         {/* Donate */}
-        <div className="flex items-center gap-2">
-          <Heart className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
+        <div className="flex items-center gap-2.5">
+          <span className="w-10 h-10 rounded-full bg-blue-500/10 ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0">
+            <Heart className="w-4 h-4 text-blue-300/80" />
+          </span>
           <p className="text-[10px] text-white/30">Dukung via crypto (EVM)</p>
         </div>
-        <div className="flex items-center gap-2 bg-black/30 border border-white/[0.06] rounded-xl px-3 py-2">
+        <div className="flex items-center gap-2 bg-black/30 border border-white/[0.08] rounded-2xl px-3 py-2">
           <p className="text-[10px] font-mono text-white/30 flex-1 truncate">{DONATE_ADDRESS}</p>
           <button onClick={copyAddr} className="flex-shrink-0 flex items-center gap-1 text-[10px] text-white/30 hover:text-blue-400 transition-colors">
             {copied ? <><Check className="w-3 h-3 text-green-400"/> <span className="text-green-400">Tersalin</span></> : <><Copy className="w-3 h-3"/> Salin</>}
@@ -266,8 +268,10 @@ function DonateFeedbackSection() {
 
         {/* Feedback */}
         <button onClick={()=>window.open(FEEDBACK_TG,"_blank","noopener,noreferrer")}
-          className="flex items-center gap-2 text-left hover:opacity-80 active:scale-95 transition-all">
-          <MessageCircle className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
+          className="flex items-center gap-2.5 text-left hover:opacity-80 active:scale-95 transition-all">
+          <span className="w-10 h-10 rounded-full bg-blue-500/10 ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0">
+            <MessageCircle className="w-4 h-4 text-blue-300/80" />
+          </span>
           <span className="text-[10px] text-white/30">Kirim feedback dan masukan, hubungi founder <span className="text-blue-400/60">@otgdontcry</span></span>
         </button>
       </div>
@@ -1184,12 +1188,15 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
       <div className="px-5 mb-4">
         <div className="rounded-2xl glass-card p-4">
           <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Follow Kami</p>
-          <div className="flex gap-2.5">
+          <div className="flex items-start justify-center gap-7">
             {SOCIAL.map(({label,Icon,url})=>(
               <button key={label} onClick={()=>window.open(url,"_blank","noopener,noreferrer")}
-                className="flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl bg-white/[0.04] ring-1 ring-white/[0.08] hover:bg-white/[0.08] hover:ring-white/[0.14] active:scale-95 transition-all">
-                <Icon className="w-5 h-5 text-white/55"/>
-                <span className="text-[9px] font-bold text-white/45">{label}</span>
+                aria-label={`Follow HUNTER WAVE on ${label}`}
+                className="flex flex-col items-center gap-1.5 group active:scale-95 transition-all">
+                <span className="w-10 h-10 rounded-full bg-blue-500/10 ring-1 ring-blue-400/25 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:ring-blue-300/60 transition-all">
+                  <Icon className="w-5 h-5 text-blue-300/75 group-hover:text-blue-200"/>
+                </span>
+                <span className="text-[9px] font-bold text-white/45 group-hover:text-blue-300 transition-colors">{label}</span>
               </button>
             ))}
           </div>
