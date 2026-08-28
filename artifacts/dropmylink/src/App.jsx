@@ -349,7 +349,7 @@ function StatusLegend() {
 // ─── SIDEBAR NAV (desktop ≥ 1024px) ───────────────────────────
 function SidebarNav({ active, onSelect, onOpenSearch }) {
   const tabs = [
-    // { id:"intro",    label:"Intro",        icon:Home },  // sementara dinonaktifkan
+    { id:"intro",    label:"Home",        icon:Home },
     { id:"info",     label:"Info Terkini", icon:Zap },
     { id:"airdrops", label:"Airdrop",      icon:LayoutGrid },
     { id:"bookmark", label:"Bookmark",     icon:Bookmark },
@@ -1956,7 +1956,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
 function BottomNav({ active, onSelect }) {
   const [poppedId, setPoppedId] = useState(null);
   const tabs = [
-    // { id:"intro",    label:"Intro",       icon:Home },  // sementara dinonaktifkan
+    { id:"intro",    label:"Home",       icon:Home },
     { id:"info",     label:"Info Terkini",icon:Zap },
     { id:"airdrops", label:"Airdrop",     icon:LayoutGrid },
     { id:"bookmark", label:"Bookmark",    icon:Bookmark },
@@ -1972,7 +1972,7 @@ function BottomNav({ active, onSelect }) {
       <div className="w-full max-w-lg flex items-center gap-0.5 px-2 py-1.5 rounded-2xl glass-nav shadow-2xl shadow-black/80">
         {tabs.map(({id,label,icon:Icon})=>(
           <button key={id} onClick={()=>handleSelect(id)}
-            className={`flex-1 flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl transition-all duration-200 ${active===id?"bg-blue-500 text-white":"text-white/30 hover:text-white/60 hover:bg-white/[0.04]"}`}>
+            className={`flex-1 flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl transition-all duration-200 ${active===id?"bg-blue-500/95 text-white shadow-sm shadow-blue-950/50":"text-white/60 hover:text-white/90 hover:bg-white/[0.08]"}`}>
             <Icon className={`w-[18px] h-[18px] ${poppedId===id ? "nav-pop" : ""}`}/>
             <span className="text-[8px] font-bold leading-none">{label}</span>
           </button>
@@ -2223,7 +2223,7 @@ function GlobalSearch({ open, onClose, airdrops, p2p, calendar, tools, onNavigat
 
 // ─── MAIN APP ─────────────────────────────────────────────────
 export default function App() {
-  // Tab "intro" sementara dinonaktifkan — default ke "airdrops"
+  // Airdrop tetap menjadi landing tab utama, Home tersedia dari navigasi.
   const [tab, setTab]             = useState("airdrops");
   const [searchOpen, setSearchOpen]     = useState(false);
   const [navigationTarget, setNavigationTarget] = useState(null);
