@@ -1489,6 +1489,30 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
   const [guideOpenId, setGuideOpenId] = useState(null);
   const [copiedId, setCopiedId]       = useState(null);
   const [burstId, setBurstId]         = useState(null);
+  const [airdropHeaderVisible, setAirdropHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  // Mobile-style auto-hide header:
+  // content moving upward hides the full Airdrop control block, while
+  // scrolling back down reveals it again.
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const delta = currentScrollY - lastScrollY.current;
+
+      if (currentScrollY <= 8 || delta < -4) {
+        setAirdropHeaderVisible(true);
+      } else if (delta > 4) {
+        setAirdropHeaderVisible(false);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    lastScrollY.current = window.scrollY;
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Expand the requested card after navigation. Scrolling is deliberately in
   // a second effect so it runs against the mounted card DOM.
@@ -1562,9 +1586,15 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
   return (
     <div className="pb-32">
 
-      {/* Sticky hanya sampai judul + jumlah proyek + tab status.
-          Search dan Filter di bawahnya tetap berada di document flow. */}
-      <div id="airdrop-sticky-header" className="sticky top-[86px] lg:top-[34px] z-40 bg-[#0a0b0d] border-b border-white/[0.05]">
+      {/* Seluruh header Airdrop auto-hide saat scroll dan muncul lagi saat
+          user scroll kembali ke bawah. Posisi sticky baru aktif ketika
+          blok ini mencapai offset header utama. */}
+      <div
+        id="airdrop-sticky-header"
+        className={`sticky top-[86px] lg:top-[34px] z-40 bg-[#0a0b0d] border-b border-white/[0.05] transition-transform duration-300 ease-out ${
+          airdropHeaderVisible ? "translate-y-0" : "-translate-y-full"
+        }`}
+      >
         <div className="px-5 pt-4 pb-2">
           <h1 className="text-lg font-bold text-white">🪂 Airdrop List</h1>
           <p className="text-xs text-white/30 mt-0.5">{airdrops.length} proyek terdaftar</p>
@@ -1591,36 +1621,35 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
           })}
           </div>
         </div>
-      </div>
 
-      {/* Search + Filter normal flow; tidak ikut sticky dan tidak akan terpotong. */}
-      <div className="px-5 pt-3 pb-3">
         {/* Search bar */}
-        <div className="relative mb-2.5">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400/50 pointer-events-none"/>
-          <input type="search" placeholder="Cari airdrop..." value={search} onChange={e=>setSearch(e.target.value)}
-            className="w-full bg-blue-500/[0.08] ring-1 ring-blue-500/25 rounded-2xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 outline-none focus:ring-blue-400/50 transition-all"/>
-        </div>
+        <div className="px-5 pt-3 pb-3">
+          <div className="relative mb-2.5">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-400/50 pointer-events-none"/>
+            <input type="search" placeholder="Cari airdrop..." value={search} onChange={e=>setSearch(e.target.value)}
+              className="w-full bg-blue-500/[0.08] ring-1 ring-blue-500/25 rounded-2xl pl-10 pr-4 py-3 text-sm text-white placeholder-white/25 outline-none focus:ring-blue-400/50 transition-all"/>
+          </div>
 
-        {/* Filter Tag */}
-        <div className="flex flex-wrap items-start gap-2">
-          <div>
-            <button onClick={()=>setFilterOpen(!filterOpen)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold ring-1 transition-all ${activeTag!=="All"?"bg-blue-500/20 ring-blue-400/40 text-blue-300":"bg-blue-500/[0.08] ring-blue-500/20 text-white/60"}`}>
-              <SlidersHorizontal className="w-3 h-3"/>
-              {activeTag!=="All"?`Tag: ${activeTag}`:"Filter Tag"}
-              {filterOpen?<ChevronUp className="w-3 h-3"/>:<ChevronDown className="w-3 h-3"/>}
-            </button>
-            {filterOpen && (
-              <div className="mt-2 bg-[#131313] border border-white/[0.10] rounded-2xl p-3 flex flex-wrap gap-2 absolute z-10 left-5 right-5">
-                {allTags.map(tag=>(
-                  <button key={tag} onClick={()=>{setActiveTag(tag);setFilterOpen(false);}}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${activeTag===tag?"bg-blue-500 border-blue-500 text-white":"bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/80"}`}>
-                    {tag}
-                  </button>
-                ))}
-              </div>
-            )}
+          {/* Filter Tag */}
+          <div className="flex flex-wrap items-start gap-2">
+            <div>
+              <button onClick={()=>setFilterOpen(!filterOpen)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold ring-1 transition-all ${activeTag!=="All"?"bg-blue-500/20 ring-blue-400/40 text-blue-300":"bg-blue-500/[0.08] ring-blue-500/20 text-white/60"}`}>
+                <SlidersHorizontal className="w-3 h-3"/>
+                {activeTag!=="All"?`Tag: ${activeTag}`:"Filter Tag"}
+                {filterOpen?<ChevronUp className="w-3 h-3"/>:<ChevronDown className="w-3 h-3"/>}
+              </button>
+              {filterOpen && (
+                <div className="mt-2 bg-[#131313] border border-white/[0.10] rounded-2xl p-3 flex flex-wrap gap-2 absolute z-10 left-5 right-5">
+                  {allTags.map(tag=>(
+                    <button key={tag} onClick={()=>{setActiveTag(tag);setFilterOpen(false);}}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${activeTag===tag?"bg-blue-500 border-blue-500 text-white":"bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/80"}`}>
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
