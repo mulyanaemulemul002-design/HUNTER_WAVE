@@ -1087,10 +1087,6 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
           <h1 className="text-[clamp(2.75rem,11vw,4.25rem)] leading-[0.92] font-black tracking-[-0.06em] text-white">
             HUNTER <span className="text-blue-500">WAVE</span>
           </h1>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-sm sm:text-base font-black tracking-wide text-white/90">
-            <span>AIRDROP &amp; WEB3 MEDIA</span>
-            <span className="text-blue-400">FIND HUNT EARN</span>
-          </div>
           <RotatingTagline />
           <p className="text-xs text-white/40 mt-3 max-w-xs leading-relaxed">
             Temukan, buru, dan pantau peluang Web3 pilihan komunitas.
