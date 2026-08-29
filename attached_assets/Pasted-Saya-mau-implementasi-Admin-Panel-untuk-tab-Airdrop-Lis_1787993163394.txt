@@ -1,0 +1,35 @@
+Saya mau implementasi Admin Panel untuk tab Airdrop List, dengan alur kerja berikut (fokus ke Airdrop dulu, tipe data lain menyusul nanti):
+
+BAGIAN 1 — Trigger Membuka Admin Panel
+1. Tap logo "HW" (icon HUNTER WAVE) di header SEBANYAK 5 KALI berturut-turut dalam waktu singkat (misal dalam 3 detik) untuk membuka Admin Panel. Ini adalah hidden trigger, tidak ada tombol visible di UI normal.
+2. Setelah 5 tap terdeteksi, buka Admin Panel sebagai halaman/modal terpisah.
+3. Admin Panel dilindungi input password sederhana sebelum bisa mengakses form (kalau belum ada, tambahkan — password bisa disimpan sebagai konstanta di kode untuk sekarang).
+
+BAGIAN 2 — Form Tambah Data Airdrop (Staging, BELUM Push ke GitHub)
+1. Setelah masuk Admin Panel, sediakan form untuk menambah data Airdrop baru, dengan field-field berikut sesuai schema Zod yang sudah ada:
+   - `title` (text input)
+   - `url` (text input)
+   - `icon` (text input, boleh kosong)
+   - `customImage` (text input, boleh kosong)
+   - `tags` (input yang bisa menambahkan beberapa tag, misal comma-separated atau tag-input UI)
+   - `description` (textarea)
+   - `status` (text input atau dropdown, misal "Active"/"Testnet"/dst)
+   - `difficulty` — dropdown/select dengan opsi TETAP: "Easy", "Medium", "Hard" (BUKAN free text, supaya tidak ada typo/salah ketik yang bikin validasi Zod gagal)
+   - `confirmationStatus` — dropdown/select dengan opsi TETAP: "confirmed", "rumored" (tampilkan label "Confirmed" dan "Potensial" di UI, tapi value yang disimpan tetap "confirmed"/"rumored" sesuai schema)
+   - `howToGuide` — input yang bisa menambahkan beberapa langkah (array of string), OPSIONAL (boleh dikosongkan semua)
+2. Field `id` — JANGAN diminta diisi manual oleh user. Otomatis generate dengan logika: ambil ID tertinggi dari data airdrops.json yang sudah ada (fetch dulu untuk tahu ID tertinggi saat ini), lalu +1. Jika di sesi Admin Panel yang sama sudah ada beberapa data staged menunggu push (lihat Bagian 3), hitung juga ID yang sudah dipakai di staging itu supaya tidak ada duplikat ID sesama data baru yang belum di-push.
+3. Field `addedAt` — JANGAN diminta diisi manual. Otomatis generate dengan format full ISO datetime (`"2026-07-27T14:05:00"`) menggunakan waktu saat user menekan tombol "Tambah ke Staging" (bukan waktu submit ke GitHub).
+4. Validasi form menggunakan Zod schema Airdrop yang sudah ada sebelum data bisa ditambahkan ke staging — tampilkan error jelas per field kalau ada yang tidak valid.
+
+BAGIAN 3 — Tabel Staging (Review Sebelum Push)
+1. Setelah user mengisi form dan menekan tombol "Tambah ke Staging" (BUKAN "Push ke GitHub"), data yang sudah divalidasi masuk ke TABEL STAGING di bawah form — tabel dengan kolom-kolom tetap/fixed (Title, Status, Difficulty, Confirmation, Tags, dst) menampilkan ringkasan tiap entry yang sudah ditambahkan.
+2. User bisa mengulangi proses ini berkali-kali untuk menambahkan BEBERAPA airdrop sekaligus ke tabel staging sebelum benar-benar push ke GitHub.
+3. Tiap baris di tabel staging punya tombol "Edit" (buka lagi form terisi data itu untuk diedit) dan "Hapus" (buang dari staging tanpa push).
+4. Setelah semua data di staging sudah sesuai keinginan user, sediakan SATU tombol terpisah "Push Semua ke GitHub" di bawah tabel staging — baru di titik inilah proses commit ke GitHub Contents API (GET data terbaru dari airdrops.json, merge dengan semua entry di staging, PUT hasil gabungan) benar-benar dieksekusi.
+5. Setelah push berhasil, kosongkan tabel staging dan tampilkan konfirmasi sukses dengan link ke commit di GitHub.
+6. Jika push gagal (misal token invalid), tampilkan error jelas dan JANGAN kosongkan tabel staging, supaya user tidak kehilangan data yang sudah diisi dan bisa coba push ulang.
+
+BAGIAN 4 — GitHub Token
+1. Tambahkan field input "GitHub Personal Access Token" di Admin Panel (scope `repo` saja), disimpan di localStorage browser dengan key terpisah (misal `hw_admin_gh_token`) — TIDAK PERNAH ditulis ke source code.
+
+Setelah selesai, jelaskan alur lengkap dari tap 5x logo sampai data sukses ter-push ke GitHub, dan konfirmasi bahwa ID serta addedAt sepenuhnya otomatis tanpa perlu diisi manual oleh saya.
