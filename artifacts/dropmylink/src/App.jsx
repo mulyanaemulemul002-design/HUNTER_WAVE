@@ -897,23 +897,28 @@ function HomeAirdropTicker({ airdrops, onSelect }) {
   );
 }
 
-function HomeProjectCard({ item, kind, onClick }) {
+function HomeProjectCard({ item, kind, onLogoClick }) {
   const isEvent = kind === "event";
 
   return (
-    <button
-      onClick={onClick}
-      data-testid={`button-home-${kind}-card-${item.id}`}
-      className="w-full text-left rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.025] border border-white/[0.11] p-2.5 hover:border-blue-400/45 hover:from-blue-500/[0.12] active:scale-[0.99] transition-all"
+    <div
+      data-testid={`home-${kind}-card-shell-${item.id}`}
+      className="w-full rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.025] border border-white/[0.11] p-2.5 hover:border-blue-400/45 hover:from-blue-500/[0.12] transition-all"
     >
       <div className="flex items-center gap-2.5">
-        <div className="w-9 h-9 rounded-xl bg-[#101a2f] ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0 overflow-hidden">
+        <button
+          type="button"
+          onClick={event => { event.stopPropagation(); onLogoClick?.(); }}
+          aria-label={`Buka ${item.title}`}
+          data-testid={`button-home-${kind}-card-${item.id}`}
+          className="w-9 h-9 rounded-xl bg-[#101a2f] ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer hover:ring-blue-300/75 hover:scale-105 active:scale-90 transition-all"
+        >
           {isEvent
             ? <Calendar className="w-4 h-4 text-blue-300"/>
             : item.icon
               ? <span className="text-base leading-none">{item.icon}</span>
               : <Favicon url={item.url} customImage={item.customImage} size={24} />}
-        </div>
+        </button>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm font-bold text-white truncate">{item.title}</h3>
@@ -921,7 +926,7 @@ function HomeProjectCard({ item, kind, onClick }) {
           {isEvent && item.date && <p className="text-[9px] text-blue-300/65 truncate mt-0.5">{item.date}</p>}
         </div>
       </div>
-    </button>
+    </div>
   );
 }
 
@@ -929,7 +934,6 @@ function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const dragStart = useRef(null);
-  const skipClick = useRef(false);
 
   useEffect(() => {
     setIndex(current => items.length ? Math.min(current, items.length - 1) : 0);
@@ -950,7 +954,6 @@ function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
 
   function handlePointerDown(event) {
     dragStart.current = event.clientX;
-    skipClick.current = false;
     setPaused(true);
     event.currentTarget.setPointerCapture?.(event.pointerId);
   }
@@ -959,7 +962,6 @@ function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
     if (dragStart.current !== null) {
       const distance = event.clientX - dragStart.current;
       if (Math.abs(distance) > 45) {
-        skipClick.current = true;
         move(distance < 0 ? 1 : -1);
       }
     }
@@ -992,13 +994,7 @@ function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
             <HomeProjectCard
               item={items[index]}
               kind={kind}
-              onClick={() => {
-                if (skipClick.current) {
-                  skipClick.current = false;
-                  return;
-                }
-                onSelect?.(items[index]);
-              }}
+              onLogoClick={() => onSelect?.(items[index])}
             />
           </div>
         </div>
