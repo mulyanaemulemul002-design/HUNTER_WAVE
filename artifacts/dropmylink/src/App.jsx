@@ -917,7 +917,6 @@ function HomeProjectCard({ item, kind, onClick }) {
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
             <h3 className="text-sm font-bold text-white truncate">{item.title}</h3>
-            <ChevronRight className="w-3.5 h-3.5 flex-shrink-0 text-white/30"/>
           </div>
           {isEvent && item.date && <p className="text-[9px] text-blue-300/65 truncate mt-0.5">{item.date}</p>}
         </div>
@@ -953,6 +952,7 @@ function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
     dragStart.current = event.clientX;
     skipClick.current = false;
     setPaused(true);
+    event.currentTarget.setPointerCapture?.(event.pointerId);
   }
 
   function handlePointerUp(event) {
@@ -963,6 +963,7 @@ function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
         move(distance < 0 ? 1 : -1);
       }
     }
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
     dragStart.current = null;
     setPaused(false);
   }
@@ -1000,44 +1001,11 @@ function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
               }}
             />
           </div>
-          {items.length > 1 && (
-            <>
-              <button
-                onClick={() => move(-1)}
-                aria-label={`Previous ${title}`}
-                data-testid={`button-home-${kind}-previous`}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/65 border border-white/15 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/85 transition-all"
-              >
-                <ChevronLeft className="w-4 h-4"/>
-              </button>
-              <button
-                onClick={() => move(1)}
-                aria-label={`Next ${title}`}
-                data-testid={`button-home-${kind}-next`}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/65 border border-white/15 flex items-center justify-center text-white/70 hover:text-white hover:bg-black/85 transition-all"
-              >
-                <ChevronRight className="w-4 h-4"/>
-              </button>
-            </>
-          )}
         </div>
       ) : (
         <div className="rounded-2xl glass-card px-4 py-6 text-center">
           <p className="text-xs font-semibold text-white/45">Belum ada data untuk bagian ini</p>
           <p className="text-[10px] text-white/25 mt-1">Bagian ini akan terisi saat data tersedia.</p>
-        </div>
-      )}
-      {items.length > 1 && (
-          <div className="flex justify-center gap-1.5 mt-1.5">
-          {items.map((item, dotIndex) => (
-            <button
-              key={`${item.id}-${dotIndex}`}
-              onClick={() => setIndex(dotIndex)}
-              aria-label={`Show ${title} item ${dotIndex + 1}`}
-              data-testid={`button-home-${kind}-dot-${dotIndex}`}
-              className={`rounded-full transition-all ${dotIndex === index ? "w-5 h-1.5 bg-blue-400" : "w-1.5 h-1.5 bg-white/20 hover:bg-white/35"}`}
-            />
-          ))}
         </div>
       )}
     </section>
@@ -1113,12 +1081,18 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
   return (
     <div className="pb-32">
       {/* ── NEW HOME HEADER ── */}
-      <div className="relative px-5 pt-5 pb-4 overflow-hidden">
+      <div className="relative px-5 pt-6 pb-5 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-950/35 via-blue-950/10 to-transparent pointer-events-none"/>
         <div className="relative">
-          <p className="text-[10px] font-bold text-blue-400/70 tracking-[0.2em] uppercase">HUNTER WAVE</p>
+          <h1 className="text-[clamp(2.75rem,11vw,4.25rem)] leading-[0.92] font-black tracking-[-0.06em] text-white">
+            HUNTER <span className="text-blue-500">WAVE</span>
+          </h1>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-sm sm:text-base font-black tracking-wide text-white/90">
+            <span>AIRDROP &amp; WEB3 MEDIA</span>
+            <span className="text-blue-400">FIND HUNT EARN</span>
+          </div>
           <RotatingTagline />
-          <p className="text-xs text-white/40 mt-2 max-w-xs leading-relaxed">
+          <p className="text-xs text-white/40 mt-3 max-w-xs leading-relaxed">
             Temukan, buru, dan pantau peluang Web3 pilihan komunitas.
           </p>
         </div>
@@ -1127,7 +1101,7 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
       <section className="mx-5 mt-3 mb-4 rounded-3xl border border-blue-500/20 bg-gradient-to-b from-blue-950/20 via-white/[0.025] to-transparent p-3 sm:p-4" data-testid="home-discovery-container">
         <HomeAirdropTicker airdrops={airdrops} onSelect={id => openAirdrop({ id })}/>
 
-        <div className="pt-3">
+        <div className="pt-3 grid grid-cols-2 gap-x-3 gap-y-4">
           <HomeCarousel title="New Airdrop" eyebrow="Freshly tracked" items={newest} kind="new" onSelect={openAirdrop}/>
           <HomeCarousel
             title="Upcoming Event"
@@ -1137,7 +1111,7 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
             onSelect={() => onNavigate({ tab: "discover", discoverSection: "calendar" })}
           />
           <HomeCarousel title="Rekomen / Hot" eyebrow="Community signal" items={hot} kind="hot" onSelect={openAirdrop}/>
-          <HomeCarousel title="Watchlist" eyebrow="Rumored projects" items={rumored} kind="rumored" onSelect={openAirdrop}/>
+          <HomeCarousel title="Watchlist" eyebrow="Potensial projects" items={rumored} kind="rumored" onSelect={openAirdrop}/>
         </div>
 
         {/* ── QUICK TAB ── */}
