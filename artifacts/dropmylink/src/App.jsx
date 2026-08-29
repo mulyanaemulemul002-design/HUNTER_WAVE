@@ -248,52 +248,47 @@ function HomeFooter({ social, onPrivacy, onTerms }) {
   }
   return (
     <footer className="px-5 mt-5 pb-4">
-      <div className="rounded-3xl bg-gradient-to-b from-blue-950/25 to-white/[0.025] border border-blue-500/20 p-4 flex flex-col gap-3.5" data-testid="home-footer">
-        {/* Social links */}
-        <div>
-          <p className="text-[9px] font-bold text-blue-400/70 uppercase tracking-[0.18em] text-center mb-3">Follow Kami</p>
-          <div className="flex items-start justify-center gap-7">
-            {social.map(({label,Icon,url})=>(
-              <button key={label} onClick={()=>window.open(url,"_blank","noopener,noreferrer")}
-                aria-label={`Follow HUNTER WAVE on ${label}`}
-                data-testid={`button-home-social-${label.toLowerCase()}`}
-                className="flex flex-col items-center gap-1.5 group active:scale-95 transition-all">
-                <span className="w-10 h-10 rounded-full bg-blue-500/10 ring-1 ring-blue-400/25 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:ring-blue-300/60 transition-all">
-                  <Icon className="w-5 h-5 text-blue-300/75 group-hover:text-blue-200"/>
-                </span>
-                <span className="text-[9px] font-bold text-white/45 group-hover:text-blue-300 transition-colors">{label}</span>
-              </button>
-            ))}
-          </div>
+      <div className="rounded-3xl bg-gradient-to-b from-blue-950/25 to-white/[0.025] border border-blue-500/20 p-4 flex flex-col gap-4" data-testid="home-footer">
+        {/* Circular action row, following the compact social layout from the reference. */}
+        <div className="flex items-start justify-center gap-3.5 sm:gap-6">
+          {social.map(({label,Icon,url})=>(
+            <button key={label} onClick={()=>window.open(url,"_blank","noopener,noreferrer")}
+              aria-label={`Follow HUNTER WAVE on ${label}`}
+              data-testid={`button-home-social-${label.toLowerCase()}`}
+              className="group active:scale-90 transition-all">
+              <span className="w-11 h-11 rounded-full bg-white/[0.08] ring-1 ring-blue-300/30 flex items-center justify-center group-hover:bg-blue-400/15 group-hover:ring-blue-300/70 transition-all">
+                <Icon className="w-5 h-5 text-blue-200/80 group-hover:text-blue-100"/>
+              </span>
+            </button>
+          ))}
+          <button onClick={copyAddr} aria-label="Salin alamat donasi crypto"
+            data-testid="button-home-donate"
+            className="group active:scale-90 transition-all">
+            <span className="w-11 h-11 rounded-full bg-white/[0.08] ring-1 ring-blue-300/30 flex items-center justify-center group-hover:bg-blue-400/15 group-hover:ring-blue-300/70 transition-all">
+              {copied ? <Check className="w-5 h-5 text-green-400"/> : <Heart className="w-5 h-5 text-blue-200/80 group-hover:text-blue-100"/>}
+            </span>
+          </button>
+          <button onClick={()=>window.open(FEEDBACK_TG,"_blank","noopener,noreferrer")}
+            aria-label="Kirim feedback ke founder"
+            data-testid="button-home-feedback"
+            className="group active:scale-90 transition-all">
+            <span className="w-11 h-11 rounded-full bg-white/[0.08] ring-1 ring-blue-300/30 flex items-center justify-center group-hover:bg-blue-400/15 group-hover:ring-blue-300/70 transition-all">
+              <MessageCircle className="w-5 h-5 text-blue-200/80 group-hover:text-blue-100"/>
+            </span>
+          </button>
         </div>
 
-        <div className="border-t border-white/[0.08]"/>
-
-        {/* Donate */}
-        <div className="flex items-start gap-2.5">
-          <span className="w-10 h-10 rounded-full bg-blue-500/10 ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0">
-            <Heart className="w-4 h-4 text-blue-300/80" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-[10px] text-white/45 mb-1.5">Dukung via Crypto (EVM)</p>
-            <div className="flex items-center gap-2 bg-black/30 border border-white/[0.08] rounded-2xl px-3 py-2">
-              <p className="text-[10px] font-mono text-white/30 flex-1 truncate">{DONATE_ADDRESS}</p>
-              <button onClick={copyAddr} data-testid="button-home-copy-wallet" className="flex-shrink-0 flex items-center gap-1 text-[10px] text-white/30 hover:text-blue-400 transition-colors">
-                {copied ? <><Check className="w-3 h-3 text-green-400"/> <span className="text-green-400">Tersalin</span></> : <><Copy className="w-3 h-3"/> Salin</>}
-              </button>
-            </div>
+        {/* Donation details remain available below the badge, including the original copy action. */}
+        <div className="text-center">
+          <p className="text-[9px] font-bold text-blue-400/70 uppercase tracking-[0.18em] mb-2">Dukung via Crypto (EVM)</p>
+          <div className="mx-auto max-w-sm flex items-center gap-2 bg-black/30 border border-white/[0.08] rounded-2xl px-3 py-2">
+            <p className="text-[10px] font-mono text-white/30 flex-1 truncate text-left">{DONATE_ADDRESS}</p>
+            <button onClick={copyAddr} data-testid="button-home-copy-wallet" className="flex-shrink-0 flex items-center gap-1 text-[10px] text-white/30 hover:text-blue-400 transition-colors">
+              {copied ? <><Check className="w-3 h-3 text-green-400"/> <span className="text-green-400">Tersalin</span></> : <><Copy className="w-3 h-3"/> Salin</>}
+            </button>
           </div>
+          <p className="text-[9px] text-white/25 mt-2">Feedback &amp; masukan · <span className="text-blue-400/60">@otgdontcry</span></p>
         </div>
-
-        {/* Feedback */}
-        <button onClick={()=>window.open(FEEDBACK_TG,"_blank","noopener,noreferrer")}
-          data-testid="button-home-feedback"
-          className="flex items-center gap-2.5 text-left hover:opacity-80 active:scale-95 transition-all">
-          <span className="w-10 h-10 rounded-full bg-blue-500/10 ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0">
-            <MessageCircle className="w-4 h-4 text-blue-300/80" />
-          </span>
-          <span className="text-[10px] text-white/30">Kirim feedback dan masukan, hubungi founder <span className="text-blue-400/60">@otgdontcry</span></span>
-        </button>
 
         <div className="border-t border-white/[0.08]"/>
 
@@ -874,7 +869,7 @@ function HomeAirdropTicker({ airdrops, onSelect }) {
   const items = [...airdrops, ...airdrops];
 
   return (
-    <div className="mx-5 rounded-2xl overflow-hidden border border-blue-500/20 bg-gradient-to-r from-blue-950/60 via-[#101426] to-blue-950/60 shadow-lg shadow-blue-950/20" data-testid="home-airdrop-ticker">
+    <div className="rounded-2xl overflow-hidden border border-blue-500/20 bg-gradient-to-r from-blue-950/60 via-[#101426] to-blue-950/60 shadow-lg shadow-blue-950/20" data-testid="home-airdrop-ticker">
       <div className="flex items-center min-h-[48px]">
         <div className="flex-shrink-0 flex items-center gap-1.5 px-3 sm:px-4 border-r border-white/10">
           <span className="text-lg font-black text-blue-300">{airdrops.length}</span>
@@ -904,59 +899,28 @@ function HomeAirdropTicker({ airdrops, onSelect }) {
 
 function HomeProjectCard({ item, kind, onClick }) {
   const isEvent = kind === "event";
-  const socialTag = item.tags?.find(tag => /social|community|twitter|discord|telegram/i.test(tag))
-    || item.tags?.[0]
-    || "Community";
 
   return (
     <button
       onClick={onClick}
       data-testid={`button-home-${kind}-card-${item.id}`}
-      className="w-full text-left rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.025] border border-white/[0.11] p-3.5 sm:p-4 hover:border-blue-400/45 hover:from-blue-500/[0.12] active:scale-[0.99] transition-all"
+      className="w-full text-left rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.025] border border-white/[0.11] p-2.5 hover:border-blue-400/45 hover:from-blue-500/[0.12] active:scale-[0.99] transition-all"
     >
-      <div className="flex items-start gap-3">
-        <div className="w-12 h-12 rounded-2xl bg-[#101a2f] ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0 overflow-hidden">
+      <div className="flex items-center gap-2.5">
+        <div className="w-9 h-9 rounded-xl bg-[#101a2f] ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0 overflow-hidden">
           {isEvent
-            ? <Calendar className="w-5 h-5 text-blue-300"/>
+            ? <Calendar className="w-4 h-4 text-blue-300"/>
             : item.icon
-              ? <span className="text-xl leading-none">{item.icon}</span>
-              : <Favicon url={item.url} customImage={item.customImage} size={31} />}
+              ? <span className="text-base leading-none">{item.icon}</span>
+              : <Favicon url={item.url} customImage={item.customImage} size={24} />}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="text-base font-bold text-white truncate">{item.title}</h3>
-            <ChevronRight className="w-4 h-4 flex-shrink-0 text-white/30 mt-0.5"/>
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-sm font-bold text-white truncate">{item.title}</h3>
+            <ChevronRight className="w-3.5 h-3.5 flex-shrink-0 text-white/30"/>
           </div>
-          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            {isEvent ? (
-              <>
-                <span className="text-[10px] font-bold text-blue-300">{item.date}</span>
-                {item.type && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/25">{item.type}</span>}
-              </>
-            ) : (
-              <>
-                <StatusBadge status={item.status}/>
-                {kind === "hot" && (
-                  <span className="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-full bg-pink-500/15 text-pink-300 ring-1 ring-pink-500/25">
-                    <MessageCircle className="w-2.5 h-2.5"/> {socialTag}
-                  </span>
-                )}
-              </>
-            )}
-          </div>
+          {isEvent && item.date && <p className="text-[9px] text-blue-300/65 truncate mt-0.5">{item.date}</p>}
         </div>
-      </div>
-      <p className="text-[11px] text-white/45 leading-relaxed mt-3 line-clamp-2">
-        {isEvent ? `Agenda ${item.type || "Web3"} di ekosistem HUNTER WAVE.` : item.description || "Lihat detail dan mulai hunting proyek ini."}
-      </p>
-      {!isEvent && item.tags?.length > 0 && (
-        <div className="flex gap-1.5 flex-wrap mt-3">
-          {item.tags.slice(0, 3).map(tag => <TagChip key={tag} tag={tag}/>)}
-        </div>
-      )}
-      <div className="flex items-center justify-end gap-1 mt-3 text-[9px] font-bold uppercase tracking-wider text-blue-300/70">
-        <span>{isEvent ? "Lihat kalender" : "Buka detail"}</span>
-        <ExternalLink className="w-3 h-3"/>
       </div>
     </button>
   );
@@ -1004,8 +968,8 @@ function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
   }
 
   return (
-    <section className="px-5 mb-4" data-testid={`home-carousel-${kind}`}>
-      <div className="flex items-end justify-between mb-2.5">
+    <section className="px-0 mb-3" data-testid={`home-carousel-${kind}`}>
+      <div className="flex items-end justify-between mb-2">
         <div>
           <p className="text-[9px] font-bold tracking-[0.18em] uppercase text-blue-400/70">{eyebrow}</p>
           <h2 className="text-base font-bold text-white mt-0.5">{title}</h2>
@@ -1064,7 +1028,7 @@ function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
         </div>
       )}
       {items.length > 1 && (
-        <div className="flex justify-center gap-1.5 mt-2.5">
+          <div className="flex justify-center gap-1.5 mt-1.5">
           {items.map((item, dotIndex) => (
             <button
               key={`${item.id}-${dotIndex}`}
@@ -1085,7 +1049,7 @@ function HomeToolsTicker({ tools, onSelect }) {
   const duration = Math.max(12, Math.round((tools.length / 21) * 28));
 
   return (
-    <div className="mx-5 mt-1 mb-4 rounded-xl border border-white/[0.08] bg-white/[0.025] overflow-hidden" data-testid="home-tools-ticker">
+    <div className="mt-3 rounded-xl border border-white/[0.08] bg-white/[0.025] overflow-hidden" data-testid="home-tools-ticker">
       <div className="flex items-center gap-3 px-3 pt-2">
         <Lightbulb className="w-3 h-3 text-blue-300/60"/>
         <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Platform &amp; Tools</span>
@@ -1160,48 +1124,50 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
         </div>
       </div>
 
-      <HomeAirdropTicker airdrops={airdrops} onSelect={id => openAirdrop({ id })}/>
+      <section className="mx-5 mt-3 mb-4 rounded-3xl border border-blue-500/20 bg-gradient-to-b from-blue-950/20 via-white/[0.025] to-transparent p-3 sm:p-4" data-testid="home-discovery-container">
+        <HomeAirdropTicker airdrops={airdrops} onSelect={id => openAirdrop({ id })}/>
 
-      <div className="pt-4">
-        <HomeCarousel title="New Airdrop" eyebrow="Freshly tracked" items={newest} kind="new" onSelect={openAirdrop}/>
-        <HomeCarousel
-          title="Upcoming Event"
-          eyebrow="Mark your calendar"
-          items={upcoming}
-          kind="event"
-          onSelect={() => onNavigate({ tab: "discover", discoverSection: "calendar" })}
-        />
-        <HomeCarousel title="Rekomen / Hot" eyebrow="Community signal" items={hot} kind="hot" onSelect={openAirdrop}/>
-        <HomeCarousel title="Rumored" eyebrow="Watchlist" items={rumored} kind="rumored" onSelect={openAirdrop}/>
-      </div>
-
-      {/* ── QUICK LINKS ── */}
-      <div className="px-5 mb-4">
-        <div className="flex items-center justify-between mb-2.5">
-          <p className="text-[9px] font-bold tracking-[0.18em] uppercase text-blue-400/70">Quick Links</p>
-          <span className="text-[10px] text-white/25">Tap to explore</span>
+        <div className="pt-3">
+          <HomeCarousel title="New Airdrop" eyebrow="Freshly tracked" items={newest} kind="new" onSelect={openAirdrop}/>
+          <HomeCarousel
+            title="Upcoming Event"
+            eyebrow="Mark your calendar"
+            items={upcoming}
+            kind="event"
+            onSelect={() => onNavigate({ tab: "discover", discoverSection: "calendar" })}
+          />
+          <HomeCarousel title="Rekomen / Hot" eyebrow="Community signal" items={hot} kind="hot" onSelect={openAirdrop}/>
+          <HomeCarousel title="Watchlist" eyebrow="Rumored projects" items={rumored} kind="rumored" onSelect={openAirdrop}/>
         </div>
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { id:"news", label:"News", hint:"Info", Icon:Zap, action:() => onNavigate({ tab:"info" }) },
-            { id:"save", label:"Save Your Airdrop", hint:"Bookmark", Icon:Bookmark, action:() => onNavigate({ tab:"bookmark" }) },
-            { id:"p2p", label:"P2P", hint:"Seller", Icon:Users, action:() => onNavigate({ tab:"discover", discoverSection:"p2p" }) },
-          ].map(({ id, label, hint, Icon, action }) => (
-            <button
-              key={id}
-              onClick={action}
-              data-testid={`button-home-quick-${id}`}
-              className="min-h-[70px] rounded-2xl bg-white/[0.045] border border-white/[0.09] px-2 py-2.5 flex flex-col items-center justify-center gap-1.5 hover:bg-blue-500/[0.12] hover:border-blue-400/35 active:scale-95 transition-all"
-            >
-              <Icon className="w-4 h-4 text-blue-300"/>
-              <span className="text-[10px] font-bold text-white/80 leading-tight text-center">{label}</span>
-              <span className="text-[9px] text-white/30">{hint}</span>
-            </button>
-          ))}
-        </div>
-      </div>
 
-      <HomeToolsTicker tools={tools} onSelect={id => onNavigate({ tab: "discover", type: "tool", id, discoverSection: "tools" })}/>
+        {/* ── QUICK TAB ── */}
+        <div className="mb-3">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[9px] font-bold tracking-[0.18em] uppercase text-blue-400/70">Quick Tab</p>
+            <span className="text-[10px] text-white/25">Tap to explore</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {[
+              { id:"news", label:"News", hint:"Info", Icon:Zap, action:() => onNavigate({ tab:"info" }) },
+              { id:"save", label:"Save Your Airdrop", hint:"Bookmark", Icon:Bookmark, action:() => onNavigate({ tab:"bookmark" }) },
+              { id:"p2p", label:"P2P", hint:"Seller", Icon:Users, action:() => onNavigate({ tab:"discover", discoverSection:"p2p" }) },
+            ].map(({ id, label, hint, Icon, action }) => (
+              <button
+                key={id}
+                onClick={action}
+                data-testid={`button-home-quick-${id}`}
+                className="min-h-[56px] rounded-xl bg-white/[0.045] border border-white/[0.09] px-1.5 py-2 flex flex-col items-center justify-center gap-1 hover:bg-blue-500/[0.12] hover:border-blue-400/35 active:scale-95 transition-all"
+              >
+                <Icon className="w-3.5 h-3.5 text-blue-300"/>
+                <span className="text-[9px] font-bold text-white/80 leading-tight text-center">{label}</span>
+                <span className="text-[8px] text-white/30">{hint}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <HomeToolsTicker tools={tools} onSelect={id => onNavigate({ tab: "discover", type: "tool", id, discoverSection: "tools" })}/>
+      </section>
 
       {/* ── BRAND PROFILE CARD ── */}
       <div className="px-5 mb-4">
