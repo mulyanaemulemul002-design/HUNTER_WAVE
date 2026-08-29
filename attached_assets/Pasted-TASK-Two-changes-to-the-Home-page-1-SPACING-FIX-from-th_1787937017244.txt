@@ -1,0 +1,24 @@
+TASK: Two changes to the Home page.
+
+1) SPACING FIX (from the previous carousel/section-order update)
+The vertical gap between sections (Total Project strip, New Airdrop, Upcoming Event, Rekomen/Hot, Rumored, Quick Links, Platform & Tools) is currently too wide. Reduce the vertical spacing/margins between these sections so that on a typical mobile screen, a user opening the Home tab for the first time can see most/all of the key sections with minimal scrolling. Tighten padding within cards too if it helps fit more content above the fold, but don't make it feel cramped — just remove excess whitespace between sections.
+
+2) MERGE FOOTER INTO ONE BLOCK
+Currently these exist as separate sections near the bottom: "Follow Kami" (X/Instagram/TikTok), "Dukung via Crypto" (donate + copy button), the feedback/founder-contact line (@otgdontcry), "Privacy Policy · Terms & Disclaimer" links, and the "© 2025 HUNTER WAVE..." copyright line.
+
+Merge ALL of these into a single unified footer block at the very bottom of the Home page, styled after this layout pattern (visual reference: a footer with a row of small circular social icon badges, a copyright line below it, then a secondary links list) — but recolor it entirely to HUNTER WAVE's existing dark background + blue accent theme, not the reference's green.
+
+Footer block structure, top to bottom, single container:
+- Row of circular icon badges: X, Instagram, TikTok (same tap-through links as now)
+- Donate line: "Dukung via Crypto (EVM)" with the wallet address and "Salin" copy button — keep the copy-to-clipboard function fully working, just restyle to fit the compact footer look
+- Feedback line: "Kirim feedback dan masukan, hubungi founder @otgdontcry" — keep link functional
+- Privacy Policy · Terms & Disclaimer links — keep functional
+- © 2025 HUNTER WAVE · Indonesia · Independen & Non-Profit
+
+All of this should read as one cohesive footer section (consistent background, consistent padding, no large gaps between these five pieces), replacing their current spread-out separate-card appearance.
+
+CONSTRAINTS
+- Don't change any functionality — every link, the copy button, and social icons must still work exactly as before, only the layout/grouping/spacing changes.
+- Keep HW's dark theme and blue accent color throughout the footer, don't introduce the green from the reference image.
+- Keep this footer visually distinct as "the end of the page" — clear top border or subtle background shift separating it from the DYOR/Kemandirian content above it.
+- Mobile-first responsive: icons and text should stay legible and not cramped at small widths.

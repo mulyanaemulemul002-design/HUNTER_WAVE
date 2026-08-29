@@ -238,8 +238,8 @@ function Btn({ onClick, children, variant = "primary", className = "", type = "b
 }
 
 
-// ─── DONATE & FEEDBACK CARD ───────────────────────────────────
-function DonateFeedbackSection() {
+// ─── HOME FOOTER ───────────────────────────────────────────────
+function HomeFooter({ social, onPrivacy, onTerms }) {
   const [copied, setCopied] = useState(false);
   function copyAddr() {
     navigator.clipboard.writeText(DONATE_ADDRESS).catch(()=>{});
@@ -247,35 +247,68 @@ function DonateFeedbackSection() {
     setTimeout(()=>setCopied(false), 2000);
   }
   return (
-    <div className="px-5 mt-6 mb-2">
-      <div className="rounded-2xl glass-card p-4 flex flex-col gap-3">
+    <footer className="px-5 mt-5 pb-4">
+      <div className="rounded-3xl bg-gradient-to-b from-blue-950/25 to-white/[0.025] border border-blue-500/20 p-4 flex flex-col gap-3.5" data-testid="home-footer">
+        {/* Social links */}
+        <div>
+          <p className="text-[9px] font-bold text-blue-400/70 uppercase tracking-[0.18em] text-center mb-3">Follow Kami</p>
+          <div className="flex items-start justify-center gap-7">
+            {social.map(({label,Icon,url})=>(
+              <button key={label} onClick={()=>window.open(url,"_blank","noopener,noreferrer")}
+                aria-label={`Follow HUNTER WAVE on ${label}`}
+                data-testid={`button-home-social-${label.toLowerCase()}`}
+                className="flex flex-col items-center gap-1.5 group active:scale-95 transition-all">
+                <span className="w-10 h-10 rounded-full bg-blue-500/10 ring-1 ring-blue-400/25 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:ring-blue-300/60 transition-all">
+                  <Icon className="w-5 h-5 text-blue-300/75 group-hover:text-blue-200"/>
+                </span>
+                <span className="text-[9px] font-bold text-white/45 group-hover:text-blue-300 transition-colors">{label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-white/[0.08]"/>
+
         {/* Donate */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-start gap-2.5">
           <span className="w-10 h-10 rounded-full bg-blue-500/10 ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0">
             <Heart className="w-4 h-4 text-blue-300/80" />
           </span>
-          <p className="text-[10px] text-white/30">Dukung via crypto (EVM)</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] text-white/45 mb-1.5">Dukung via Crypto (EVM)</p>
+            <div className="flex items-center gap-2 bg-black/30 border border-white/[0.08] rounded-2xl px-3 py-2">
+              <p className="text-[10px] font-mono text-white/30 flex-1 truncate">{DONATE_ADDRESS}</p>
+              <button onClick={copyAddr} data-testid="button-home-copy-wallet" className="flex-shrink-0 flex items-center gap-1 text-[10px] text-white/30 hover:text-blue-400 transition-colors">
+                {copied ? <><Check className="w-3 h-3 text-green-400"/> <span className="text-green-400">Tersalin</span></> : <><Copy className="w-3 h-3"/> Salin</>}
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2 bg-black/30 border border-white/[0.08] rounded-2xl px-3 py-2">
-          <p className="text-[10px] font-mono text-white/30 flex-1 truncate">{DONATE_ADDRESS}</p>
-          <button onClick={copyAddr} className="flex-shrink-0 flex items-center gap-1 text-[10px] text-white/30 hover:text-blue-400 transition-colors">
-            {copied ? <><Check className="w-3 h-3 text-green-400"/> <span className="text-green-400">Tersalin</span></> : <><Copy className="w-3 h-3"/> Salin</>}
-          </button>
-        </div>
-
-        {/* Divider */}
-        <div className="border-t border-white/[0.06]"/>
 
         {/* Feedback */}
         <button onClick={()=>window.open(FEEDBACK_TG,"_blank","noopener,noreferrer")}
+          data-testid="button-home-feedback"
           className="flex items-center gap-2.5 text-left hover:opacity-80 active:scale-95 transition-all">
           <span className="w-10 h-10 rounded-full bg-blue-500/10 ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0">
             <MessageCircle className="w-4 h-4 text-blue-300/80" />
           </span>
           <span className="text-[10px] text-white/30">Kirim feedback dan masukan, hubungi founder <span className="text-blue-400/60">@otgdontcry</span></span>
         </button>
+
+        <div className="border-t border-white/[0.08]"/>
+
+        <div className="flex items-center justify-center gap-3">
+          <button onClick={onPrivacy} data-testid="button-home-privacy" className="text-[10px] text-white/35 hover:text-blue-400/80 transition-colors">
+            Privacy Policy
+          </button>
+          <span className="text-white/15">·</span>
+          <button onClick={onTerms} data-testid="button-home-terms" className="text-[10px] text-white/35 hover:text-blue-400/80 transition-colors">
+            Terms &amp; Disclaimer
+          </button>
+        </div>
+        <p className="text-center text-[9px] text-white/25">© 2025 HUNTER WAVE · Indonesia · Independen &amp; Non-Profit</p>
       </div>
-    </div>
+    </footer>
   );
 }
 
@@ -879,7 +912,7 @@ function HomeProjectCard({ item, kind, onClick }) {
     <button
       onClick={onClick}
       data-testid={`button-home-${kind}-card-${item.id}`}
-      className="w-full text-left rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.025] border border-white/[0.11] p-4 sm:p-5 hover:border-blue-400/45 hover:from-blue-500/[0.12] active:scale-[0.99] transition-all"
+      className="w-full text-left rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.025] border border-white/[0.11] p-3.5 sm:p-4 hover:border-blue-400/45 hover:from-blue-500/[0.12] active:scale-[0.99] transition-all"
     >
       <div className="flex items-start gap-3">
         <div className="w-12 h-12 rounded-2xl bg-[#101a2f] ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -971,7 +1004,7 @@ function HomeCarousel({ title, eyebrow, items, kind, onSelect }) {
   }
 
   return (
-    <section className="px-5 mb-6" data-testid={`home-carousel-${kind}`}>
+    <section className="px-5 mb-4" data-testid={`home-carousel-${kind}`}>
       <div className="flex items-end justify-between mb-2.5">
         <div>
           <p className="text-[9px] font-bold tracking-[0.18em] uppercase text-blue-400/70">{eyebrow}</p>
@@ -1052,7 +1085,7 @@ function HomeToolsTicker({ tools, onSelect }) {
   const duration = Math.max(12, Math.round((tools.length / 21) * 28));
 
   return (
-    <div className="mx-5 mt-1 mb-5 rounded-xl border border-white/[0.08] bg-white/[0.025] overflow-hidden" data-testid="home-tools-ticker">
+    <div className="mx-5 mt-1 mb-4 rounded-xl border border-white/[0.08] bg-white/[0.025] overflow-hidden" data-testid="home-tools-ticker">
       <div className="flex items-center gap-3 px-3 pt-2">
         <Lightbulb className="w-3 h-3 text-blue-300/60"/>
         <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Platform &amp; Tools</span>
@@ -1129,7 +1162,7 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
 
       <HomeAirdropTicker airdrops={airdrops} onSelect={id => openAirdrop({ id })}/>
 
-      <div className="pt-6">
+      <div className="pt-4">
         <HomeCarousel title="New Airdrop" eyebrow="Freshly tracked" items={newest} kind="new" onSelect={openAirdrop}/>
         <HomeCarousel
           title="Upcoming Event"
@@ -1143,7 +1176,7 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
       </div>
 
       {/* ── QUICK LINKS ── */}
-      <div className="px-5 mb-6">
+      <div className="px-5 mb-4">
         <div className="flex items-center justify-between mb-2.5">
           <p className="text-[9px] font-bold tracking-[0.18em] uppercase text-blue-400/70">Quick Links</p>
           <span className="text-[10px] text-white/25">Tap to explore</span>
@@ -1158,7 +1191,7 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
               key={id}
               onClick={action}
               data-testid={`button-home-quick-${id}`}
-              className="min-h-[78px] rounded-2xl bg-white/[0.045] border border-white/[0.09] px-2 py-3 flex flex-col items-center justify-center gap-1.5 hover:bg-blue-500/[0.12] hover:border-blue-400/35 active:scale-95 transition-all"
+              className="min-h-[70px] rounded-2xl bg-white/[0.045] border border-white/[0.09] px-2 py-2.5 flex flex-col items-center justify-center gap-1.5 hover:bg-blue-500/[0.12] hover:border-blue-400/35 active:scale-95 transition-all"
             >
               <Icon className="w-4 h-4 text-blue-300"/>
               <span className="text-[10px] font-bold text-white/80 leading-tight text-center">{label}</span>
@@ -1179,25 +1212,6 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
           <div className="mt-3.5 flex gap-2 flex-wrap">
             {["Airdrop","Campaign","Web3","DeFi","Layer2"].map(t=>(
               <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20">{t}</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── FOLLOW KAMI ── */}
-      <div className="px-5 mb-4">
-        <div className="rounded-2xl glass-card p-4">
-          <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-3">Follow Kami</p>
-          <div className="flex items-start justify-center gap-7">
-            {SOCIAL.map(({label,Icon,url})=>(
-              <button key={label} onClick={()=>window.open(url,"_blank","noopener,noreferrer")}
-                aria-label={`Follow HUNTER WAVE on ${label}`}
-                className="flex flex-col items-center gap-1.5 group active:scale-95 transition-all">
-                <span className="w-10 h-10 rounded-full bg-blue-500/10 ring-1 ring-blue-400/25 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:ring-blue-300/60 transition-all">
-                  <Icon className="w-5 h-5 text-blue-300/75 group-hover:text-blue-200"/>
-                </span>
-                <span className="text-[9px] font-bold text-white/45 group-hover:text-blue-300 transition-colors">{label}</span>
-              </button>
             ))}
           </div>
         </div>
@@ -1234,21 +1248,11 @@ Jangan jadikan airdrop sebagai sumber penghasilan utama. Disarankan fokus di leb
         </div>
       </div>
 
-      <DonateFeedbackSection />
-
-      {/* ── FOOTER ── */}
-      <div className="px-5 pt-5 pb-4 mt-2 border-t border-white/[0.05]">
-        <div className="flex items-center justify-center gap-4 mb-2.5">
-          <button onClick={()=>setShowPrivacy(true)} className="text-[10px] text-white/30 hover:text-blue-400/70 transition-colors">
-            Privacy Policy
-          </button>
-          <span className="text-white/10">·</span>
-          <button onClick={()=>setShowTerms(true)} className="text-[10px] text-white/30 hover:text-blue-400/70 transition-colors">
-            Terms & Disclaimer
-          </button>
-        </div>
-        <p className="text-center text-[9px] text-white/20">© 2025 HUNTER WAVE · Indonesia · Independen &amp; Non-Profit</p>
-      </div>
+      <HomeFooter
+        social={SOCIAL}
+        onPrivacy={() => setShowPrivacy(true)}
+        onTerms={() => setShowTerms(true)}
+      />
 
       {showPrivacy && <PrivacyModal onClose={()=>setShowPrivacy(false)}/>}
       {showTerms   && <TermsModal  onClose={()=>setShowTerms(false)}/>}
