@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import Fuse from "fuse.js";
 import { getAirdrops, getNews, getQinfo, getTools, getP2P, getCalendar, getTicker } from "./lib/data";
+import AdminPanel from "./components/AdminPanel";
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
   ExternalLink, Copy, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
@@ -379,7 +380,7 @@ function StatusLegend() {
 }
 
 // ─── SIDEBAR NAV (desktop ≥ 1024px) ───────────────────────────
-function SidebarNav({ active, onSelect, onOpenSearch }) {
+function SidebarNav({ active, onSelect, onOpenSearch, onLogoTap }) {
   const tabs = [
     { id:"intro",    label:"Home",        icon:Home },
     { id:"info",     label:"Info Terkini", icon:Zap },
@@ -390,10 +391,11 @@ function SidebarNav({ active, onSelect, onOpenSearch }) {
   return (
     <div className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-56 bg-[#0A0A0A] border-r border-white/[0.06] z-40 py-5 px-3">
       <div className="flex items-center justify-between px-3 mb-8 select-none">
-        <div className="flex items-center gap-2.5">
+        <button type="button" onClick={onLogoTap} data-testid="button-hw-logo-desktop" aria-label="HUNTER WAVE"
+          className="flex items-center gap-2.5 rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70">
           <img src="/logo.jpg" alt="logo" className="w-8 h-8 rounded-lg object-cover ring-1 ring-blue-500/30"/>
           <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
-        </div>
+        </button>
         <button onClick={onOpenSearch}
           className="w-7 h-7 rounded-lg bg-blue-500/[0.08] ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/15 transition-all"
           title="Cari (Global Search)">
@@ -2493,6 +2495,8 @@ export default function App() {
   const [calendar, setCalendar] = useState(DEF_CALENDAR);
   const [ticker, setTicker]     = useState(DEF_TICKER);
   const [loaded, setLoaded]     = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
+  const logoTapsRef = useRef([]);
 
   // ─── TOOL BOOKMARKS on/off (localStorage) ─────────────────
   const [toolBookmarks, setToolBookmarks] = useState(() => {
@@ -2535,6 +2539,21 @@ export default function App() {
     });
   }
 
+  const handleLogoTap = useCallback(() => {
+    const now = Date.now();
+    const recentTaps = [...logoTapsRef.current, now].filter((tap) => now - tap <= 3000);
+    logoTapsRef.current = recentTaps;
+    if (recentTaps.length >= 5) {
+      logoTapsRef.current = [];
+      setAdminOpen(true);
+    }
+  }, []);
+
+  const handleAdminAirdropsChange = useCallback((nextAirdrops) => {
+    setAirdrops(nextAirdrops);
+    idbSet("airdrops", nextAirdrops);
+  }, []);
+
   // ─── GLOBAL SEARCH NAVIGATION ─────────────────────────────
   const handleSearchNavigate = useCallback(({ tab: destTab, type, id, discoverSection: ds }) => {
     // Update the destination first. The destination component owns the
@@ -2555,7 +2574,7 @@ export default function App() {
     setDiscoverSection(ds || null);
   }, []);
 
-  // Load all data from IndexedDB on mount (tapCount/handleLogoTap sudah dihapus bersama admin panel)
+  // Load all data from IndexedDB on mount.
   useEffect(() => {
     idbGetAll().then(([a, n, q, t, p, cal, tick]) => {
       if (a)    setAirdrops(a);
@@ -2573,7 +2592,7 @@ export default function App() {
     <div className="min-h-screen bg-[#0A0A0A] text-white relative">
 
       {/* ── SIDEBAR NAV (desktop ≥ 1024px) ── */}
-      <SidebarNav active={tab} onSelect={setTab} onOpenSearch={() => setSearchOpen(true)} />
+       <SidebarNav active={tab} onSelect={setTab} onOpenSearch={() => setSearchOpen(true)} onLogoTap={handleLogoTap} />
 
       {/* ── MAIN COLUMN ── */}
       <div className="lg:ml-56">
@@ -2581,10 +2600,11 @@ export default function App() {
         {/* Header logo — mobile only, fixed top-0 */}
         <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-[#0A0A0A] border-b border-white/[0.06]">
           <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2 select-none">
+            <button type="button" onClick={handleLogoTap} data-testid="button-hw-logo-mobile" aria-label="HUNTER WAVE"
+              className="flex items-center gap-2 select-none rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-blue-400/70">
               <img src="/logo.jpg" alt="logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-blue-500/30"/>
               <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
-            </div>
+            </button>
             <button onClick={() => setSearchOpen(true)}
               className="w-8 h-8 rounded-xl bg-blue-500/[0.08] ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/15 active:scale-90 transition-all">
               <Search className="w-4 h-4 text-blue-400/70"/>
@@ -2635,6 +2655,14 @@ export default function App() {
         tools={tools}
         onNavigate={handleSearchNavigate}
       />
+
+      {adminOpen && (
+        <AdminPanel
+          airdrops={airdrops}
+          onAirdropsChange={handleAdminAirdropsChange}
+          onClose={() => setAdminOpen(false)}
+        />
+      )}
 
     </div>
   );
