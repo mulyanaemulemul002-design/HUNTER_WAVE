@@ -619,7 +619,9 @@ function scrollToCard({ id, cardPrefix, stickyId }) {
 
   const fixedHeight = window.innerWidth >= 1024 ? 34 : 86;
   const stickyEl = document.getElementById(stickyId);
-  const stickyHeight = stickyEl ? stickyEl.offsetHeight : 0;
+  const stickyHeight = stickyEl && window.getComputedStyle(stickyEl).position === "sticky"
+    ? stickyEl.offsetHeight
+    : 0;
   const stickyOffset = fixedHeight + stickyHeight + 12;
   const top = el.getBoundingClientRect().top + window.scrollY - stickyOffset;
   window.scrollTo({ top, behavior: "smooth" });
@@ -1748,30 +1750,6 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
   const [guideOpenId, setGuideOpenId] = useState(null);
   const [copiedId, setCopiedId]       = useState(null);
   const [burstId, setBurstId]         = useState(null);
-  const [airdropHeaderVisible, setAirdropHeaderVisible] = useState(true);
-  const lastScrollY = useRef(0);
-
-  // Mobile-style auto-hide header:
-  // content moving upward hides the full Airdrop control block, while
-  // scrolling back down reveals it again.
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const delta = currentScrollY - lastScrollY.current;
-
-      if (currentScrollY <= 8 || delta < -4) {
-        setAirdropHeaderVisible(true);
-      } else if (delta > 4) {
-        setAirdropHeaderVisible(false);
-      }
-
-      lastScrollY.current = currentScrollY;
-    };
-
-    lastScrollY.current = window.scrollY;
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // Expand the requested card after navigation. Scrolling is deliberately in
   // a second effect so it runs against the mounted card DOM.
@@ -1845,14 +1823,9 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
   return (
     <div className="pb-32">
 
-      {/* Seluruh header Airdrop auto-hide saat scroll dan muncul lagi saat
-          user scroll kembali ke bawah. Posisi sticky baru aktif ketika
-          blok ini mencapai offset header utama. */}
       <div
         id="airdrop-sticky-header"
-        className={`sticky top-[86px] lg:top-[34px] z-40 bg-[#0a0b0d] border-b border-white/[0.05] transition-transform duration-300 ease-out ${
-          airdropHeaderVisible ? "translate-y-0" : "-translate-y-full"
-        }`}
+        className="bg-[#0a0b0d] border-b border-white/[0.05]"
       >
         <div className="px-5 pt-4 pb-2">
           <h1 className="text-lg font-bold text-white">🪂 Airdrop List</h1>
