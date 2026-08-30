@@ -600,7 +600,7 @@ export default function AdminPanel({ airdrops, onAirdropsChange, onClose }) {
                   </AdminField>
                 </div>
                 <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
-                  <AdminField label="GitHub Personal Access Token" hint="Disimpan hanya di localStorage browser dengan key terpisah. Gunakan scope repo.">
+                  <AdminField label="GitHub Personal Access Token" hint="Disimpan hanya di localStorage browser dengan key terpisah. Fine-grained token harus punya Contents: Read and write.">
                     <div className="relative">
                       <AdminInput
                         type="password"
@@ -609,7 +609,7 @@ export default function AdminPanel({ airdrops, onAirdropsChange, onClose }) {
                           setToken(event.target.value);
                           try { localStorage.setItem(TOKEN_STORAGE_KEY, event.target.value); } catch {}
                         }}
-                        placeholder="ghp_..."
+                         placeholder="github_pat_..."
                         autoComplete="off"
                         data-testid="input-github-token"
                         className="pr-10"
