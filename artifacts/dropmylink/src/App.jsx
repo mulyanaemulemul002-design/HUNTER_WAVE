@@ -708,7 +708,7 @@ function AirdropIconStrip({ airdrops }) {
   );
 }
 
-// ─── TOOLS ICON STRIP (quick-navigation, khusus Platform & Tools) ──
+// ─── PLATFORM ICON STRIP (quick-navigation, khusus Platform) ──
 function ToolsIconStrip({ tools }) {
   const [paused, setPaused] = useState(false);
   const resumeTimer = useRef(null);
@@ -1020,7 +1020,7 @@ function HomeToolsTicker({ tools, onSelect }) {
     <div className="mt-3 rounded-xl border border-white/[0.08] bg-white/[0.025] overflow-hidden" data-testid="home-tools-ticker">
       <div className="flex items-center gap-3 px-3 pt-2">
         <Lightbulb className="w-3 h-3 text-blue-300/60"/>
-        <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Platform &amp; Tools</span>
+         <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Platform</span>
       </div>
       <div className="overflow-hidden py-1.5">
         <div className="hw-home-tools-scroll-track" style={{ animationDuration: `${duration}s` }}>
@@ -1043,9 +1043,45 @@ function HomeToolsTicker({ tools, onSelect }) {
   );
 }
 
+function HomeDisclosure({ id, title, icon: Icon, open, onToggle, tone = "blue", children }) {
+  const tones = tone === "orange"
+    ? { icon: "bg-white/[0.06] ring-white/[0.10]", iconText: "text-orange-400/70" }
+    : { icon: "bg-blue-500/15 ring-blue-500/25", iconText: "text-blue-400" };
+
+  return (
+    <div className="px-5 mb-4">
+      <div className="rounded-2xl glass-card overflow-hidden">
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-controls={id}
+          data-testid={`button-home-disclosure-${id}`}
+          className="w-full flex items-center gap-2.5 p-4 text-left hover:bg-white/[0.03] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60"
+        >
+          <span className={`w-7 h-7 rounded-lg ${tones.icon} ring-1 flex items-center justify-center flex-shrink-0`}>
+            <Icon className={`w-3.5 h-3.5 ${tones.iconText}`} />
+          </span>
+          <span className="flex-1 text-xs font-bold text-white">{title}</span>
+          {open ? <ChevronUp className="w-4 h-4 text-white/35" /> : <ChevronDown className="w-4 h-4 text-white/35" />}
+        </button>
+        {open && (
+          <div id={id} className="px-4 pb-4" data-testid={`home-disclosure-content-${id}`}>
+            {children}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = () => {} }) {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms]     = useState(false);
+  const [openDisclosures, setOpenDisclosures] = useState({
+    independence: true,
+    dyor: true,
+  });
 
   const SOCIAL = [
     { label:"X",         Icon:IconX,         url:"https://x.com/otgboys" },
@@ -1101,7 +1137,7 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
           <HomeCarousel title="New Airdrop" eyebrow="Freshly tracked" items={newest} kind="new" onSelect={openAirdrop}/>
           <HomeCarousel
             title="Upcoming Event"
-            eyebrow="Mark your calendar"
+            eyebrow="Track event"
             items={upcoming}
             kind="event"
             onSelect={() => onNavigate({ tab: "discover", discoverSection: "calendar" })}
@@ -1136,7 +1172,7 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
           </div>
         </div>
 
-        <HomeToolsTicker tools={tools} onSelect={id => onNavigate({ tab: "discover", type: "tool", id, discoverSection: "tools" })}/>
+       <HomeToolsTicker tools={tools} onSelect={id => onNavigate({ tab: "discover", type: "tool", id, discoverSection: "platform" })}/>
       </section>
 
       {/* ── BRAND PROFILE CARD ── */}
@@ -1153,36 +1189,32 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
         </div>
       </div>
 
-      {/* ── KEMANDIRIAN ── */}
-      <div className="px-5 mb-4">
-        <div className="rounded-2xl glass-card p-4">
-          <div className="flex items-center gap-2 mb-2.5">
-            <div className="w-7 h-7 rounded-lg bg-blue-500/15 ring-1 ring-blue-500/25 flex items-center justify-center flex-shrink-0">
-              <Shield className="w-3.5 h-3.5 text-blue-400"/>
-            </div>
-            <p className="text-xs font-bold text-white">Kemandirian HUNTER WAVE</p>
-          </div>
-          <p className="text-[11px] text-white/40 leading-relaxed">
-            HUNTER WAVE adalah platform <span className="text-blue-400/80">independen</span> yang tidak memiliki afiliasi resmi, sponsor, atau kerja sama berbayar dengan proyek, tim, atau entitas mana pun. Semua konten disajikan murni berdasarkan riset dan kurasi komunitas.
-          </p>
-        </div>
-      </div>
+      <HomeDisclosure
+        id="independence"
+        title="Kemandirian HUNTER WAVE"
+        icon={Shield}
+        open={openDisclosures.independence}
+        onToggle={() => setOpenDisclosures((current) => ({ ...current, independence: !current.independence }))}
+      >
+        <p className="text-[11px] text-white/40 leading-relaxed">
+          HUNTER WAVE adalah platform <span className="text-blue-400/80">independen</span> yang tidak memiliki afiliasi resmi, sponsor, atau kerja sama berbayar dengan proyek, tim, atau entitas mana pun. Semua konten disajikan murni berdasarkan riset dan kurasi komunitas.
+        </p>
+      </HomeDisclosure>
 
-      {/* ── DYOR ── */}
-      <div className="px-5 mb-4">
-        <div className="rounded-2xl glass-card p-4">
-          <div className="flex items-center gap-2 mb-2.5">
-            <div className="w-7 h-7 rounded-lg bg-white/[0.06] ring-1 ring-white/[0.10] flex items-center justify-center flex-shrink-0">
-              <AlertTriangle className="w-3.5 h-3.5 text-orange-400/70"/>
-            </div>
-            <p className="text-xs font-bold text-white/80">DYOR</p>
-          </div>
-          <p className="text-[11px] text-white/35 leading-relaxed">
-           Airdrop bersifat spekulatif tidak ada jaminan proyek bakal TGE, apalagi worth farming dalam jangka panjang. Prosesnya bisa makan waktu berbulan-bulan sampai tahunan, dan proyek bisa aja shutdown di tengah jalan tanpa distribusi apa pun.
-Jangan jadikan airdrop sebagai sumber penghasilan utama. Disarankan fokus di lebih dari 5+ proyek sekaligus biar waktu dan effort lu gak kebagi terlalu tipis. Platform tidak bertanggung jawab atas kerugian waktu maupun aset yang timbul.
-          </p>
-        </div>
-      </div>
+      <HomeDisclosure
+        id="dyor"
+        title="DYOR"
+        icon={AlertTriangle}
+        tone="orange"
+        open={openDisclosures.dyor}
+        onToggle={() => setOpenDisclosures((current) => ({ ...current, dyor: !current.dyor }))}
+      >
+        <p className="text-[11px] text-white/35 leading-relaxed">
+          Airdrop bersifat spekulatif tidak ada jaminan proyek bakal TGE, apalagi worth farming dalam jangka panjang. Prosesnya bisa makan waktu berbulan-bulan sampai tahunan, dan proyek bisa aja shutdown di tengah jalan tanpa distribusi apa pun.
+          <br /><br />
+          Jangan jadikan airdrop sebagai sumber penghasilan utama. Disarankan fokus di lebih dari 5+ proyek sekaligus biar waktu dan effort lu gak kebagi terlalu tipis. Platform tidak bertanggung jawab atas kerugian waktu maupun aset yang timbul.
+        </p>
+      </HomeDisclosure>
 
       <HomeFooter
         social={SOCIAL}
@@ -1467,7 +1499,7 @@ function BookmarkScreen({ airdrops, bookmarks, onToggleBookmark, tools, toolBook
             <div className="rounded-2xl glass-card border-dashed p-10 flex flex-col items-center gap-3 text-center">
               <span className="text-2xl">🔧</span>
               <p className="text-sm font-semibold text-white/50">Platform kosong</p>
-              <p className="text-xs text-white/25 leading-relaxed">Belum ada platform tersimpan.<br/>Ketuk ikon bookmark di Discover → Platform & Tools.</p>
+              <p className="text-xs text-white/25 leading-relaxed">Belum ada platform tersimpan.<br/>Ketuk ikon bookmark di Discover → Platform.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-2.5">
@@ -1982,9 +2014,9 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
   }, [requestSection]);
 
   // Wait for the requested Discover subsection to become active and render
-  // before using the same scroll/highlight handler as the tools icon strip.
+  // before using the same scroll/highlight handler as the platform icon strip.
   useEffect(() => {
-    if (navigationTarget?.type !== "tool" || section !== "tools") return;
+    if (navigationTarget?.type !== "tool" || section !== "platform") return;
     const frame = requestAnimationFrame(() => {
       scrollToCard({
         id: navigationTarget.id,
@@ -2000,19 +2032,21 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
     setCopiedToolId(tool.id);
     setTimeout(()=>setCopiedToolId(null), 2000);
   }
+  const visibleTools = section === "platform" ? tools : [];
+
   return (
     <div className="pb-32">
       <div className="px-5 pt-6 mb-3">
         <h1 className="text-lg font-bold text-white">🧭 Discover</h1>
-        <p className="text-xs text-white/30 mt-0.5">P2P, Kalender, dan Platform Tools</p>
+        <p className="text-xs text-white/30 mt-0.5">P2P, EVENT, Platform, dan Tools</p>
       </div>
 
-      {/* ── STICKY: TOOL STRIP (tools tab) + SECTION TABS ── */}
+      {/* ── STICKY: PLATFORM STRIP + SECTION TABS ── */}
       <div id="discover-sticky-header" className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]">
-        {section === "tools" && <ToolsIconStrip tools={tools} />}
+        {section === "platform" && <ToolsIconStrip tools={tools} />}
         <div className="bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
           <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
-            {[{id:"p2p",label:"P2P Seller",icon:Users},{id:"calendar",label:"Kalender",icon:Calendar},{id:"tools",label:"Platform & Tools",icon:Lightbulb}].map(({id,label,icon:Icon})=>(
+            {[{id:"p2p",label:"P2P",icon:Users},{id:"calendar",label:"EVENT",icon:Calendar},{id:"platform",label:"Platform",icon:Lightbulb},{id:"tools",label:"Tools",icon:Settings}].map(({id,label,icon:Icon})=>(
               <button key={id} onClick={()=>setSection(id)}
                 className={`flex-none flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold ring-1 transition-all ${section===id?"bg-blue-500 text-white ring-blue-500":"bg-blue-500/[0.08] ring-blue-500/20 text-white/50 hover:text-blue-300"}`}>
                 <Icon className="w-3.5 h-3.5"/>{label}
@@ -2026,7 +2060,13 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
         <div className="px-5 flex flex-col gap-3">
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-purple-500/10 ring-1 ring-purple-500/20">
             <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-500/25 text-purple-300 ring-1 ring-purple-500/30 tracking-wider uppercase">Example</span>
-            <p className="text-[11px] text-purple-300/70 leading-relaxed">Data ini adalah contoh. Belum ada listing P2P aktif.</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] text-purple-300/70 leading-relaxed">Data ini adalah contoh. Belum ada listing P2P aktif.</p>
+              <a href={FEEDBACK_TG} target="_blank" rel="noreferrer" data-testid="link-p2p-developer-contact"
+                className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-blue-300/80 underline underline-offset-2 hover:text-blue-200">
+                <MessageCircle className="h-3 w-3" /> Hubungi pengembang jika ingin jadi seller
+              </a>
+            </div>
           </div>
           <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-amber-500/10 ring-1 ring-amber-500/20">
             <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0"/>
@@ -2112,7 +2152,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
         <div className="px-5 flex flex-col gap-3">
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-purple-500/10 ring-1 ring-purple-500/20">
             <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-purple-500/25 text-purple-300 ring-1 ring-purple-500/30 tracking-wider uppercase">Example</span>
-            <p className="text-[11px] text-purple-300/70 leading-relaxed">Data ini adalah contoh. Belum ada event kalender aktif.</p>
+            <p className="text-[11px] text-purple-300/70 leading-relaxed">Data ini adalah contoh. Belum ada event aktif.</p>
           </div>
           <StatusLegend />
           {calendar.map(e=>(
@@ -2130,10 +2170,20 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
         </div>
       )}
 
-      {section==="tools" && (
+      {(section==="platform" || section==="tools") && (
         <div>
           <div className="px-5 flex flex-col gap-3 pt-3">
-          {tools.map(tool=>{
+          {visibleTools.length === 0 ? (
+            <div className="rounded-2xl glass-card p-6 text-center" data-testid="empty-discover-tools">
+              <Settings className="mx-auto h-8 w-8 text-white/20" />
+              <p className="mt-3 text-sm font-semibold text-white/50">
+                {section === "tools" ? "Belum ada data tools" : "Belum ada data platform"}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-white/25">
+                {section === "tools" ? "Data tools akan ditambahkan pada update berikutnya." : "Belum ada platform yang tersedia saat ini."}
+              </p>
+            </div>
+          ) : visibleTools.map(tool=>{
             const open      = expandedItem === tool.id;
             const saved     = toolBookmarks && toolBookmarks.has(String(tool.id));
             return (
@@ -2233,9 +2283,9 @@ function highlightText(text, matches, key) {
 
 const SEARCH_SECTIONS = [
   { type: "airdrop",  label: "Airdrop",         tab: "airdrops",  discoverSection: null,       icon: "🪂" },
-  { type: "tool",     label: "Platform & Tools", tab: "discover",  discoverSection: "tools",    icon: "🔧" },
-  { type: "p2p",      label: "P2P Seller",       tab: "discover",  discoverSection: "p2p",      icon: "🤝" },
-  { type: "calendar", label: "Kalender",          tab: "discover",  discoverSection: "calendar", icon: "📅" },
+  { type: "tool",     label: "Platform",        tab: "discover",  discoverSection: "platform", icon: "🔧" },
+  { type: "p2p",      label: "P2P",              tab: "discover",  discoverSection: "p2p",      icon: "🤝" },
+  { type: "calendar", label: "EVENT",            tab: "discover",  discoverSection: "calendar", icon: "📅" },
 ];
 
 function buildCorpus(airdrops, p2p, calendar, tools) {
