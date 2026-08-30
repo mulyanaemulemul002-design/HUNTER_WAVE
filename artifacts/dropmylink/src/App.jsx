@@ -1782,6 +1782,47 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
   const [guideOpenId, setGuideOpenId] = useState(null);
   const [copiedId, setCopiedId]       = useState(null);
   const [burstId, setBurstId]         = useState(null);
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const lastScrollYRef = useRef(0);
+  const scrollFrameRef = useRef(null);
+  const headerVisibleRef = useRef(true);
+
+  // Keep the full search container in the document flow and only animate its
+  // sticky layer. This prevents the cards from jumping when the header hides.
+  useEffect(() => {
+    lastScrollYRef.current = window.scrollY;
+
+    function setVisible(nextVisible) {
+      if (headerVisibleRef.current === nextVisible) return;
+      headerVisibleRef.current = nextVisible;
+      setHeaderVisible(nextVisible);
+    }
+
+    function handleScroll() {
+      if (scrollFrameRef.current !== null) return;
+      scrollFrameRef.current = requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        const delta = currentY - lastScrollYRef.current;
+
+        if (currentY <= 94) {
+          setVisible(true);
+        } else if (Math.abs(delta) >= 4) {
+          // Scrolling down hides the controls; reversing direction reveals
+          // them immediately without requiring a trip back to the top.
+          setVisible(delta < 0);
+          lastScrollYRef.current = currentY;
+        }
+
+        scrollFrameRef.current = null;
+      });
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollFrameRef.current !== null) cancelAnimationFrame(scrollFrameRef.current);
+    };
+  }, []);
 
   // Expand the requested card after navigation. Scrolling is deliberately in
   // a second effect so it runs against the mounted card DOM.
@@ -1857,7 +1898,12 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
 
       <div
         id="airdrop-sticky-header"
-        className="bg-[#0a0b0d] border-b border-white/[0.05]"
+        className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0a0b0d] border-b border-white/[0.05] shadow-[0_10px_24px_rgba(0,0,0,0.3)]"
+        style={{
+          transform: headerVisible ? "translateY(0)" : "translateY(calc(-100% - 8px))",
+          transition: "transform 220ms ease-out",
+          willChange: "transform",
+        }}
       >
         <div className="px-5 pt-4 pb-2">
           <h1 className="text-lg font-bold text-white">🪂 Airdrop List</h1>
@@ -2043,7 +2089,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
 
       {/* ── STICKY: PLATFORM STRIP + SECTION TABS ── */}
       <div id="discover-sticky-header" className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]">
-        {section === "platform" && <ToolsIconStrip tools={tools} />}
+        {(section === "platform" || section === "tools") && <ToolsIconStrip tools={tools} />}
         <div className="bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
           <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
             {[{id:"p2p",label:"P2P",icon:Users},{id:"calendar",label:"EVENT",icon:Calendar},{id:"platform",label:"Platform",icon:Lightbulb},{id:"tools",label:"Tools",icon:Settings}].map(({id,label,icon:Icon})=>(
