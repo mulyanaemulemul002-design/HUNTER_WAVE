@@ -157,6 +157,12 @@ function Favicon({ url, customImage, size = 24 }) {
   );
 }
 
+function getAirdropImage(item) {
+  const title = String(item?.title || "").replace(/\s+/g, "").toLowerCase();
+  if (title === "0xmonaco") return item.customImage || "/icons/airdrops/0xmonaco.jpg";
+  return item.customImage;
+}
+
 function FormInput({ label, ...props }) {
   return (
     <div>
@@ -698,7 +704,7 @@ function AirdropIconStrip({ airdrops }) {
             >
               {a.icon
                 ? <span className="text-sm leading-none">{a.icon}</span>
-                : <Favicon url={a.url} customImage={a.customImage} size={22} />
+                : <Favicon url={a.url} customImage={getAirdropImage(a)} size={22} />
               }
             </button>
           ))}
@@ -891,7 +897,7 @@ function HomeAirdropTicker({ airdrops, onSelect }) {
               >
                 {item.icon
                   ? <span className="text-sm leading-none">{item.icon}</span>
-                  : <Favicon url={item.url} customImage={item.customImage} size={23} />}
+              : <Favicon url={item.url} customImage={getAirdropImage(item)} size={23} />}
               </button>
             ))}
           </div>
@@ -907,21 +913,21 @@ function HomeProjectCard({ item, kind, onLogoClick }) {
   return (
     <div
       data-testid={`home-${kind}-card-shell-${item.id}`}
-      className="w-full rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.025] border border-white/[0.11] p-2.5 hover:border-blue-400/45 hover:from-blue-500/[0.12] transition-all"
+      className="w-full min-h-[76px] rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.025] border border-white/[0.11] p-3 hover:border-blue-400/45 hover:from-blue-500/[0.12] transition-all"
     >
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={event => { event.stopPropagation(); onLogoClick?.(); }}
           aria-label={`Buka ${item.title}`}
           data-testid={`button-home-${kind}-card-${item.id}`}
-          className="w-9 h-9 rounded-xl bg-[#101a2f] ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer hover:ring-blue-300/75 hover:scale-105 active:scale-90 transition-all"
+          className="w-11 h-11 rounded-2xl bg-[#101a2f] ring-1 ring-blue-400/25 flex items-center justify-center flex-shrink-0 overflow-hidden cursor-pointer hover:ring-blue-300/75 hover:scale-105 active:scale-90 transition-all"
         >
           {isEvent
             ? <Calendar className="w-4 h-4 text-blue-300"/>
             : item.icon
               ? <span className="text-base leading-none">{item.icon}</span>
-              : <Favicon url={item.url} customImage={item.customImage} size={24} />}
+              : <Favicon url={item.url} customImage={getAirdropImage(item)} size={28} />}
         </button>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-2">
@@ -1090,7 +1096,10 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
   ];
 
   const newest = useMemo(
-    () => [...airdrops].sort((a, b) => String(b.addedAt).localeCompare(String(a.addedAt))).slice(0, 5),
+     () => [...airdrops]
+       .filter(item => item.confirmationStatus === "confirmed")
+       .sort((a, b) => String(b.addedAt).localeCompare(String(a.addedAt)))
+       .slice(0, 5),
     [airdrops]
   );
   const upcoming = useMemo(
@@ -1103,8 +1112,8 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
     return [...pool].sort(() => Math.random() - 0.5).slice(0, 5);
   }, [airdrops]);
   const rumored = useMemo(
-    () => [...airdrops]
-      .filter(item => item.confirmationStatus === "rumored" || item.tags?.some(tag => tag.toLowerCase() === "rumored"))
+     () => [...airdrops]
+       .filter(item => item.confirmationStatus === "rumored")
       .sort((a, b) => String(b.addedAt).localeCompare(String(a.addedAt)))
       .slice(0, 5),
     [airdrops]
@@ -1978,7 +1987,7 @@ function AirdropScreen({ airdrops, bookmarks, onToggleBookmark, navigationTarget
               <div key={item.id} id={`airdrop-card-${item.id}`} className={`card-shimmer rounded-2xl transition-all duration-300 ${expanded?"glass-card-blue":"glass-card"}`}>
                 <div className="flex items-center gap-3 p-4 cursor-pointer select-none" onClick={()=>setExpandedId(expanded?null:item.id)}>
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center overflow-hidden">
-                    {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={item.customImage}/>}
+                    {item.icon?<span className="text-lg">{item.icon}</span>:<Favicon url={item.url} customImage={getAirdropImage(item)}/>}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
