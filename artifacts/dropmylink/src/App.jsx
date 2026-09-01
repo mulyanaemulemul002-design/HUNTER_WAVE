@@ -1102,6 +1102,10 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
        .slice(0, 5),
     [airdrops]
   );
+  const platformTools = useMemo(
+    () => tools.filter(tool => String(tool.category || "").trim().toLowerCase() !== "tools"),
+    [tools]
+  );
   const upcoming = useMemo(
     () => [...calendar].sort((a, b) => homeCalendarSortValue(a.date) - homeCalendarSortValue(b.date)).slice(0, 5),
     [calendar]
@@ -1181,7 +1185,7 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
           </div>
         </div>
 
-       <HomeToolsTicker tools={tools} onSelect={id => onNavigate({ tab: "discover", type: "tool", id, discoverSection: "platform" })}/>
+       <HomeToolsTicker tools={platformTools} onSelect={id => onNavigate({ tab: "discover", type: "tool", id, discoverSection: "platform" })}/>
       </section>
 
       {/* ── BRAND PROFILE CARD ── */}
@@ -2087,7 +2091,9 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
     setCopiedToolId(tool.id);
     setTimeout(()=>setCopiedToolId(null), 2000);
   }
-  const visibleTools = section === "platform" ? tools : [];
+  const platformTools = tools.filter(tool => String(tool.category || "").trim().toLowerCase() !== "tools");
+  const toolsOnly = tools.filter(tool => String(tool.category || "").trim().toLowerCase() === "tools");
+  const visibleTools = section === "platform" ? platformTools : toolsOnly;
 
   return (
     <div className="pb-32">
@@ -2098,7 +2104,7 @@ function DiscoverScreen({ tools, p2p, calendar, toolBookmarks, onToggleToolBookm
 
       {/* ── STICKY: PLATFORM STRIP + SECTION TABS ── */}
       <div id="discover-sticky-header" className="sticky top-[86px] lg:top-[34px] z-30 bg-[#0A0A0A]">
-        {(section === "platform" || section === "tools") && <ToolsIconStrip tools={tools} />}
+        {(section === "platform" || section === "tools") && <ToolsIconStrip tools={visibleTools} />}
         <div className="bg-[#0A0A0A]/90 backdrop-blur-md border-b border-white/[0.05] px-5 py-3">
           <div className="flex gap-2 overflow-x-auto" style={{scrollbarWidth:"none"}}>
             {[{id:"p2p",label:"P2P",icon:Users},{id:"calendar",label:"EVENT",icon:Calendar},{id:"platform",label:"Platform",icon:Lightbulb},{id:"tools",label:"Tools",icon:Settings}].map(({id,label,icon:Icon})=>(
@@ -2356,6 +2362,7 @@ function buildCorpus(airdrops, p2p, calendar, tools) {
       title: t.title,
       body: t.description || "",
       meta: t.category || "",
+      discoverSection: String(t.category || "").trim().toLowerCase() === "tools" ? "tools" : "platform",
     })),
     ...p2p.map(p => ({
       _type: "p2p", _id: p.id,
@@ -2440,7 +2447,7 @@ function GlobalSearch({ open, onClose, airdrops, p2p, calendar, tools, onNavigat
 
   function handleSelect(item) {
     const sec = SEARCH_SECTIONS.find(s => s.type === item._type);
-    onNavigate({ tab: sec.tab, type: item._type, id: item._id, discoverSection: sec.discoverSection });
+    onNavigate({ tab: sec.tab, type: item._type, id: item._id, discoverSection: item.discoverSection || sec.discoverSection });
     onClose();
   }
 
@@ -2627,9 +2634,11 @@ export default function App() {
     }
   }, []);
 
-  const handleAdminAirdropsChange = useCallback((nextAirdrops) => {
-    setAirdrops(nextAirdrops);
-    idbSet("airdrops", nextAirdrops);
+  const handleAdminDataChange = useCallback((collection, nextData) => {
+    if (collection === "airdrops") setAirdrops(nextData);
+    if (collection === "calendar") setCalendar(nextData);
+    if (collection === "tools") setTools(nextData);
+    idbSet(collection, nextData);
   }, []);
 
   // ─── GLOBAL SEARCH NAVIGATION ─────────────────────────────
@@ -2737,7 +2746,9 @@ export default function App() {
       {adminOpen && (
         <AdminPanel
           airdrops={airdrops}
-          onAirdropsChange={handleAdminAirdropsChange}
+          calendar={calendar}
+          tools={tools}
+          onDataChange={handleAdminDataChange}
           onClose={() => setAdminOpen(false)}
         />
       )}
