@@ -456,8 +456,8 @@ function BeginnerMode({ onExit }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[500] overflow-y-auto bg-[#07090e] text-white" data-testid="beginner-mode">
-      <div className="min-h-full bg-[radial-gradient(circle_at_15%_0%,rgba(37,99,235,0.20),transparent_28%),radial-gradient(circle_at_90%_30%,rgba(14,165,233,0.09),transparent_24%)]">
+    <div className="fixed inset-0 z-[500] w-full max-w-full overflow-x-hidden overflow-y-auto overscroll-x-none bg-[#07090e] text-white" style={{ touchAction: "pan-y" }} data-testid="beginner-mode">
+      <div className="min-h-full w-full max-w-full overflow-x-hidden bg-[radial-gradient(circle_at_15%_0%,rgba(37,99,235,0.20),transparent_28%),radial-gradient(circle_at_90%_30%,rgba(14,165,233,0.09),transparent_24%)]">
         <header className="sticky top-0 z-30 border-b border-white/[0.08] bg-[#07090e]/90 backdrop-blur-xl">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-3">
@@ -481,7 +481,7 @@ function BeginnerMode({ onExit }) {
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-4 py-6 pb-12 sm:px-6 sm:py-8 lg:px-8">
+        <main className="mx-auto min-w-0 max-w-6xl px-4 py-6 pb-12 sm:px-6 sm:py-8 lg:px-8">
           <section className="relative overflow-hidden rounded-[2rem] border border-blue-400/25 bg-gradient-to-br from-blue-950/75 via-[#101727] to-[#0b111d] p-5 shadow-2xl shadow-blue-950/20 sm:p-8">
             <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-blue-500/15 blur-3xl" />
             <div className="relative grid gap-6 lg:grid-cols-[1fr_280px] lg:items-end">
@@ -524,7 +524,7 @@ function BeginnerMode({ onExit }) {
                 <div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-300/60">Learning path</p><h3 className="mt-1 text-base font-bold text-white">Peta perjalananmu</h3></div>
                 <span className="text-[10px] text-white/30">{MODULES.length} modul</span>
               </div>
-              <div className="flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-2 lg:overflow-visible">
+              <div className="grid min-w-0 gap-2 sm:grid-cols-2 lg:block lg:space-y-2">
                 {MODULES.map((module) => (
                   <BeginnerModuleCard
                     key={module.id}
