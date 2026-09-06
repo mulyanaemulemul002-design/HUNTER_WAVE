@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AppWindow,
   ArrowLeft,
@@ -31,6 +31,11 @@ const MODULES = [
     tone: "blue",
     available: true,
     lessons: ["Web2 vs Web3", "Blockchain secara sederhana", "Wallet bukan bank"],
+    quests: [
+      { id: "web3-map", title: "Buat peta Web3 pertamamu", kind: "Learn", description: "Bedakan website biasa, wallet, blockchain, dan aplikasi Web3.", points: 10 },
+      { id: "web3-blockchain", title: "Susun blok transaksi", kind: "Practice", description: "Simulasi sederhana bagaimana transaksi dicatat dan diverifikasi.", points: 15 },
+      { id: "web3-checkpoint", title: "Lulus checkpoint Web3", kind: "Checkpoint", description: "Jawab pertanyaan singkat untuk membuka materi wallet.", points: 20 },
+    ],
   },
   {
     id: "wallet",
@@ -42,6 +47,11 @@ const MODULES = [
     tone: "cyan",
     available: true,
     lessons: ["Coin, token, dan network", "Seed phrase", "Approval dan signature"],
+    quests: [
+      { id: "wallet-assets", title: "Kenali coin, token, dan network", kind: "Learn", description: "Pahami kenapa satu token bisa punya beberapa network dan biaya gas.", points: 15 },
+      { id: "wallet-safety", title: "Temukan red flag wallet", kind: "Safety", description: "Latihan membedakan permintaan aman dan permintaan yang mencurigakan.", points: 20 },
+      { id: "wallet-signature", title: "Baca sebelum sign", kind: "Practice", description: "Simulasi membaca signature dan approval tanpa menghubungkan wallet.", points: 25 },
+    ],
   },
   {
     id: "airdrop",
@@ -53,6 +63,11 @@ const MODULES = [
     tone: "amber",
     available: true,
     lessons: ["Cara membaca campaign", "Cek link resmi", "DYOR dan anti-scam"],
+    quests: [
+      { id: "airdrop-anatomy", title: "Baca anatomi sebuah airdrop", kind: "Learn", description: "Kenali eligibility, task, snapshot, dan distribusi dalam satu campaign.", points: 20 },
+      { id: "airdrop-safety", title: "Validasi link campaign", kind: "Safety", description: "Gunakan checklist HUNTER WAVE sebelum membuka atau connect ke website.", points: 25 },
+      { id: "airdrop-plan", title: "Susun rencana hunting", kind: "Practice", description: "Buat urutan task yang realistis tanpa mengejar semua campaign sekaligus.", points: 30 },
+    ],
   },
   {
     id: "dapp",
@@ -64,6 +79,11 @@ const MODULES = [
     tone: "violet",
     available: false,
     lessons: ["Connect wallet", "Signature vs transaction", "Membaca permission"],
+    quests: [
+      { id: "dapp-connect", title: "Simulasi connect wallet", kind: "Simulation", description: "Pahami data apa yang boleh terlihat oleh sebuah DApp.", points: 30 },
+      { id: "dapp-sign", title: "Bedakan signature dan transaction", kind: "Simulation", description: "Kenali kapan tindakan hanya sign dan kapan benar-benar mengirim transaksi.", points: 35 },
+      { id: "dapp-permission", title: "Audit permission DApp", kind: "Checkpoint", description: "Latihan membaca permission sebelum membuka akses token.", points: 40 },
+    ],
   },
   {
     id: "defi",
@@ -75,6 +95,11 @@ const MODULES = [
     tone: "green",
     available: false,
     lessons: ["Swap dan liquidity", "Price impact", "Rug pull dan smart contract risk"],
+    quests: [
+      { id: "defi-swap", title: "Simulasi swap pertama", kind: "Simulation", description: "Pelajari alur token masuk, token keluar, dan biaya tanpa transaksi nyata.", points: 35 },
+      { id: "defi-liquidity", title: "Temukan sumber liquidity", kind: "Learn", description: "Kenali liquidity pool dan kenapa harga bisa bergerak saat swap.", points: 40 },
+      { id: "defi-risk", title: "Risk scan protokol", kind: "Safety", description: "Gunakan checklist untuk membaca risiko kontrak dan liquidity.", points: 45 },
+    ],
   },
   {
     id: "perps",
@@ -86,6 +111,11 @@ const MODULES = [
     tone: "rose",
     available: false,
     lessons: ["Leverage", "Margin dan liquidation", "Risk management"],
+    quests: [
+      { id: "perps-leverage", title: "Pahami leverage", kind: "Learn", description: "Lihat bagaimana leverage memperbesar peluang sekaligus kerugian.", points: 45 },
+      { id: "perps-liquidation", title: "Simulasi liquidation", kind: "Simulation", description: "Eksperimen dengan margin dalam lingkungan latihan yang aman.", points: 50 },
+      { id: "perps-risk", title: "Buat batas risiko", kind: "Checkpoint", description: "Tentukan kapan tidak boleh membuka posisi dan kapan harus berhenti.", points: 55 },
+    ],
   },
   {
     id: "smart-contract",
@@ -97,8 +127,29 @@ const MODULES = [
     tone: "slate",
     available: false,
     lessons: ["Contract address", "Read vs write", "Gas dan confirmation"],
+    quests: [
+      { id: "contract-address", title: "Baca contract address", kind: "Learn", description: "Kenali identitas contract sebelum berinteraksi.", points: 50 },
+      { id: "contract-read-write", title: "Bedakan read dan write", kind: "Simulation", description: "Pahami mana aksi yang gratis dibaca dan mana yang membutuhkan transaksi.", points: 60 },
+      { id: "contract-lab", title: "Smart contract lab", kind: "On-chain lab", description: "Akan dibuka setelah lingkungan testnet HUNTER WAVE tersedia.", points: 75 },
+    ],
   },
 ];
+
+const BEGINNER_PROGRESS_KEY = "hw_beginner_progress_v1";
+
+function readBeginnerProgress() {
+  try {
+    const raw = localStorage.getItem(BEGINNER_PROGRESS_KEY);
+    if (!raw) return { completedQuestIds: [], points: 0 };
+    const parsed = JSON.parse(raw);
+    return {
+      completedQuestIds: Array.isArray(parsed.completedQuestIds) ? parsed.completedQuestIds : [],
+      points: Number.isFinite(parsed.points) ? parsed.points : 0,
+    };
+  } catch {
+    return { completedQuestIds: [], points: 0 };
+  }
+}
 
 const TONE_STYLES = {
   blue: {
@@ -143,7 +194,7 @@ function ModuleIcon({ module, className = "h-4 w-4" }) {
   return <Icon className={className} />;
 }
 
-function BeginnerModuleCard({ module, active, completed, onSelect }) {
+function BeginnerModuleCard({ module, active, completedCount, onSelect }) {
   const style = TONE_STYLES[module.tone];
   return (
     <button
@@ -164,11 +215,14 @@ function BeginnerModuleCard({ module, active, completed, onSelect }) {
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-1.5">
             <span className="truncate text-xs font-bold text-white/90">{module.shortTitle}</span>
-            {completed && <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-300" />}
+            {completedCount > 0 && <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-300" />}
           </span>
           <span className="mt-1 block text-[10px] text-white/35">{module.available ? "Materi tersedia" : "Segera hadir"}</span>
         </span>
-        {module.available ? <ChevronRight className="h-4 w-4 flex-shrink-0 text-white/25 transition group-hover:translate-x-0.5 group-hover:text-white/60" /> : <LockKeyhole className="h-3.5 w-3.5 flex-shrink-0 text-white/25" />}
+        <span className="flex flex-shrink-0 items-center gap-1.5">
+          <span className="text-[9px] font-bold text-white/30">{completedCount}/{module.quests.length}</span>
+          {module.available ? <ChevronRight className="h-4 w-4 text-white/25 transition group-hover:translate-x-0.5 group-hover:text-white/60" /> : <LockKeyhole className="h-3.5 w-3.5 text-white/25" />}
+        </span>
       </div>
     </button>
   );
@@ -176,21 +230,40 @@ function BeginnerModuleCard({ module, active, completed, onSelect }) {
 
 function BeginnerMode({ onExit }) {
   const [activeId, setActiveId] = useState("web3");
-  const [completed, setCompleted] = useState([]);
+  const [progressState, setProgressState] = useState(readBeginnerProgress);
   const activeModule = MODULES.find((module) => module.id === activeId) || MODULES[0];
   const activeStyle = TONE_STYLES[activeModule.tone];
-  const completedCount = completed.length;
-  const progress = Math.round((completedCount / 3) * 100);
+  const completedQuestIds = progressState.completedQuestIds;
+  const points = progressState.points;
+  const completedCount = completedQuestIds.length;
   const unlockedModules = useMemo(() => MODULES.filter((module) => module.available), []);
+  const availableQuestCount = useMemo(
+    () => unlockedModules.reduce((total, module) => total + module.quests.length, 0),
+    [unlockedModules]
+  );
+  const progress = Math.min(100, Math.round((completedCount / availableQuestCount) * 100));
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(BEGINNER_PROGRESS_KEY, JSON.stringify(progressState));
+    } catch {}
+  }, [progressState]);
 
   function selectModule(id) {
     const selected = MODULES.find((module) => module.id === id);
-    if (selected?.available) setActiveId(id);
+    if (selected) setActiveId(id);
   }
 
-  function completeActiveModule() {
-    if (!activeModule.available) return;
-    setCompleted((current) => current.includes(activeModule.id) ? current : [...current, activeModule.id]);
+  function completeQuest(quest) {
+    if (!activeModule.available || completedQuestIds.includes(quest.id)) return;
+    setProgressState((current) => ({
+      completedQuestIds: [...current.completedQuestIds, quest.id],
+      points: current.points + quest.points,
+    }));
+  }
+
+  function moduleCompletedCount(module) {
+    return module.quests.filter((quest) => completedQuestIds.includes(quest.id)).length;
   }
 
   return (
@@ -239,7 +312,7 @@ function BeginnerMode({ onExit }) {
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1.5 ring-1 ring-white/10"><Rocket className="h-3.5 w-3.5 text-amber-300" />Berbasis praktik</span>
                 </div>
               </div>
-              <div className="rounded-2xl border border-white/[0.10] bg-black/20 p-4">
+               <div className="rounded-2xl border border-white/[0.10] bg-black/20 p-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">Progress kamu</span>
                   <span className="text-sm font-black text-blue-200">{progress}%</span>
@@ -247,7 +320,11 @@ function BeginnerMode({ onExit }) {
                 <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/[0.08]">
                   <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-300 transition-all duration-500" style={{ width: `${progress}%` }} />
                 </div>
-                <p className="mt-3 text-xs leading-relaxed text-white/45">{completedCount} dari {unlockedModules.length} materi dasar selesai</p>
+                 <p className="mt-3 text-xs leading-relaxed text-white/45">{completedCount} dari {availableQuestCount} quest dasar selesai</p>
+                 <div className="mt-3 flex items-center justify-between border-t border-white/[0.07] pt-3">
+                   <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-white/30">Wave Points</span>
+                   <span className="text-sm font-black text-amber-200">{points} XP</span>
+                 </div>
                 <div className="mt-4 flex items-center gap-2 text-[10px] text-emerald-200/70"><ShieldCheck className="h-3.5 w-3.5" />Tidak ada transaksi nyata</div>
               </div>
             </div>
@@ -260,7 +337,7 @@ function BeginnerMode({ onExit }) {
                 <span className="text-[10px] text-white/30">{MODULES.length} modul</span>
               </div>
               <div className="flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-2 lg:overflow-visible">
-                {MODULES.map((module) => <BeginnerModuleCard key={module.id} module={module} active={activeId === module.id} completed={completed.includes(module.id)} onSelect={selectModule} />)}
+                 {MODULES.map((module) => <BeginnerModuleCard key={module.id} module={module} active={activeId === module.id} completedCount={moduleCompletedCount(module)} onSelect={selectModule} />)}
               </div>
             </aside>
 
@@ -280,19 +357,48 @@ function BeginnerMode({ onExit }) {
                   {activeModule.available ? (
                     <>
                       <div className="mt-6 rounded-2xl border border-white/[0.08] bg-black/15 p-4">
-                        <div className="flex items-start gap-3"><CircleHelp className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-300/80" /><div><p className="text-xs font-bold text-white/80">Yang akan kamu pelajari</p><ul className="mt-3 space-y-2">{activeModule.lessons.map((lesson) => <li key={lesson} className="flex items-center gap-2 text-xs text-white/50"><span className={`h-1.5 w-1.5 rounded-full ${activeStyle.icon.split(" ")[1] || "bg-blue-300"}`} />{lesson}</li>)}</ul></div></div>
+                        <div className="flex items-start gap-3">
+                          <CircleHelp className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-300/80" />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-3">
+                              <p className="text-xs font-bold text-white/80">Quest dalam modul</p>
+                              <span className="text-[10px] text-white/30">{moduleCompletedCount(activeModule)}/{activeModule.quests.length} selesai</span>
+                            </div>
+                            <div className="mt-3 space-y-2">
+                              {activeModule.quests.map((quest) => {
+                                const done = completedQuestIds.includes(quest.id);
+                                return (
+                                  <div key={quest.id} className={`rounded-xl border p-3 transition ${done ? "border-emerald-400/20 bg-emerald-500/[0.06]" : "border-white/[0.07] bg-white/[0.025]"}`}>
+                                    <div className="flex items-start gap-3">
+                                      <span className={`mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg ring-1 ${done ? "bg-emerald-500/15 text-emerald-300 ring-emerald-400/25" : activeStyle.icon}`}>
+                                        {done ? <Check className="h-3.5 w-3.5" /> : <span className="text-[10px] font-black">{quest.points}</span>}
+                                      </span>
+                                      <div className="min-w-0 flex-1">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                          <p className={`text-xs font-bold ${done ? "text-emerald-100/80" : "text-white/80"}`}>{quest.title}</p>
+                                          <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ring-1 ${activeStyle.chip}`}>{quest.kind}</span>
+                                        </div>
+                                        <p className="mt-1 text-[10px] leading-relaxed text-white/35">{quest.description}</p>
+                                      </div>
+                                      <button type="button" onClick={() => completeQuest(quest)} disabled={done} data-testid={`button-complete-quest-${quest.id}`} className={`min-h-9 flex-shrink-0 rounded-lg px-2.5 text-[10px] font-bold transition ${done ? "cursor-default bg-emerald-500/10 text-emerald-200/70" : "bg-blue-500/15 text-blue-200 ring-1 ring-blue-400/20 hover:bg-blue-500/25"}`}>
+                                        {done ? "Selesai" : `+${quest.points} XP`}
+                                      </button>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-[10px] text-white/30">Materi interaktif akan ditambahkan bertahap.</p>
-                        <button type="button" onClick={completeActiveModule} data-testid={`button-complete-beginner-${activeModule.id}`} className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 text-xs font-bold transition ${completed.includes(activeModule.id) ? "bg-emerald-500/15 text-emerald-200 ring-1 ring-emerald-400/25" : "bg-blue-500 text-white hover:bg-blue-400"}`}>
-                          {completed.includes(activeModule.id) ? <Check className="h-3.5 w-3.5" /> : <ArrowRight className="h-3.5 w-3.5" />}
-                          {completed.includes(activeModule.id) ? "Materi selesai" : "Tandai untuk selesai"}
-                        </button>
+                        <p className="text-[10px] text-white/30">Selesaikan quest bertahap. Point ini masih point training, bukan token.</p>
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1.5 text-[10px] font-bold text-amber-200/75 ring-1 ring-amber-400/20"><Sparkles className="h-3 w-3" />{points} Wave Points</span>
                       </div>
                     </>
                   ) : (
                     <div className="mt-6 rounded-2xl border border-dashed border-white/[0.12] bg-black/15 p-5">
-                      <div className="flex items-start gap-3"><LockKeyhole className="mt-0.5 h-5 w-5 flex-shrink-0 text-white/30" /><div><p className="text-sm font-bold text-white/75">Modul ini sedang dipersiapkan</p><p className="mt-2 text-xs leading-relaxed text-white/40">Interface dan materi dasarnya sudah disiapkan lebih dulu. Interaksi wallet, DApp, DeFi, DEX, Perps, dan smart contract akan dibangun setelah jalur pemula ini selesai.</p><span className="mt-4 inline-flex rounded-full bg-white/[0.06] px-2.5 py-1 text-[10px] font-bold text-white/35 ring-1 ring-white/10">Coming soon · tanpa transaksi nyata</span></div></div>
+                      <div className="flex items-start gap-3"><LockKeyhole className="mt-0.5 h-5 w-5 flex-shrink-0 text-white/30" /><div className="min-w-0 flex-1"><p className="text-sm font-bold text-white/75">Modul ini sedang dipersiapkan</p><p className="mt-2 text-xs leading-relaxed text-white/40">Jalur quest-nya sudah dirancang, tetapi interaksi wallet dan on-chain baru akan dibuka setelah training dasar aman untuk dipelajari.</p><div className="mt-4 space-y-2">{activeModule.quests.map((quest) => <div key={quest.id} className="flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2.5"><LockKeyhole className="h-3 w-3 flex-shrink-0 text-white/25" /><span className="min-w-0 flex-1 truncate text-[10px] text-white/45">{quest.title}</span><span className="text-[9px] font-bold text-amber-200/45">+{quest.points} XP</span></div>)}</div><span className="mt-4 inline-flex rounded-full bg-white/[0.06] px-2.5 py-1 text-[10px] font-bold text-white/35 ring-1 ring-white/10">Coming soon · tanpa transaksi nyata</span></div></div>
                     </div>
                   )}
                 </div>
@@ -306,7 +412,7 @@ function BeginnerMode({ onExit }) {
           </div>
 
           <section className="mt-6 flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-300/70" /><p className="text-[11px] leading-relaxed text-white/35">Beginner Mode saat ini adalah ruang belajar. Wallet connection dan smart contract belum aktif, jadi kamu bisa mengenal konsepnya dengan tenang.</p></div>
+            <div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-300/70" /><p className="text-[11px] leading-relaxed text-white/35">Beginner Mode saat ini adalah ruang training. Quest dan Wave Points tersimpan di browser, belum menjadi token, dan belum mengirim transaksi. Lingkungan testnet bisa ditambahkan setelah fondasi belajar siap.</p></div>
             <button type="button" onClick={onExit} data-testid="button-beginner-back-to-app" className="inline-flex min-h-10 flex-shrink-0 items-center justify-center gap-2 rounded-xl bg-white/[0.06] px-3.5 text-xs font-bold text-white/65 ring-1 ring-white/10 hover:bg-white/[0.11] hover:text-white"><ArrowLeft className="h-3.5 w-3.5" />Kembali</button>
           </section>
         </main>
