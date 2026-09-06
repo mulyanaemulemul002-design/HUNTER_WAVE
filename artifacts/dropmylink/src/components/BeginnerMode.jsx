@@ -174,12 +174,43 @@ const MODULES = [
     description: "Pelajari apa yang terjadi saat wallet terhubung ke aplikasi.",
     icon: AppWindow,
     tone: "violet",
-    available: false,
-    lessons: ["Connect wallet", "Signature vs transaction", "Membaca permission"],
+    available: true,
+    lessons: [
+      {
+        title: "Connect wallet",
+        intro: "Menghubungkan wallet berarti memberi aplikasi akses terbatas untuk membaca alamatmu, bukan menyerahkan seed phrase.",
+        points: [
+          "DApp biasanya hanya dapat melihat alamat publik dan meminta signature atau transaction secara terpisah.",
+          "Pastikan domain yang dibuka benar dan gunakan wallet latihan dengan saldo kecil untuk eksperimen.",
+          "Tombol connect tidak otomatis berarti kamu menyetujui transfer aset.",
+        ],
+        takeaway: "Connect wallet adalah awal interaksi, bukan alasan untuk menyetujui semua permission berikutnya.",
+      },
+      {
+        title: "Signature vs transaction",
+        intro: "Signature dan transaction sama-sama muncul di wallet, tetapi konsekuensi dan biayanya berbeda.",
+        points: [
+          "Signature membuktikan bahwa wallet menyetujui pesan tertentu dan sering kali tidak membutuhkan gas.",
+          "Transaction mengubah keadaan blockchain dan biasanya membutuhkan gas fee.",
+          "Baca tujuan, network, dan nominal sebelum menekan confirm.",
+        ],
+        takeaway: "Jangan menilai keamanan hanya dari ada atau tidaknya gas fee.",
+      },
+      {
+        title: "Membaca permission",
+        intro: "Permission menentukan apa yang boleh dilakukan contract terhadap aset atau akunmu.",
+        points: [
+          "Perhatikan token, jumlah approval, nama contract, dan network yang ditampilkan wallet.",
+          "Unlimited approval memang praktis, tetapi memperbesar dampak jika contract bermasalah.",
+          "Jika detail permission tidak sesuai tujuan, batalkan dan periksa link dari sumber resmi.",
+        ],
+        takeaway: "Permission yang tidak kamu pahami bukan permission yang aman untuk disetujui.",
+      },
+    ],
     quests: [
-      { id: "dapp-connect", title: "Simulasi connect wallet", kind: "Simulation", description: "Pahami data apa yang boleh terlihat oleh sebuah DApp.", points: 30 },
-      { id: "dapp-sign", title: "Bedakan signature dan transaction", kind: "Simulation", description: "Kenali kapan tindakan hanya sign dan kapan benar-benar mengirim transaksi.", points: 35 },
-      { id: "dapp-permission", title: "Audit permission DApp", kind: "Checkpoint", description: "Latihan membaca permission sebelum membuka akses token.", points: 40 },
+      { id: "dapp-connect", title: "Simulasi connect wallet", kind: "Simulation", description: "Pahami data apa yang boleh terlihat oleh sebuah DApp.", points: 30, campaign: { project: "AstraDrop", label: "Campaign onboarding fiktif" } },
+      { id: "dapp-sign", title: "Bedakan signature dan transaction", kind: "Simulation", description: "Kenali kapan tindakan hanya sign dan kapan benar-benar mengirim transaksi.", points: 35, campaign: { project: "AstraDrop", label: "Campaign onboarding fiktif" } },
+      { id: "dapp-permission", title: "Audit permission DApp", kind: "Checkpoint", description: "Latihan membaca permission sebelum membuka akses token.", points: 40, campaign: { project: "AstraDrop", label: "Campaign onboarding fiktif" } },
     ],
   },
   {
@@ -190,12 +221,51 @@ const MODULES = [
     description: "Kenali swap, liquidity pool, slippage, dan risiko protokol.",
     icon: Layers3,
     tone: "green",
-    available: false,
-    lessons: ["Swap dan liquidity", "Price impact", "Rug pull dan smart contract risk"],
+    available: true,
+    lessons: [
+      {
+        title: "Swap dan liquidity",
+        intro: "DEX seperti NovaSwap menukar satu token dengan token lain melalui liquidity pool, bukan melalui order book tradisional.",
+        points: [
+          "Token yang kamu masukkan disebut token in, sedangkan token yang diterima disebut token out.",
+          "Liquidity pool membutuhkan aset dari liquidity provider agar swap dapat diproses.",
+          "Simulasi ini tidak terhubung ke wallet dan tidak mengirim transaksi nyata.",
+        ],
+        takeaway: "Pahami alur token masuk, token keluar, dan biaya sebelum mempertimbangkan transaksi sungguhan.",
+      },
+      {
+        title: "Price impact",
+        intro: "Jumlah swap yang besar dibanding liquidity pool dapat menggeser harga dan membuat hasil akhir lebih buruk.",
+        points: [
+          "Pool tipis biasanya menghasilkan price impact lebih besar.",
+          "Slippage tolerance adalah batas perbedaan harga yang masih kamu izinkan.",
+          "Quote terbaik tidak selalu berarti protokol paling aman.",
+        ],
+        takeaway: "Ukuran transaksi, liquidity, dan slippage harus dibaca bersama-sama.",
+      },
+      {
+        title: "Rug pull dan smart contract risk",
+        intro: "DeFi membuka akses tanpa perantara, tetapi risiko contract, token, dan liquidity tetap harus diperiksa.",
+        points: [
+          "Periksa contract address, audit, permission admin, dan sumber liquidity.",
+          "APR tinggi bukan bukti keamanan dan dapat berubah sangat cepat.",
+          "Jangan memakai uang yang tidak siap hilang hanya demi mengejar hasil.",
+        ],
+        takeaway: "Tidak ada yield yang gratis; pahami dari mana imbal hasil berasal dan siapa yang menanggung risikonya.",
+      },
+    ],
     quests: [
-      { id: "defi-swap", title: "Simulasi swap pertama", kind: "Simulation", description: "Pelajari alur token masuk, token keluar, dan biaya tanpa transaksi nyata.", points: 35 },
-      { id: "defi-liquidity", title: "Temukan sumber liquidity", kind: "Learn", description: "Kenali liquidity pool dan kenapa harga bisa bergerak saat swap.", points: 40 },
-      { id: "defi-risk", title: "Risk scan protokol", kind: "Safety", description: "Gunakan checklist untuk membaca risiko kontrak dan liquidity.", points: 45 },
+      {
+        id: "defi-swap",
+        title: "Swap pertama di NovaSwap",
+        kind: "Simulation",
+        description: "Masukkan jumlah USDC simulasi untuk menukar ke NOVA tanpa transaksi nyata.",
+        points: 35,
+        campaign: { project: "NovaSwap", label: "DEX simulasi · project fiktif" },
+        simulation: { tokenIn: "USDC", tokenOut: "NOVA", minimumAmount: 100 },
+      },
+      { id: "defi-liquidity", title: "Temukan sumber liquidity", kind: "Learn", description: "Kenali liquidity pool dan kenapa harga bisa bergerak saat swap.", points: 40, campaign: { project: "NovaSwap", label: "DEX simulasi · project fiktif" } },
+      { id: "defi-risk", title: "Risk scan protokol", kind: "Safety", description: "Gunakan checklist untuk membaca risiko contract dan liquidity.", points: 45, campaign: { project: "NovaSwap", label: "DEX simulasi · project fiktif" } },
     ],
   },
   {
@@ -352,8 +422,9 @@ function FoundationView({ activeId, completedIds, onSelect, onComplete, onEnterQ
           const StepIcon = step.icon;
           const stepStyle = TONE_STYLES[step.tone];
           const done = completedIds.includes(step.id);
+          const unlocked = index === 0 || completedIds.includes(FOUNDATION_STEPS[index - 1].id);
           return (
-            <button type="button" key={step.id} onClick={() => onSelect(step.id)} data-testid={`button-foundation-${step.id}`} className={`relative overflow-hidden rounded-2xl border p-3 text-left transition ${activeStep.id === step.id ? "border-blue-400/45 bg-blue-500/[0.11]" : "border-white/[0.08] bg-white/[0.035] hover:border-white/[0.18]"}`}>
+            <button type="button" key={step.id} onClick={() => unlocked && onSelect(step.id)} disabled={!unlocked} data-testid={`button-foundation-${step.id}`} className={`relative overflow-hidden rounded-2xl border p-3 text-left transition ${activeStep.id === step.id ? "border-blue-400/45 bg-blue-500/[0.11]" : "border-white/[0.08] bg-white/[0.035] hover:border-white/[0.18]"} ${!unlocked ? "cursor-not-allowed opacity-45" : ""}`}>
               <div className={`absolute inset-x-0 top-0 h-16 bg-gradient-to-b ${stepStyle.glow} opacity-40`} />
               <div className="relative flex items-center gap-3">
                 <span className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ring-1 ${stepStyle.icon}`}>{done ? <Check className="h-4 w-4" /> : <StepIcon className="h-4 w-4" />}</span>
@@ -483,6 +554,8 @@ function BeginnerModuleCard({ module, active, completedCount, completedQuestCoun
 function BeginnerMode({ onExit }) {
   const [progress, setProgress] = useState(getInitialProgress);
   const [questProgress, setQuestProgress] = useState(readQuestProgress);
+  const [simulationAmounts, setSimulationAmounts] = useState({});
+  const [questFeedback, setQuestFeedback] = useState({});
   const [activeId, setActiveId] = useState(() => getInitialProgress().lastModule);
   const [activeFoundationId, setActiveFoundationId] = useState("web-evolution");
   const [viewMode, setViewMode] = useState(() => getInitialProgress().foundationCompletedIds.length === FOUNDATION_STEPS.length ? "quests" : "foundation");
@@ -588,6 +661,17 @@ function BeginnerMode({ onExit }) {
 
   function completeQuest(quest) {
     if (!activeModule.available || completedQuestIds.includes(quest.id)) return;
+    if (quest.simulation) {
+      const amount = Number(simulationAmounts[quest.id] || 0);
+      if (amount < quest.simulation.minimumAmount) {
+        setQuestFeedback((current) => ({
+          ...current,
+          [quest.id]: `Masukkan minimal ${quest.simulation.minimumAmount} ${quest.simulation.tokenIn} untuk menyelesaikan simulasi.`,
+        }));
+        return;
+      }
+    }
+    setQuestFeedback((current) => ({ ...current, [quest.id]: "" }));
     setQuestProgress((current) => ({
       completedQuestIds: [...current.completedQuestIds, quest.id],
       points: current.points + quest.points,
@@ -647,21 +731,43 @@ function BeginnerMode({ onExit }) {
               <div className="rounded-2xl border border-white/[0.10] bg-black/20 p-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">Progress kamu</span>
-                  <span className="text-sm font-black text-blue-200">{progressPercent}%</span>
+                   <span className="text-sm font-black text-blue-200">{trainingProgressPercent}%</span>
                 </div>
                 <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/[0.08]">
-                  <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-300 transition-all duration-500" style={{ width: `${progressPercent}%` }} />
+                  <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-300 transition-all duration-500" style={{ width: `${trainingProgressPercent}%` }} />
                 </div>
-                <p className="mt-3 text-xs leading-relaxed text-white/45">{completedTotal} dari {totalLessons} lesson dasar selesai</p>
+                 <p className="mt-3 text-xs leading-relaxed text-white/45">
+                   {foundationReady ? `${completedTotal} dari ${totalLessons} lesson dasar selesai` : `${foundationCompletedIds.length} dari ${FOUNDATION_STEPS.length} checkpoint pondasi selesai`}
+                 </p>
                 <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] text-emerald-200/70">
                   <span className="flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5" />Tidak ada transaksi nyata</span>
-                  <span className="flex items-center gap-1.5 text-amber-200/70"><Sparkles className="h-3.5 w-3.5" />{points} Wave Points</span>
+                   <span className="flex items-center gap-1.5 text-amber-200/70"><Sparkles className="h-3.5 w-3.5" />{points} Campaign Points</span>
                 </div>
               </div>
             </div>
           </section>
 
-          <div className="mt-6 grid gap-6 lg:grid-cols-[280px_1fr]">
+           {viewMode === "foundation" ? (
+             <FoundationView
+               activeId={activeFoundationId}
+               completedIds={foundationCompletedIds}
+               onSelect={setActiveFoundationId}
+               onComplete={completeFoundation}
+               onEnterQuest={() => setViewMode("quests")}
+             />
+           ) : (
+           <>
+           <div className="mt-6 mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-400/15 bg-emerald-500/[0.05] px-4 py-3">
+             <div>
+               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-200/70">Quest Lab</p>
+               <p className="mt-1 text-xs leading-relaxed text-white/45">Simulasi campaign project fiktif. Point di sini bukan token dan bukan point HUNTER WAVE.</p>
+             </div>
+             <button type="button" onClick={() => setViewMode("foundation")} data-testid="button-back-to-foundation" className="rounded-xl bg-white/[0.06] px-3 py-2 text-[10px] font-bold text-white/60 ring-1 ring-white/10 hover:bg-white/[0.10] hover:text-white">
+               Ulangi pondasi
+             </button>
+           </div>
+
+           <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
             <aside>
               <div className="mb-3 flex items-center justify-between px-1">
                 <div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-300/60">Learning path</p><h3 className="mt-1 text-base font-bold text-white">Peta perjalananmu</h3></div>
@@ -771,6 +877,39 @@ function BeginnerMode({ onExit }) {
                                   </div>
                                 </div>
                                 <p className="mt-2 text-[10px] leading-relaxed text-white/35">{quest.description}</p>
+                                 {quest.campaign && (
+                                   <div className="mt-3 rounded-lg border border-amber-300/15 bg-amber-400/[0.06] px-2.5 py-2">
+                                     <p className="text-[9px] font-bold uppercase tracking-[0.12em] text-amber-200/65">{quest.campaign.label}</p>
+                                     <p className="mt-1 text-[11px] font-bold text-amber-100/85">{quest.campaign.project}</p>
+                                   </div>
+                                 )}
+                                 {quest.simulation && !done && (
+                                   <div className="mt-3">
+                                     <label htmlFor={`simulation-amount-${quest.id}`} className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/35">
+                                       Jumlah {quest.simulation.tokenIn} simulasi
+                                     </label>
+                                     <div className="mt-1 flex items-center gap-1.5">
+                                       <input
+                                         id={`simulation-amount-${quest.id}`}
+                                         type="number"
+                                         min={quest.simulation.minimumAmount}
+                                         value={simulationAmounts[quest.id] || ""}
+                                         onChange={(event) => {
+                                           setSimulationAmounts((current) => ({ ...current, [quest.id]: event.target.value }));
+                                           setQuestFeedback((current) => ({ ...current, [quest.id]: "" }));
+                                         }}
+                                         placeholder={`${quest.simulation.minimumAmount}`}
+                                         data-testid={`input-simulation-${quest.id}`}
+                                         className="min-w-0 flex-1 rounded-lg bg-black/20 px-2.5 py-2 text-xs text-white outline-none ring-1 ring-white/10 placeholder-white/20 focus:ring-emerald-400/40"
+                                       />
+                                       <span className="text-[10px] font-bold text-white/35">{quest.simulation.tokenIn}</span>
+                                     </div>
+                                     <p className="mt-1 text-[9px] text-white/30">
+                                       Minimal {quest.simulation.minimumAmount} {quest.simulation.tokenIn} → {quest.simulation.tokenOut}
+                                     </p>
+                                     {questFeedback[quest.id] && <p className="mt-2 text-[9px] leading-relaxed text-rose-200/75">{questFeedback[quest.id]}</p>}
+                                   </div>
+                                 )}
                                 <button
                                   type="button"
                                   onClick={() => completeQuest(quest)}
@@ -778,13 +917,13 @@ function BeginnerMode({ onExit }) {
                                   data-testid={`button-complete-quest-${quest.id}`}
                                   className={`mt-3 min-h-9 w-full rounded-lg px-2.5 text-[10px] font-bold transition ${done ? "cursor-default bg-emerald-500/10 text-emerald-200/70" : "bg-blue-500/15 text-blue-200 ring-1 ring-blue-400/20 hover:bg-blue-500/25"}`}
                                 >
-                                  {done ? "Selesai" : `+${quest.points} XP`}
+                                   {done ? "Selesai" : `+${quest.points} Campaign Points`}
                                 </button>
                               </div>
                             );
                           })}
                         </div>
-                        <p className="mt-3 text-[10px] text-white/30">Quest dan point ini hanya untuk latihan, bukan token dan tidak mengirim transaksi.</p>
+                         <p className="mt-3 text-[10px] text-white/30">Quest dan Campaign Points ini hanya simulasi project fiktif. Tidak ada wallet connection, token, atau transaksi nyata.</p>
                       </div>
 
                       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
@@ -821,7 +960,9 @@ function BeginnerMode({ onExit }) {
                 <div className="rounded-2xl border border-amber-400/15 bg-amber-500/[0.05] p-4"><div className="flex items-center gap-2 text-xs font-bold text-amber-100/80"><CircleHelp className="h-4 w-4 text-amber-300" />Belum paham?</div><p className="mt-2 text-[11px] leading-relaxed text-white/40">Kamu bisa kembali ke materi sebelumnya kapan saja. Progress lesson tersimpan otomatis di browser ini.</p></div>
               </div>
             </section>
-          </div>
+           </div>
+           </>
+           )}
 
           <section className="mt-6 flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-300/70" /><p className="text-[11px] leading-relaxed text-white/35">Beginner Mode saat ini adalah ruang belajar. Wallet connection dan smart contract belum aktif, jadi kamu bisa mengenal konsepnya dengan tenang.</p></div>
