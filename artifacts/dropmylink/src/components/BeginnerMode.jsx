@@ -366,7 +366,7 @@ function BeginnerMode({ onExit }) {
   const activeModule = MODULES.find((module) => module.id === activeId) || MODULES[0];
   const activeStyle = TONE_STYLES[activeModule.tone];
   const activeLessonIndex = Math.min(
-    Number.isInteger(progress.currentLesson?.[activeId]) ? progress.currentLesson[activeId] : 0,
+    Math.max(Number.isInteger(progress.currentLesson?.[activeId]) ? progress.currentLesson[activeId] : 0, 0),
     activeModule.lessons.length - 1,
   );
   const activeLesson = activeModule.available ? activeModule.lessons[activeLessonIndex] : null;

@@ -1,0 +1,1 @@
+- [Frontend test runtime](frontend-test-runtime.md) — keep jsdom on the Node-compatible major used by this workspace.
