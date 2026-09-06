@@ -8,7 +8,9 @@ import {
   CheckCircle2,
   ChevronRight,
   CircleHelp,
+  Coins,
   Gift,
+  Globe2,
   Landmark,
   Layers3,
   LockKeyhole,
@@ -246,6 +248,48 @@ function readQuestProgress() {
   }
 }
 
+const FOUNDATION_STEPS = [
+  {
+    id: "web-evolution",
+    eyebrow: "STEP 01 · FOUNDATION",
+    title: "Apa itu Web3?",
+    description: "Bandingkan Web1, Web2, dan Web3 sebelum mengenal wallet, blockchain, dan DApp.",
+    icon: Globe2,
+    tone: "blue",
+    sections: [
+      { label: "Web1 · Read", title: "Internet yang mostly dibaca", description: "Website cenderung statis. Pengguna datang untuk membaca informasi yang dibuat oleh pemilik website.", examples: ["Homepage statis", "Direktori Yahoo", "Blog personal"] },
+      { label: "Web2 · Read + Write", title: "Internet yang kita gunakan", description: "Pengguna bisa membuat konten, berinteraksi, dan bertransaksi melalui platform yang mengelola akun dan data.", examples: ["Instagram dan YouTube", "Google Workspace", "Marketplace dan streaming"] },
+      { label: "Web3 · Read + Write + Own", title: "Internet dengan kepemilikan digital", description: "Wallet dapat menjadi identitas dan aset dapat berinteraksi dengan aplikasi terbuka melalui blockchain.", examples: ["Wallet dan DApp", "DeFi dan DEX", "DAO, NFT, smart contract"] },
+    ],
+  },
+  {
+    id: "crypto",
+    eyebrow: "STEP 02 · DIGITAL ASSETS",
+    title: "Apa itu Crypto?",
+    description: "Pahami coin, token, network, wallet, dan gas fee dengan analogi sederhana.",
+    icon: Coins,
+    tone: "cyan",
+    sections: [
+      { label: "Coin & token", title: "Aset digital punya fungsi berbeda", description: "Coin biasanya menjadi aset native sebuah network. Token dibuat di atas network untuk fungsi tertentu.", examples: ["ETH sebagai aset network", "USDC sebagai stablecoin", "Token governance aplikasi"] },
+      { label: "Wallet", title: "Bukan rekening bank", description: "Wallet menyimpan kunci untuk membuktikan kepemilikan. Asetnya tercatat di blockchain.", examples: ["Public address boleh dibagikan", "Seed phrase harus rahasia", "Signature berbeda dari transfer"] },
+      { label: "Network & gas", title: "Jalan dan biaya transaksi", description: "Network memproses transaksi. Gas adalah biaya untuk meminta jaringan menjalankan instruksi.", examples: ["Pilih network yang benar", "Cek biaya sebelum sign", "Jangan asal approval"] },
+    ],
+  },
+  {
+    id: "airdrop",
+    eyebrow: "STEP 03 · FIRST HUNT",
+    title: "Apa itu Airdrop?",
+    description: "Pahami bagaimana campaign bekerja sebelum mencoba quest dari proyek mana pun.",
+    icon: Gift,
+    tone: "amber",
+    sections: [
+      { label: "1 · Discover", title: "Temukan campaign", description: "Project membuat campaign untuk mengenalkan produk atau mengajak komunitas mencoba ekosistemnya.", examples: ["Baca sumber resmi", "Kenali network", "Cek periode campaign"] },
+      { label: "2 · Participate", title: "Selesaikan task", description: "Peserta melakukan aktivitas sesuai aturan campaign. Tidak semua task membutuhkan transaksi.", examples: ["Membaca materi", "Mencoba DApp", "Simulasi swap atau liquidity"] },
+      { label: "3 · Snapshot", title: "Project mengecek eligibility", description: "Project bisa mengambil snapshot berdasarkan aturan mereka. Airdrop tidak pernah otomatis terjamin.", examples: ["Cek kriteria", "Simpan bukti aktivitas", "Waspadai link palsu"] },
+    ],
+  },
+];
+
 const TONE_STYLES = {
   blue: {
     icon: "bg-blue-500/15 text-blue-300 ring-blue-400/25",
@@ -284,6 +328,81 @@ const TONE_STYLES = {
   },
 };
 
+function FoundationView({ activeId, completedIds, onSelect, onComplete, onEnterQuest }) {
+  const activeStep = FOUNDATION_STEPS.find((step) => step.id === activeId) || FOUNDATION_STEPS[0];
+  const style = TONE_STYLES[activeStep.tone];
+  const activeIndex = FOUNDATION_STEPS.findIndex((step) => step.id === activeStep.id);
+  const isComplete = completedIds.includes(activeStep.id);
+  const allComplete = completedIds.length === FOUNDATION_STEPS.length;
+  const Icon = activeStep.icon;
+
+  return (
+    <section className="mt-6" data-testid="beginner-foundation">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-300/60">Sebelum masuk quest</p>
+          <h3 className="mt-1 text-xl font-black tracking-[-0.03em] text-white">Bangun pemahaman dasarmu</h3>
+          <p className="mt-1 max-w-2xl text-xs leading-relaxed text-white/40">Tiga checkpoint ini wajib dilewati supaya quest berikutnya terasa masuk akal, bukan sekadar klik dan mengumpulkan point.</p>
+        </div>
+        <span className="rounded-full bg-blue-500/10 px-2.5 py-1.5 text-[10px] font-bold text-blue-200/75 ring-1 ring-blue-400/20">{completedIds.length}/{FOUNDATION_STEPS.length} foundation selesai</span>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-3">
+        {FOUNDATION_STEPS.map((step, index) => {
+          const StepIcon = step.icon;
+          const stepStyle = TONE_STYLES[step.tone];
+          const done = completedIds.includes(step.id);
+          return (
+            <button type="button" key={step.id} onClick={() => onSelect(step.id)} data-testid={`button-foundation-${step.id}`} className={`relative overflow-hidden rounded-2xl border p-3 text-left transition ${activeStep.id === step.id ? "border-blue-400/45 bg-blue-500/[0.11]" : "border-white/[0.08] bg-white/[0.035] hover:border-white/[0.18]"}`}>
+              <div className={`absolute inset-x-0 top-0 h-16 bg-gradient-to-b ${stepStyle.glow} opacity-40`} />
+              <div className="relative flex items-center gap-3">
+                <span className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ring-1 ${stepStyle.icon}`}>{done ? <Check className="h-4 w-4" /> : <StepIcon className="h-4 w-4" />}</span>
+                <span className="min-w-0 flex-1"><span className="block text-[9px] font-bold uppercase tracking-[0.12em] text-white/30">0{index + 1}</span><span className="mt-1 block truncate text-xs font-bold text-white/85">{step.title}</span></span>
+                {done && <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-emerald-300" />}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className={`relative mt-4 overflow-hidden rounded-[2rem] border border-white/[0.10] bg-gradient-to-br ${style.glow} via-white/[0.025] to-white/[0.02] p-5 sm:p-7`}>
+        <div className="absolute right-0 top-0 h-48 w-48 rounded-full bg-white/[0.03] blur-3xl" />
+        <div className="relative">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl ring-1 ${style.icon}`}><Icon className="h-5 w-5" /></div>
+              <div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/35">{activeStep.eyebrow}</p><h4 className="mt-1 text-2xl font-black tracking-[-0.03em] text-white">{activeStep.title}</h4></div>
+            </div>
+            <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ring-1 ${isComplete ? "bg-emerald-500/10 text-emerald-200 ring-emerald-400/20" : style.chip}`}>{isComplete ? "Checkpoint selesai" : "Pelajari dulu"}</span>
+          </div>
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/55">{activeStep.description}</p>
+
+          <div className="mt-6 grid gap-3 lg:grid-cols-3">
+            {activeStep.sections.map((section) => (
+              <div key={section.label} className="rounded-2xl border border-white/[0.08] bg-black/15 p-4">
+                <p className={`text-[10px] font-bold uppercase tracking-[0.12em] ${activeStep.tone === "amber" ? "text-amber-200/55" : "text-blue-200/55"}`}>{section.label}</p>
+                <h5 className="mt-2 text-sm font-bold text-white/85">{section.title}</h5>
+                <p className="mt-2 text-[11px] leading-relaxed text-white/40">{section.description}</p>
+                <div className="mt-3 space-y-1.5">{section.examples.map((example) => <p key={example} className="flex items-start gap-2 text-[10px] text-white/50"><span className={`mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full ${activeStep.tone === "amber" ? "bg-amber-300/60" : "bg-blue-300/60"}`} />{example}</p>)}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.08] pt-4">
+            <p className="max-w-lg text-[10px] leading-relaxed text-white/30">Foundation ini tidak memberikan token atau point airdrop. Point baru muncul saat kamu masuk ke simulasi campaign proyek.</p>
+            <div className="flex flex-wrap gap-2">
+              {activeIndex > 0 && <button type="button" onClick={() => onSelect(FOUNDATION_STEPS[activeIndex - 1].id)} className="rounded-xl bg-white/[0.06] px-3.5 py-2.5 text-xs font-bold text-white/55 ring-1 ring-white/10 hover:bg-white/[0.10]">Sebelumnya</button>}
+              {!isComplete && <button type="button" onClick={() => onComplete(activeStep.id)} data-testid={`button-complete-foundation-${activeStep.id}`} className="inline-flex items-center gap-2 rounded-xl bg-blue-500 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-400"><Check className="h-3.5 w-3.5" />Saya paham</button>}
+              {isComplete && activeIndex < FOUNDATION_STEPS.length - 1 && <button type="button" onClick={() => onSelect(FOUNDATION_STEPS[activeIndex + 1].id)} className="inline-flex items-center gap-2 rounded-xl bg-blue-500 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-400">Lanjut <ArrowRight className="h-3.5 w-3.5" /></button>}
+              {allComplete && <button type="button" onClick={onEnterQuest} data-testid="button-enter-quest-lab" className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/85 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-400"><Rocket className="h-3.5 w-3.5" />Masuk Quest Lab</button>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const AVAILABLE_MODULES = MODULES.filter((module) => module.available);
 
 function getInitialProgress() {
@@ -291,6 +410,7 @@ function getInitialProgress() {
     completed: {},
     currentLesson: {},
     lastModule: "web3",
+    foundationCompletedIds: [],
   };
 
   try {
@@ -300,6 +420,7 @@ function getInitialProgress() {
       completed: saved.completed && typeof saved.completed === "object" ? saved.completed : {},
       currentLesson: saved.currentLesson && typeof saved.currentLesson === "object" ? saved.currentLesson : {},
       lastModule: AVAILABLE_MODULES.some((module) => module.id === saved.lastModule) ? saved.lastModule : "web3",
+      foundationCompletedIds: Array.isArray(saved.foundationCompletedIds) ? saved.foundationCompletedIds.filter((id) => FOUNDATION_STEPS.some((step) => step.id === id)) : [],
     };
   } catch {
     return empty;
@@ -363,6 +484,8 @@ function BeginnerMode({ onExit }) {
   const [progress, setProgress] = useState(getInitialProgress);
   const [questProgress, setQuestProgress] = useState(readQuestProgress);
   const [activeId, setActiveId] = useState(() => getInitialProgress().lastModule);
+  const [activeFoundationId, setActiveFoundationId] = useState("web-evolution");
+  const [viewMode, setViewMode] = useState(() => getInitialProgress().foundationCompletedIds.length === FOUNDATION_STEPS.length ? "quests" : "foundation");
   const activeModule = MODULES.find((module) => module.id === activeId) || MODULES[0];
   const activeStyle = TONE_STYLES[activeModule.tone];
   const activeLessonIndex = Math.min(
@@ -376,6 +499,11 @@ function BeginnerMode({ onExit }) {
     [progress],
   );
   const progressPercent = Math.round((completedTotal / totalLessons) * 100);
+  const foundationCompletedIds = progress.foundationCompletedIds || [];
+  const foundationReady = foundationCompletedIds.length === FOUNDATION_STEPS.length;
+  const trainingProgressPercent = foundationReady
+    ? progressPercent
+    : Math.round((foundationCompletedIds.length / FOUNDATION_STEPS.length) * 100);
 
   useEffect(() => {
     try {
@@ -394,6 +522,21 @@ function BeginnerMode({ onExit }) {
     if (!selected?.available) return;
     setActiveId(id);
     updateProgress((current) => ({ ...current, lastModule: id }));
+  }
+
+  function completeFoundation(id) {
+    updateProgress((current) => ({
+      ...current,
+      foundationCompletedIds: current.foundationCompletedIds.includes(id)
+        ? current.foundationCompletedIds
+        : [...current.foundationCompletedIds, id],
+    }));
+    const index = FOUNDATION_STEPS.findIndex((step) => step.id === id);
+    if (index >= 0 && index < FOUNDATION_STEPS.length - 1) {
+      setActiveFoundationId(FOUNDATION_STEPS[index + 1].id);
+    } else {
+      setViewMode("quests");
+    }
   }
 
   function selectLesson(index) {
