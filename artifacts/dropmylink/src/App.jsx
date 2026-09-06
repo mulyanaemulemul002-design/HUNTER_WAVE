@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import Fuse from "fuse.js";
 import { getAirdrops, getNews, getQinfo, getTools, getP2P, getCalendar, getTicker } from "./lib/data";
 import AdminPanel from "./components/AdminPanel";
+import BeginnerMode from "./components/BeginnerMode";
 import {
   Home, LayoutGrid, Compass, Search, SlidersHorizontal,
   ExternalLink, Copy, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
@@ -386,7 +387,7 @@ function StatusLegend() {
 }
 
 // ─── SIDEBAR NAV (desktop ≥ 1024px) ───────────────────────────
-function SidebarNav({ active, onSelect, onOpenSearch, onLogoTap }) {
+function SidebarNav({ active, onSelect, onOpenSearch, onLogoTap, onOpenBeginnerMode }) {
   const tabs = [
     { id:"intro",    label:"Home",        icon:Home },
     { id:"info",     label:"Info Terkini", icon:Zap },
@@ -417,6 +418,15 @@ function SidebarNav({ active, onSelect, onOpenSearch, onLogoTap }) {
           </button>
         ))}
       </nav>
+      <button
+        type="button"
+        onClick={onOpenBeginnerMode}
+        data-testid="button-sidebar-beginner-mode"
+        className="mt-4 flex items-center gap-3 rounded-xl border border-blue-400/20 bg-blue-500/[0.08] px-3 py-3 text-left text-xs font-bold text-blue-200/80 transition hover:border-blue-300/40 hover:bg-blue-500/[0.14] hover:text-blue-100"
+      >
+        <BookOpen className="h-4 w-4 flex-shrink-0 text-blue-300" />
+        <span className="min-w-0"><span className="block">Beginner Mode</span><span className="mt-0.5 block text-[9px] font-normal text-blue-100/35">Belajar Web3 dari dasar</span></span>
+      </button>
     </div>
   );
 }
@@ -1081,7 +1091,7 @@ function HomeDisclosure({ id, title, icon: Icon, open, onToggle, tone = "blue", 
   );
 }
 
-function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = () => {} }) {
+function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = () => {}, onOpenBeginnerMode = () => {} }) {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms]     = useState(false);
   const [openDisclosures, setOpenDisclosures] = useState({
@@ -1140,6 +1150,16 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
           <p className="text-xs text-white/40 mt-3 max-w-xs leading-relaxed">
             Temukan, buru, dan pantau peluang Web3 pilihan komunitas.
           </p>
+           <button
+             type="button"
+             onClick={onOpenBeginnerMode}
+             data-testid="button-open-beginner-mode"
+             className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-blue-500 px-4 text-xs font-bold text-white shadow-lg shadow-blue-950/30 transition hover:bg-blue-400 active:scale-[0.98]"
+           >
+             <BookOpen className="h-4 w-4" />
+             Mulai Beginner Mode
+             <ChevronRight className="h-3.5 w-3.5" />
+           </button>
         </div>
       </div>
 
@@ -2581,6 +2601,7 @@ export default function App() {
   const [ticker, setTicker]     = useState(DEF_TICKER);
   const [loaded, setLoaded]     = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [beginnerMode, setBeginnerMode] = useState(false);
   const logoTapsRef = useRef([]);
 
   // ─── TOOL BOOKMARKS on/off (localStorage) ─────────────────
@@ -2675,11 +2696,22 @@ export default function App() {
     });
   }, []);
 
+  if (beginnerMode) {
+    return (
+      <BeginnerMode
+        onExit={() => {
+          setBeginnerMode(false);
+          window.scrollTo({ top: 0, behavior: "auto" });
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative">
 
       {/* ── SIDEBAR NAV (desktop ≥ 1024px) ── */}
-       <SidebarNav active={tab} onSelect={setTab} onOpenSearch={() => setSearchOpen(true)} onLogoTap={handleLogoTap} />
+       <SidebarNav active={tab} onSelect={setTab} onOpenSearch={() => setSearchOpen(true)} onLogoTap={handleLogoTap} onOpenBeginnerMode={() => setBeginnerMode(true)} />
 
       {/* ── MAIN COLUMN ── */}
       <div className="lg:ml-56">
@@ -2692,10 +2724,16 @@ export default function App() {
               <img src="/logo.jpg" alt="logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-blue-500/30"/>
               <span className="text-sm font-bold text-white tracking-wide">HUNTER<span className="text-blue-500"> WAVE</span></span>
             </button>
-            <button onClick={() => setSearchOpen(true)}
-              className="w-8 h-8 rounded-xl bg-blue-500/[0.08] ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/15 active:scale-90 transition-all">
-              <Search className="w-4 h-4 text-blue-400/70"/>
-            </button>
+             <div className="flex items-center gap-2">
+               <button type="button" onClick={() => setBeginnerMode(true)} data-testid="button-mobile-beginner-mode" aria-label="Buka Beginner Mode"
+                 className="w-8 h-8 rounded-xl bg-blue-500/[0.08] ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/15 active:scale-90 transition-all">
+                 <BookOpen className="w-4 h-4 text-blue-400/70"/>
+               </button>
+               <button type="button" onClick={() => setSearchOpen(true)} aria-label="Cari"
+                 className="w-8 h-8 rounded-xl bg-blue-500/[0.08] ring-1 ring-blue-500/20 flex items-center justify-center hover:bg-blue-500/15 active:scale-90 transition-all">
+                 <Search className="w-4 h-4 text-blue-400/70"/>
+               </button>
+             </div>
           </div>
         </div>
 
@@ -2721,7 +2759,7 @@ export default function App() {
 
         {/* Content — Home only offsets the fixed mobile logo; other tabs also offset the ticker. */}
         <div className={`relative z-10 max-w-xl mx-auto ${tab === "intro" ? "pt-[52px] lg:pt-[34px]" : "pt-[86px] lg:pt-[34px]"}`}>
-          {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} tools={tools} onNavigate={handleHomeNavigate} />}
+          {tab==="intro"    && <IntroScreen airdrops={airdrops} calendar={calendar} tools={tools} onNavigate={handleHomeNavigate} onOpenBeginnerMode={() => setBeginnerMode(true)} />}
           {tab==="info"     && <InfoTerkiniScreen news={news} qinfo={qinfo} />}
           {tab==="airdrops" && <AirdropScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} navigationTarget={navigationTarget} />}
           {tab==="bookmark" && <BookmarkScreen airdrops={airdrops} bookmarks={bookmarks} onToggleBookmark={toggleBookmark} tools={tools} toolBookmarks={toolBookmarks} onToggleToolBookmark={toggleToolBookmark} />}
