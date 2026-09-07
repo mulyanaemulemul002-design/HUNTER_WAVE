@@ -45,13 +45,11 @@ describe("BeginnerMode learning path", () => {
     render(<BeginnerMode onExit={vi.fn()} />);
 
     fireEvent.click(screen.getByTestId("button-beginner-mode-active-practice"));
-    fireEvent.change(screen.getByTestId("input-practice-platform-social-quest-wl"), { target: { value: "Latihan umum" } });
-    fireEvent.change(screen.getByTestId("input-practice-campaignName-social-quest-wl"), { target: { value: "Community round" } });
 
     expect(screen.getByTestId("button-practice-complete-social-quest-wl")).toBeDisabled();
-    fireEvent.click(screen.getByTestId("checkbox-practice-step-social-quest-wl-source"));
-    fireEvent.click(screen.getByTestId("checkbox-practice-step-social-quest-wl-rules"));
-    fireEvent.click(screen.getByTestId("checkbox-practice-step-social-quest-wl-risk"));
+    fireEvent.click(screen.getByTestId("button-practice-social-source"));
+    fireEvent.click(screen.getByTestId("button-practice-social-rules"));
+    fireEvent.click(screen.getByTestId("button-practice-social-risk"));
     expect(screen.getByTestId("button-practice-complete-social-quest-wl")).not.toBeDisabled();
 
     fireEvent.click(screen.getByTestId("button-practice-complete-social-quest-wl"));
@@ -63,9 +61,9 @@ describe("BeginnerMode learning path", () => {
       activeCategoryId: "dex-swap",
       categories: {
         "social-quest-wl": {
-          platform: "Latihan umum",
           completed: true,
           steps: { source: true, rules: true, risk: true },
+          simulator: { selectedCard: "risk" },
         },
       },
     });
