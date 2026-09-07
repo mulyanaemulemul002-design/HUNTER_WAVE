@@ -1095,8 +1095,8 @@ function IntroScreen({ airdrops = [], calendar = [], tools = [], onNavigate = ()
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms]     = useState(false);
   const [openDisclosures, setOpenDisclosures] = useState({
-    independence: true,
-    dyor: true,
+     independence: false,
+     dyor: false,
   });
 
   const SOCIAL = [
