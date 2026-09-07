@@ -14,6 +14,7 @@ import {
   Network,
   ShieldCheck,
 } from "lucide-react";
+import ActivePracticeMode from "./ActivePracticeMode";
 
 const LEARNING_STORAGE_KEY = "hw_beginner_learning_v2";
 const LEGACY_STORAGE_KEYS = [
@@ -366,6 +367,7 @@ function DrawerContent({ step, completed, onComplete }) {
 function BeginnerMode({ onExit }) {
   const [progress, setProgress] = useState(readLearningState);
   const [openId, setOpenId] = useState(null);
+  const [activeMode, setActiveMode] = useState("read");
 
   useEffect(() => {
     removeLegacyState();
@@ -423,6 +425,33 @@ function BeginnerMode({ onExit }) {
         </header>
 
         <main className="mx-auto max-w-5xl px-4 py-8 pb-14 sm:px-6 sm:py-12">
+          <div className="mb-8 flex rounded-2xl border border-white/[0.08] bg-white/[0.025] p-1" role="tablist" aria-label="Mode belajar">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeMode === "read"}
+              onClick={() => setActiveMode("read")}
+              data-testid="button-beginner-mode-read-only"
+              className={`min-h-11 flex-1 rounded-xl px-3 text-xs font-bold transition ${activeMode === "read" ? "bg-white/[0.10] text-white" : "text-white/40 hover:text-white/70"}`}
+            >
+              Read Only
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeMode === "practice"}
+              onClick={() => setActiveMode("practice")}
+              data-testid="button-beginner-mode-active-practice"
+              className={`min-h-11 flex-1 rounded-xl px-3 text-xs font-bold transition ${activeMode === "practice" ? "bg-blue-300/15 text-blue-100" : "text-white/40 hover:text-white/70"}`}
+            >
+              Active Practice
+            </button>
+          </div>
+
+          {activeMode === "practice" ? (
+            <ActivePracticeMode />
+          ) : (
+            <>
           <section className="grid gap-8 border-b border-white/[0.10] pb-10 lg:grid-cols-[1fr_240px] lg:items-end">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200/65">Mulai dengan tenang</p>
@@ -497,6 +526,8 @@ function BeginnerMode({ onExit }) {
             <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke aplikasi
             <ArrowRight className="h-3.5 w-3.5 opacity-40" />
           </button>
+            </>
+          )}
         </main>
       </div>
     </div>

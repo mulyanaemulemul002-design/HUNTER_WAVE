@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import BeginnerMode from "./BeginnerMode";
 
 const LEARNING_STORAGE_KEY = "hw_beginner_learning_v2";
+const PRACTICE_STORAGE_KEY = "hw_beginner_practice_v1";
 const LEGACY_KEYS = [
   "dropmylink_beginner_progress_v1",
   "hw_beginner_progress_v1",
@@ -28,6 +29,48 @@ function complete(id) {
 }
 
 describe("BeginnerMode learning path", () => {
+  it("opens the local Active Practice path without wallet actions", () => {
+    render(<BeginnerMode onExit={vi.fn()} />);
+
+    fireEvent.click(screen.getByTestId("button-beginner-mode-active-practice"));
+
+    expect(screen.getByTestId("active-practice-mode")).toBeInTheDocument();
+    expect(screen.getByTestId("text-practice-progress")).toHaveTextContent("0/10");
+    expect(screen.getByTestId("practice-local-notice")).toHaveTextContent("Tidak ada wallet, RPC, Sepolia");
+    expect(screen.getByTestId("button-practice-category-social-quest-wl")).not.toBeDisabled();
+    expect(screen.getByTestId("button-practice-category-dex-swap")).toBeDisabled();
+  });
+
+  it("saves the first local practice and unlocks the next category", () => {
+    render(<BeginnerMode onExit={vi.fn()} />);
+
+    fireEvent.click(screen.getByTestId("button-beginner-mode-active-practice"));
+    fireEvent.change(screen.getByTestId("input-practice-platform-social-quest-wl"), { target: { value: "Latihan umum" } });
+    fireEvent.change(screen.getByTestId("input-practice-campaignName-social-quest-wl"), { target: { value: "Community round" } });
+
+    expect(screen.getByTestId("button-practice-complete-social-quest-wl")).toBeDisabled();
+    fireEvent.click(screen.getByTestId("checkbox-practice-step-social-quest-wl-source"));
+    fireEvent.click(screen.getByTestId("checkbox-practice-step-social-quest-wl-rules"));
+    fireEvent.click(screen.getByTestId("checkbox-practice-step-social-quest-wl-risk"));
+    expect(screen.getByTestId("button-practice-complete-social-quest-wl")).not.toBeDisabled();
+
+    fireEvent.click(screen.getByTestId("button-practice-complete-social-quest-wl"));
+
+    expect(screen.getByTestId("text-practice-progress")).toHaveTextContent("1/10");
+    expect(screen.getByTestId("practice-panel-dex-swap")).toBeInTheDocument();
+    expect(screen.getByTestId("button-practice-category-dex-swap")).not.toBeDisabled();
+    expect(JSON.parse(window.localStorage.getItem(PRACTICE_STORAGE_KEY))).toMatchObject({
+      activeCategoryId: "dex-swap",
+      categories: {
+        "social-quest-wl": {
+          platform: "Latihan umum",
+          completed: true,
+          steps: { source: true, rules: true, risk: true },
+        },
+      },
+    });
+  });
+
   it("starts with every drawer closed", () => {
     render(<BeginnerMode onExit={vi.fn()} />);
 
