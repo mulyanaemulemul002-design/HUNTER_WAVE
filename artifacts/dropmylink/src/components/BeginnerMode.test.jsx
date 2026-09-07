@@ -69,6 +69,41 @@ describe("BeginnerMode learning path", () => {
     });
   });
 
+  it("teaches a DEX sequence with token rows, quote settings, and a local wallet notice", () => {
+    render(<BeginnerMode onExit={vi.fn()} />);
+    fireEvent.click(screen.getByTestId("button-beginner-mode-active-practice"));
+    fireEvent.click(screen.getByTestId("button-practice-social-source"));
+    fireEvent.click(screen.getByTestId("button-practice-social-rules"));
+    fireEvent.click(screen.getByTestId("button-practice-social-risk"));
+    fireEvent.click(screen.getByTestId("button-practice-complete-social-quest-wl"));
+
+    expect(screen.getByTestId("button-practice-swap-sell-token")).toBeInTheDocument();
+    expect(screen.getByTestId("button-practice-swap-buy-token")).toBeInTheDocument();
+    expect(screen.getByTestId("button-practice-swap-settings")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("button-practice-swap-settings"));
+    expect(screen.getByTestId("button-practice-swap-slippage")).toHaveTextContent("0.50%");
+    fireEvent.click(screen.getByTestId("button-practice-swap-quote"));
+    expect(screen.getByTestId("button-practice-swap-quote")).toHaveTextContent("Refresh quote");
+    fireEvent.click(screen.getByTestId("button-practice-swap-route"));
+    fireEvent.click(screen.getByTestId("button-practice-swap-connect-wallet"));
+    expect(screen.getByTestId("practice-wallet-notice-dex-swap")).toHaveTextContent("Local lesson only");
+  });
+
+  it("does not use the old optional form as the completion gate", () => {
+    render(<BeginnerMode onExit={vi.fn()} />);
+    fireEvent.click(screen.getByTestId("button-beginner-mode-active-practice"));
+    fireEvent.click(screen.getByTestId("button-practice-social-source"));
+    fireEvent.click(screen.getByTestId("button-practice-social-rules"));
+    fireEvent.click(screen.getByTestId("button-practice-social-risk"));
+    fireEvent.click(screen.getByTestId("button-practice-complete-social-quest-wl"));
+
+    expect(screen.queryByTestId("input-practice-pair-dex-swap")).not.toBeInTheDocument();
+    expect(screen.getByTestId("button-practice-complete-dex-swap")).toBeDisabled();
+    fireEvent.click(screen.getByTestId("button-practice-swap-quote"));
+    fireEvent.click(screen.getByTestId("button-practice-swap-route"));
+    expect(screen.getByTestId("button-practice-complete-dex-swap")).not.toBeDisabled();
+  });
+
   it("starts with every drawer closed", () => {
     render(<BeginnerMode onExit={vi.fn()} />);
 

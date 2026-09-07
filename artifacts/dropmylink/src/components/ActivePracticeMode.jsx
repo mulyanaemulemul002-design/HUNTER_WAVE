@@ -1,327 +1,42 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  ArrowLeft,
-  ArrowRight,
-  BadgeCheck,
-  BarChart3,
-  Check,
-  CheckCircle2,
-  ChevronDown,
-  CircleDollarSign,
-  Code2,
-  Coins,
-  Compass,
-  ExternalLink,
-  FileCode2,
-  Gauge,
-  Globe2,
-  Info,
-  Layers3,
-  LockKeyhole,
-  MoveRight,
-  Network,
-  Palette,
-  Play,
-  Plus,
-  RefreshCw,
-  Rocket,
-  Save,
-  ScanLine,
-  ShieldCheck,
-  Sparkles,
-  Tags,
-  Target,
-  Timer,
-  TrendingDown,
-  TrendingUp,
-  Users,
-  WalletCards,
-  Waves,
-  Zap,
+  ArrowDown, ArrowLeft, ArrowRight, BarChart3, Check, CheckCircle2,
+  ChevronDown, CircleDollarSign, Code2, Coins, Compass, Copy, ExternalLink, FileCode2, Gauge,
+  Globe2, Info, Landmark, Layers3, LockKeyhole, MoveRight, Network, Palette, PanelTop,
+  Plus, Rocket, Save, ScanLine, Search, Settings2, ShieldCheck, SlidersHorizontal,
+  Target, TrendingDown, TrendingUp, Users, WalletCards, Waves,
 } from "lucide-react";
 
 export const PRACTICE_STORAGE_KEY = "hw_beginner_practice_v1";
 
 const ACCENT_STYLES = {
-  blue: {
-    icon: "bg-sky-300/10 text-sky-100 ring-sky-200/20",
-    line: "bg-sky-200/80",
-    eyebrow: "text-sky-100/70",
-    button: "bg-sky-200 text-[#08141a] hover:bg-sky-100",
-    soft: "border-sky-200/20 bg-sky-200/[0.06]",
-    tint: "sky",
-  },
-  cyan: {
-    icon: "bg-cyan-300/10 text-cyan-100 ring-cyan-200/20",
-    line: "bg-cyan-200/80",
-    eyebrow: "text-cyan-100/70",
-    button: "bg-cyan-200 text-[#071315] hover:bg-cyan-100",
-    soft: "border-cyan-200/20 bg-cyan-200/[0.06]",
-    tint: "cyan",
-  },
-  amber: {
-    icon: "bg-amber-300/10 text-amber-100 ring-amber-200/20",
-    line: "bg-amber-200/80",
-    eyebrow: "text-amber-100/70",
-    button: "bg-amber-200 text-[#171108] hover:bg-amber-100",
-    soft: "border-amber-200/20 bg-amber-200/[0.06]",
-    tint: "amber",
-  },
-  violet: {
-    icon: "bg-violet-300/10 text-violet-100 ring-violet-200/20",
-    line: "bg-violet-200/80",
-    eyebrow: "text-violet-100/70",
-    button: "bg-violet-200 text-[#100b1b] hover:bg-violet-100",
-    soft: "border-violet-200/20 bg-violet-200/[0.06]",
-    tint: "violet",
-  },
+  blue: { icon: "bg-sky-300/10 text-sky-100 ring-sky-200/20", line: "bg-sky-200/80", eyebrow: "text-sky-100/70", button: "bg-sky-200 text-[#08141a] hover:bg-sky-100", soft: "border-sky-200/20 bg-sky-200/[0.06]", tint: "sky" },
+  cyan: { icon: "bg-cyan-300/10 text-cyan-100 ring-cyan-200/20", line: "bg-cyan-200/80", eyebrow: "text-cyan-100/70", button: "bg-cyan-200 text-[#071315] hover:bg-cyan-100", soft: "border-cyan-200/20 bg-cyan-200/[0.06]", tint: "cyan" },
+  amber: { icon: "bg-amber-300/10 text-amber-100 ring-amber-200/20", line: "bg-amber-200/80", eyebrow: "text-amber-100/70", button: "bg-amber-200 text-[#171108] hover:bg-amber-100", soft: "border-amber-200/20 bg-amber-200/[0.06]", tint: "amber" },
+  violet: { icon: "bg-violet-300/10 text-violet-100 ring-violet-200/20", line: "bg-violet-200/80", eyebrow: "text-violet-100/70", button: "bg-violet-200 text-[#100b1b] hover:bg-violet-100", soft: "border-violet-200/20 bg-violet-200/[0.06]", tint: "violet" },
 };
 
+const base = (id, index, label, shortLabel, accent, title, summary, explanation, context, icon, actions, steps, fields = []) => ({
+  id, index, label, shortLabel, accent, title, summary, explanation, context, icon,
+  actionOptions: actions.map(([value, text, description]) => ({ id: value, label: text, description })),
+  fields, steps,
+});
+
 export const PRACTICE_CATEGORIES = [
-  {
-    id: "social-quest-wl",
-    index: "01",
-    label: "Social Quest / WL",
-    shortLabel: "Social / WL",
-    title: "Ikuti jejak campaign, bukan hype-nya",
-    accent: "blue",
-    summary: "Buka papan campaign fiktif dan pelajari bagaimana task, sumber resmi, serta eligibility saling terhubung.",
-    explanation: "Mulai dengan membaca brief. Klik kartu di papan untuk melihat bukti yang perlu dicari, lalu tandai apa yang sudah kamu pahami.",
-    context: "Whitelist atau eligibility bukan janji alokasi. Selalu periksa domain, tanggal snapshot, aturan multi-akun, dan siapa yang menerbitkan pengumuman.",
-    icon: Users,
-    actionOptions: [
-      { id: "social", label: "Social task", description: "Ikuti kontribusi publik dan simpan bukti yang relevan." },
-      { id: "whitelist", label: "Whitelist", description: "Bedakan syarat masuk dari alokasi yang sudah pasti." },
-    ],
-    fields: [{ key: "campaignName", label: "Nama campaign latihan", placeholder: "Community round", required: true }],
-    steps: [
-      { id: "source", label: "Sumber resmi dan domain benar" },
-      { id: "rules", label: "Aturan, periode, dan syarat dipahami" },
-      { id: "risk", label: "Risiko link dan klaim hasil ditandai" },
-    ],
-  },
-  {
-    id: "dex-swap",
-    index: "02",
-    label: "DEX / Swap",
-    shortLabel: "DEX / Swap",
-    title: "Baca quote sebelum menekan swap",
-    accent: "cyan",
-    summary: "Jelajahi layar exchange mini: pilih token, bandingkan quote, dan lihat jalur yang akan dipakai.",
-    explanation: "Quote adalah informasi yang berubah, bukan janji harga. Perhatikan network, fee, slippage, price impact, dan permission.",
-    context: "Angka di layar ini adalah demo. Tidak ada approval, saldo, wallet, atau transaksi yang dikirim.",
-    icon: Waves,
-    actionOptions: [
-      { id: "quote", label: "Baca quote", description: "Bandingkan jumlah masuk, jumlah keluar, fee, dan price impact." },
-      { id: "route", label: "Cek route", description: "Lihat jalur swap dan kontrak demo yang akan dipanggil." },
-    ],
-    fields: [{ key: "pair", label: "Pair yang diamati", placeholder: "TESTA / TESTB", required: true }],
-    steps: [
-      { id: "network", label: "Aset dan network cocok" },
-      { id: "quote", label: "Fee, slippage, impact, dan minimum dibaca" },
-      { id: "permission", label: "Permission dibaca sebelum sign" },
-    ],
-  },
-  {
-    id: "defi",
-    index: "03",
-    label: "DeFi",
-    shortLabel: "DeFi",
-    title: "Masuk ke permukaan DeFi yang berbeda",
-    accent: "blue",
-    summary: "Pindah tab antara lending, borrowing, liquidity pool, dan supply untuk melihat istilah yang berubah.",
-    explanation: "Empat permukaan ini punya input dan risiko berbeda. Klik tab, lihat metriknya, lalu ikuti satu alur demo.",
-    context: "APY bukan hasil pasti. Di lab ini tidak ada saldo, bunga, jaminan, lock, atau posisi yang benar-benar bergerak.",
-    icon: Layers3,
-    actionOptions: [
-      { id: "landing", label: "Landing", description: "Kenali halaman protokol dan kontrak yang dirujuk." },
-      { id: "borrowing", label: "Borrowing", description: "Baca collateral, health factor, bunga, dan likuidasi." },
-      { id: "lp", label: "LP", description: "Bandingkan pair, fee pool, dan impermanent loss." },
-      { id: "supply", label: "Supply", description: "Catat aset setoran, lock, dan cara penarikan." },
-    ],
-    fields: [{ key: "surface", label: "Permukaan yang dipelajari", placeholder: "Lending pool", required: true }],
-    steps: [
-      { id: "asset", label: "Aset masuk, keluar, atau collateral dikenali" },
-      { id: "terms", label: "Bunga, fee, lock, dan impact dibaca" },
-      { id: "exit", label: "Kondisi berhenti dan cara keluar ditentukan" },
-    ],
-  },
-  {
-    id: "meme-launchpad",
-    index: "04",
-    label: "Meme Launchpad",
-    shortLabel: "Meme Launchpad",
-    title: "Lihat apa yang disembunyikan oleh hype",
-    accent: "amber",
-    summary: "Preview launch token fiktif dengan bonding curve, distribusi, dan liquidity yang bisa kamu bongkar.",
-    explanation: "Launchpad membuat token terlihat mudah dibuat. Simulasi ini memperlambat langkah agar tokenomics dan risiko exit terbaca.",
-    context: "Meme asset sangat volatil dan popularitas bukan due diligence. Periksa supply, konsentrasi holder, liquidity, dan hak admin.",
-    icon: Rocket,
-    actionOptions: [
-      { id: "launch", label: "Preview launch", description: "Baca parameter token, distribusi, dan mekanisme peluncuran." },
-      { id: "trade", label: "Baca market", description: "Amati liquidity, volume, holder concentration, dan risiko exit." },
-    ],
-    fields: [{ key: "launchpad", label: "Nama launchpad latihan", placeholder: "Launchpad latihan", required: true }],
-    steps: [
-      { id: "tokenomics", label: "Supply, distribusi, unlock, dan admin dicatat" },
-      { id: "liquidity", label: "Sumber dan aturan liquidity diperiksa" },
-      { id: "volatility", label: "Skenario terburuk ditulis tanpa hype" },
-    ],
-  },
-  {
-    id: "bridge",
-    index: "05",
-    label: "Bridge",
-    shortLabel: "Bridge",
-    title: "Ikuti rute aset lintas-network",
-    accent: "cyan",
-    summary: "Susun perjalanan TEST token dari satu network demo ke network lain dan lihat titik risikonya.",
-    explanation: "Bridge menambah lapisan kontrak, validator, liquidity, dan finality. Baca seluruh rute sebelum membayangkan tombol transfer.",
-    context: "Tidak ada message lintas-chain atau perpindahan aset. Token pada layar hanyalah representasi demo.",
-    icon: Network,
-    actionOptions: [
-      { id: "route", label: "Baca route", description: "Petakan asal, tujuan, token, fee, dan finalisasi." },
-      { id: "message", label: "Baca message", description: "Pahami pesan dan kontrak yang terlibat lintas-network." },
-    ],
-    fields: [
-      { key: "sourceNetwork", label: "Network asal", placeholder: "Sepolia", required: true },
-      { key: "destinationNetwork", label: "Network tujuan", placeholder: "Base Sepolia", required: true },
-    ],
-    steps: [
-      { id: "networks", label: "Network asal, tujuan, dan kontrak cocok" },
-      { id: "asset", label: "Native, wrapped, atau representasi dikenali" },
-      { id: "finality", label: "Fee, waktu tunggu, dan kondisi gagal dicatat" },
-    ],
-  },
-  {
-    id: "perps-trading",
-    index: "06",
-    label: "Perps Trading",
-    shortLabel: "Perps",
-    title: "Ukur risiko sebelum membuka posisi",
-    accent: "amber",
-    summary: "Gunakan trade ticket demo untuk melihat hubungan entry, margin, leverage, funding, dan liquidation.",
-    explanation: "Perpetual contract dapat memperbesar rugi. Simulasi ini memprioritaskan liquidation price, bukan sensasi entry.",
-    context: "Tidak ada saldo, PnL nyata, order, atau posisi yang dibuka. Leverage tinggi bukan shortcut belajar.",
-    icon: Gauge,
-    actionOptions: [
-      { id: "long", label: "Skenario long", description: "Pelajari dampak harga naik dan harga turun." },
-      { id: "short", label: "Skenario short", description: "Pelajari dampak harga turun dan harga naik." },
-    ],
-    fields: [{ key: "market", label: "Market latihan", placeholder: "TEST-PERP", required: true }],
-    steps: [
-      { id: "margin", label: "Margin, notional, leverage, dan collateral dibedakan" },
-      { id: "funding", label: "Funding rate dan fee dibaca" },
-      { id: "liquidation", label: "Liquidation price dan batas berhenti ditentukan" },
-    ],
-  },
-  {
-    id: "nft",
-    index: "07",
-    label: "NFT",
-    shortLabel: "NFT",
-    title: "Lihat collection di balik sebuah gambar",
-    accent: "violet",
-    summary: "Masuk ke halaman mint collection fiktif, lihat metadata, supply, royalty, dan ownership.",
-    explanation: "NFT bukan cuma gambar. Jelajahi preview token lalu bedakan metadata, contract, mint condition, dan marketplace permission.",
-    context: "Tidak ada mint, listing, atau token ID yang benar-benar dibuat. Semua artwork dan metadata di sini adalah demo.",
-    icon: Palette,
-    actionOptions: [
-      { id: "mint", label: "Baca mint", description: "Periksa supply, mint price, allowlist, dan fungsi contract." },
-      { id: "market", label: "Baca marketplace", description: "Periksa listing, royalty, transfer permission, dan provenance." },
-    ],
-    fields: [{ key: "collection", label: "Nama collection latihan", placeholder: "Night Lab Objects", required: true }],
-    steps: [
-      { id: "contract", label: "Contract dan token standard dicocokkan" },
-      { id: "metadata", label: "Lokasi dan sifat metadata diperiksa" },
-      { id: "ownership", label: "Ownership, royalty, dan permission dipahami" },
-    ],
-  },
-  {
-    id: "onchain-interaction",
-    index: "08",
-    label: "On-chain Interaction",
-    shortLabel: "On-chain",
-    title: "Terjemahkan klik menjadi contract call",
-    accent: "blue",
-    summary: "Gunakan console kontrak lokal untuk memilih read/write function, melihat parameter, dan mem-preview receipt.",
-    explanation: "DApp biasanya menerjemahkan sebuah klik menjadi calldata. Latih mata untuk membaca target, function, parameter, dan event.",
-    context: "Ini hanya transaction brief. Belum ada wallet, RPC, gas, signature, nonce, atau receipt sungguhan.",
-    icon: Code2,
-    actionOptions: [
-      { id: "read", label: "Read function", description: "Bedakan fungsi baca yang tidak mengubah state." },
-      { id: "write", label: "Write function", description: "Catat parameter, value, permission, dan state yang berubah." },
-    ],
-    fields: [{ key: "contractFunction", label: "Contract dan function", placeholder: "0xDEMO · claim()", required: true }],
-    steps: [
-      { id: "target", label: "Contract address dan network diverifikasi" },
-      { id: "parameters", label: "Parameter, value, dan permission dibaca" },
-      { id: "receipt", label: "Event dan status receipt dipahami" },
-    ],
-  },
-  {
-    id: "smart-contract-activity",
-    index: "09",
-    label: "Smart Contract Activity",
-    shortLabel: "Smart Contract",
-    title: "Rakit blueprint contract dari nol",
-    accent: "violet",
-    summary: "Pilih tipe contract, susun parameter, dan baca preview source tanpa menyentuh compiler atau deployer.",
-    explanation: "Contract yang baik dimulai dari scope, state, permission, event, dan test. Preview ini membantu menghubungkan istilah ke bentuknya.",
-    context: "Belum ada source yang di-compile, address yang di-deploy, token, peg, atau transaksi nyata.",
-    icon: FileCode2,
-    actionOptions: [
-      { id: "token", label: "Token sederhana", description: "Susun nama, symbol, decimals, dan initial supply." },
-      { id: "stablecoin", label: "Stablecoin latihan", description: "Susun mint/burn dengan catatan peg belum ada." },
-      { id: "faucet", label: "Faucet testnet", description: "Susun batas claim dan cooldown token latihan." },
-    ],
-    fields: [
-      { key: "contractName", label: "Nama contract", placeholder: "NightLab Token", required: true },
-      { key: "symbol", label: "Symbol", placeholder: "NLT", required: true },
-      { key: "initialSupply", label: "Initial supply", placeholder: "1000000", required: true },
-    ],
-    steps: [
-      { id: "scope", label: "Fungsi dan caller contract ditentukan" },
-      { id: "state", label: "State, supply, event, dan admin dicatat" },
-      { id: "tests", label: "Skenario test disiapkan sebelum deploy" },
-    ],
-  },
-  {
-    id: "rwa-special-type",
-    index: "10",
-    label: "RWA Special Type",
-    shortLabel: "RWA",
-    title: "Verifikasi hak di balik token RWA",
-    accent: "amber",
-    summary: "Buka data room aset dunia nyata fiktif dan periksa issuer, custodian, legal wrapper, serta redemption.",
-    explanation: "Tokenisasi tidak otomatis berarti kepemilikan legal. Ikuti dokumen dan pihak yang bertanggung jawab sebelum melihat tokennya.",
-    context: "Semua issuer, dokumen, dan angka di sini adalah demo. Jangan membuat klaim aset tanpa bukti yang bisa diverifikasi.",
-    icon: ScanLine,
-    actionOptions: [
-      { id: "treasury", label: "Treasury", description: "Baca issuer, reserve, attestation, dan hak redemption." },
-      { id: "real-estate", label: "Real estate", description: "Baca wrapper legal, SPV, ownership, dan batas transfer." },
-      { id: "commodity", label: "Commodity", description: "Baca custody, audit, serialisasi, dan klaim." },
-    ],
-    fields: [{ key: "assetTheme", label: "Tema aset latihan", placeholder: "Treasury bill latihan", required: true }],
-    steps: [
-      { id: "issuer", label: "Issuer, custodian, dan penanggung jawab dikenali" },
-      { id: "rights", label: "Hak token holder dan batas transfer dibaca" },
-      { id: "evidence", label: "Reserve, wrapper legal, audit, dan redemption dicari" },
-    ],
-  },
+  base("social-quest-wl", "01", "Social Quest / WL", "Social / WL", "blue", "Read a campaign like a source trail", "A real campaign connects its project header, tasks, announcement, and eligibility rules.", "Use the product surface, not a checklist. Open the source, inspect task status, then read the eligibility timeline.", "Eligibility is not an allocation. Verify the domain, dates, snapshot rule, and publisher.", Users, [["social", "Social task", "Public contribution and evidence."], ["whitelist", "Whitelist", "Entry criteria, not a guarantee."]], [["source", "Official source is verified"], ["rules", "Task and eligibility rules are understood"], ["risk", "Link and claim risks are marked"]]),
+  base("dex-swap", "02", "DEX / Swap", "DEX / Swap", "cyan", "Read the swap ticket before the action", "A DEX puts the pair, quote, route, slippage, and permission beside the primary action.", "Choose the asset pair, reveal a quote, inspect settings and route, then decide whether a wallet action would be appropriate.", "All numbers are DEMO / TEST. No approval, wallet, balance, signature, gas, or transaction exists.", Waves, [["quote", "Read quote", "Amount in, amount out, fee, and impact."], ["route", "Check route", "Pools and contracts used by the swap."]], [["network", "Assets and network match"], ["quote", "Fee, slippage, impact, and minimum are read"], ["permission", "Permission is understood before signing"]], [{ key: "pair", label: "Pair observed", placeholder: "TESTA / TESTB" }]),
+  base("defi", "03", "DeFi", "DeFi", "blue", "Move through a lending protocol", "Lending screens separate supply, borrow, liquidity, and exit decisions.", "Switch the surface, search a reserve, open its detail panel, and preview the action with the risk metric in view.", "APY is not a promise. No balance, collateral, interest, lock, or position changes in this lab.", Layers3, [["landing", "Overview", "Protocol and reserve map."], ["borrowing", "Borrowing", "Collateral, health factor, and liquidation."], ["lp", "Liquidity", "Pool fee and impermanent loss."], ["supply", "Supply", "Deposit, APY, and withdrawal."]], [["asset", "Asset and reserve are identified"], ["terms", "Rate, fee, health factor, or impact is read"], ["exit", "An exit or liquidation condition is known"]]),
+  base("meme-launchpad", "04", "Meme Launchpad", "Meme Launchpad", "amber", "Audit the launchpad surface", "A launchpad combines token identity, curve mechanics, distribution, and liquidity controls.", "Move between discovery and creation. Preview the token, inspect its curve, then open the distribution and launch-state explanation.", "Popularity is not due diligence. Check supply, concentrated holders, liquidity controls, and admin rights.", Rocket, [["launch", "Preview launch", "Token identity and parameters."], ["trade", "Read market", "Liquidity, volume, holders, and exit risk."]], [["tokenomics", "Supply, distribution, unlock, and admin are noted"], ["liquidity", "Liquidity source and rules are checked"], ["volatility", "A downside scenario is considered"]]),
+  base("bridge", "05", "Bridge", "Bridge", "cyan", "Follow an asset across networks", "A bridge makes source, destination, message, fee, and finality visible before review.", "Select both networks, enter a demo amount, inspect the route, and walk through approve, lock, and mint states.", "No cross-chain message or asset movement is sent. A wrapped representation is not the native asset.", Network, [["route", "Read route", "Source, destination, token, and fee."], ["message", "Read message", "Validators, lock, mint, and finality."]], [["networks", "Source and destination match"], ["asset", "Native, wrapped, or representation is identified"], ["finality", "Fee, ETA, and failure conditions are known"]]),
+  base("perps-trading", "06", "Perps Trading", "Perps", "amber", "See liquidation inside the order ticket", "A perpetual terminal puts entry, margin, leverage, funding, and liquidation beside Long and Short.", "Choose a side and order type, set leverage, then open the risk review before any simulated order review.", "There is no balance, PnL, order, or position. Leverage is not a shortcut to learning.", Gauge, [["long", "Long scenario", "Price rises and price falls."], ["short", "Short scenario", "Price falls and price rises."]], [["margin", "Margin, notional, leverage, and collateral are distinct"], ["funding", "Funding rate and fee are read"], ["liquidation", "Liquidation price and stop condition are known"]]),
+  base("nft", "07", "NFT", "NFT", "violet", "Read the collection, not only the artwork", "Collection screens connect an item, contract, metadata, supply, mint price, and ownership.", "Open the collection tabs, inspect a token, and preview a mint state without assigning a real owner.", "Artwork, metadata, contract, and ownership shown here are fictional and local.", Palette, [["mint", "Read mint", "Supply, price, allowlist, and contract."], ["market", "Read marketplace", "Listing, royalty, and provenance."]], [["contract", "Contract and token standard match"], ["metadata", "Metadata location and traits are inspected"], ["ownership", "Ownership, royalty, and permissions are understood"]]),
+  base("onchain-interaction", "08", "On-chain Interaction", "On-chain", "blue", "Translate a click into a contract call", "Explorer-style contract pages separate read calls, write calls, parameters, value, and expected events.", "Select a contract function, expand its inputs, preview calldata, and inspect the event a receipt could contain.", "This is a transaction brief only. No RPC, gas, signature, nonce, or receipt is real.", Code2, [["read", "Read function", "A view call does not change state."], ["write", "Write function", "A write asks for permission."]], [["target", "Contract and network are verified"], ["parameters", "Parameters, value, and permission are read"], ["receipt", "Expected event and receipt status are understood"]]),
+  base("smart-contract-activity", "09", "Smart Contract Activity", "Smart Contract", "violet", "Build a contract blueprint", "A Remix-like workspace exposes files, source, compiler status, and a disabled deploy panel.", "Choose a local template, open its source, check compile status, then read why deploy remains unavailable.", "No compiler, contract address, token, peg, or deployment exists in this browser-only lab.", FileCode2, [["token", "Token", "Supply and admin permissions."], ["stablecoin", "Stablecoin", "Mint, burn, and the missing peg."], ["faucet", "Faucet", "Claim limit and cooldown."]], [["scope", "Function and caller scope are defined"], ["state", "State, supply, and events are visible"], ["tests", "Test scenarios exist before deploy"]]),
+  base("rwa-special-type", "10", "RWA Special Type", "RWA", "amber", "Verify the right behind the token", "Tokenized asset dashboards connect an asset summary to issuer, custodian, legal wrapper, and redemption evidence.", "Switch asset types, open the evidence tabs, and review holdings and transfer restrictions before redeeming.", "Issuer, documents, reserve, and legal rights are demo records; a token label does not prove ownership.", ScanLine, [["treasury", "Treasury", "Issuer, reserve, and redemption."], ["real-estate", "Real estate", "SPV, wrapper, and transfer list."], ["commodity", "Commodity", "Custody, audit, and serials."]], [["issuer", "Issuer and custodian are identified"], ["rights", "Holder rights and transfer limits are read"], ["evidence", "Reserve, legal wrapper, audit, and redemption are found"]]),
 ];
 
 function getDefaultCategoryState(category) {
-  return {
-    platform: "",
-    action: category.actionOptions[0].id,
-    inputs: Object.fromEntries(category.fields.map((field) => [field.key, ""])),
-    steps: Object.fromEntries(category.steps.map((step) => [step.id, false])),
-    simulator: {},
-    notes: "",
-    completed: false,
-    updatedAt: 0,
-  };
+  return { platform: "", action: category.actionOptions[0].id, inputs: Object.fromEntries(category.fields.map((field) => [field.key, ""])), steps: Object.fromEntries(category.steps.map((step) => [step[0], false])), simulator: {}, notes: "", completed: false, updatedAt: 0 };
 }
 
 function normalizePracticeState(raw) {
@@ -331,378 +46,122 @@ function normalizePracticeState(raw) {
     const defaults = getDefaultCategoryState(category);
     const saved = raw.categories?.[category.id];
     if (!saved || typeof saved !== "object") return [category.id, defaults];
-    return [category.id, {
-      ...defaults,
-      platform: typeof saved.platform === "string" ? saved.platform : "",
-      action: category.actionOptions.some((option) => option.id === saved.action) ? saved.action : defaults.action,
-      inputs: Object.fromEntries(category.fields.map((field) => [field.key, typeof saved.inputs?.[field.key] === "string" ? saved.inputs[field.key] : ""])),
-      steps: Object.fromEntries(category.steps.map((step) => [step.id, saved.steps?.[step.id] === true])),
-      simulator: saved.simulator && typeof saved.simulator === "object" ? saved.simulator : {},
-      notes: typeof saved.notes === "string" ? saved.notes : "",
-      completed: saved.completed === true,
-      updatedAt: Number.isFinite(saved.updatedAt) ? saved.updatedAt : 0,
-    }];
+    return [category.id, { ...defaults, platform: typeof saved.platform === "string" ? saved.platform : "", action: category.actionOptions.some((option) => option.id === saved.action) ? saved.action : defaults.action, inputs: Object.fromEntries(category.fields.map((field) => [field.key, typeof saved.inputs?.[field.key] === "string" ? saved.inputs[field.key] : ""])), steps: Object.fromEntries(category.steps.map((step) => [step[0], saved.steps?.[step[0]] === true])), simulator: saved.simulator && typeof saved.simulator === "object" ? saved.simulator : {}, notes: typeof saved.notes === "string" ? saved.notes : "", completed: saved.completed === true, updatedAt: Number.isFinite(saved.updatedAt) ? saved.updatedAt : 0 }];
   }));
-  return {
-    version: 1,
-    activeCategoryId: PRACTICE_CATEGORIES.some((category) => category.id === raw.activeCategoryId) ? raw.activeCategoryId : empty.activeCategoryId,
-    categories,
-  };
+  return { version: 1, activeCategoryId: PRACTICE_CATEGORIES.some((category) => category.id === raw.activeCategoryId) ? raw.activeCategoryId : empty.activeCategoryId, categories };
 }
 
 export function readPracticeState(storage = window.localStorage) {
-  try {
-    const saved = storage.getItem(PRACTICE_STORAGE_KEY);
-    return normalizePracticeState(saved ? JSON.parse(saved) : null);
-  } catch {
-    return normalizePracticeState(null);
-  }
-}
-
-function PracticeCategoryRow({ category, active, completed, unlocked, onSelect }) {
-  const style = ACCENT_STYLES[category.accent];
-  const Icon = category.icon;
-  return (
-    <button
-      type="button"
-      onClick={() => unlocked && onSelect(category.id)}
-      disabled={!unlocked}
-      aria-current={active ? "step" : undefined}
-      aria-disabled={!unlocked}
-      data-testid={`button-practice-category-${category.id}`}
-      className={`flex min-h-14 w-full items-center gap-3 border-b border-white/[0.07] px-3 py-3 text-left transition last:border-b-0 ${active ? "bg-white/[0.07]" : unlocked ? "hover:bg-white/[0.04]" : "cursor-not-allowed opacity-35"}`}
-    >
-      <span className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-[10px] font-black ring-1 ${style.icon}`}>
-        {completed ? <Check className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[10px] font-bold uppercase tracking-[0.12em] text-white/35">{category.index}</span>
-        <span className={`mt-0.5 block truncate text-xs font-semibold ${active ? "text-white" : "text-white/65"}`}>{category.label}</span>
-      </span>
-      {!unlocked && <LockKeyhole className="h-3.5 w-3.5 flex-shrink-0 text-white/25" />}
-      {completed && <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-300/75" />}
-    </button>
-  );
+  try { const saved = storage.getItem(PRACTICE_STORAGE_KEY); return normalizePracticeState(saved ? JSON.parse(saved) : null); } catch { return normalizePracticeState(null); }
 }
 
 function DemoPill({ children, tone = "sky" }) {
-  const tones = {
-    sky: "border-sky-200/20 bg-sky-200/10 text-sky-100/75",
-    cyan: "border-cyan-200/20 bg-cyan-200/10 text-cyan-100/75",
-    amber: "border-amber-200/20 bg-amber-200/10 text-amber-100/75",
-    violet: "border-violet-200/20 bg-violet-200/10 text-violet-100/75",
-    green: "border-emerald-200/20 bg-emerald-200/10 text-emerald-100/75",
-  };
-  return <span className={`inline-flex items-center rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-[0.14em] ${tones[tone]}`}>{children}</span>;
+  const tones = { sky: "border-sky-200/20 bg-sky-200/10 text-sky-100/75", cyan: "border-cyan-200/20 bg-cyan-200/10 text-cyan-100/75", amber: "border-amber-200/20 bg-amber-200/10 text-amber-100/75", violet: "border-violet-200/20 bg-violet-200/10 text-violet-100/75", green: "border-emerald-200/20 bg-emerald-200/10 text-emerald-100/75" };
+  return <span className={`inline-flex items-center rounded border px-2 py-1 text-[9px] font-bold uppercase tracking-[0.14em] ${tones[tone]}`}>{children}</span>;
 }
 
-function SimButton({ children, onClick, active = false, tone = "sky", testId, icon: Icon = Play }) {
-  const toneClasses = {
-    sky: "border-sky-200/20 text-sky-100 hover:bg-sky-200/10",
-    cyan: "border-cyan-200/20 text-cyan-100 hover:bg-cyan-200/10",
-    amber: "border-amber-200/20 text-amber-100 hover:bg-amber-200/10",
-    violet: "border-violet-200/20 text-violet-100 hover:bg-violet-200/10",
-  };
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      data-testid={testId}
-      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border px-3 text-[11px] font-bold transition ${toneClasses[tone]} ${active ? "bg-white/[0.12] ring-1 ring-white/15" : "bg-black/10"}`}
-    >
-      <Icon className="h-3.5 w-3.5" /> {children}
-    </button>
-  );
+function ProtocolShell({ category, name, mark, nav = ["Markets", "Activity", "Docs"], children, accent = "sky" }) {
+  const markStyles = { sky: "bg-sky-200/15 text-sky-100 ring-sky-200/20", cyan: "bg-cyan-200/15 text-cyan-100 ring-cyan-200/20", amber: "bg-amber-200/15 text-amber-100 ring-amber-200/20", violet: "bg-violet-200/15 text-violet-100 ring-violet-200/20" };
+  return <div className="overflow-hidden border border-white/[0.12] bg-[#101722] practice-window" data-testid={`protocol-shell-${category.id}`}>
+    <header className="flex min-h-14 flex-wrap items-center gap-3 border-b border-white/[0.09] bg-[#121b28] px-3 py-2.5 sm:px-4">
+      <div className="flex items-center gap-2.5 border-r border-white/[0.1] pr-3"><span className={`flex h-8 w-8 items-center justify-center rounded-lg ring-1 ${markStyles[accent]}`}>{mark}</span><span className="text-sm font-extrabold tracking-[-0.03em] text-white/90">{name}</span><DemoPill tone={accent}>DEMO</DemoPill></div>
+      <nav className="hidden items-center gap-4 text-[10px] font-semibold text-white/45 sm:flex" aria-label={`${name} product navigation`}>{nav.map((item) => <button type="button" key={item} className="transition hover:text-white/80" onClick={() => {}} data-testid={`nav-${category.id}-${item.toLowerCase()}`}>{item}</button>)}</nav>
+      <div className="ml-auto flex items-center gap-2"><ChainSelect category={category} /><WalletButton category={category} /><span className="hidden items-center gap-1.5 text-[9px] text-emerald-200/65 sm:flex"><span className="h-1.5 w-1.5 rounded-full bg-emerald-300" /> LOCAL TEST</span></div>
+    </header>
+    {children}
+  </div>;
 }
 
-function WindowBar({ category, children }) {
-  const style = ACCENT_STYLES[category.accent];
-  return (
-    <div className={`overflow-hidden rounded-2xl border border-white/[0.11] bg-[#0d141d] practice-window ${category.id === "social-quest-wl" ? "practice-grid" : ""}`}>
-      <div className="flex items-center justify-between border-b border-white/[0.08] bg-black/20 px-3 py-2.5">
-        <div className="flex items-center gap-2">
-          <span className={`h-2 w-2 rounded-full ${style.line}`} />
-          <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/45">HUNTER LAB / {category.shortLabel}</span>
-        </div>
-        <DemoPill tone={style.tint}>DEMO · TEST</DemoPill>
-      </div>
-      {children}
-    </div>
-  );
+function ChainSelect({ category, value = "Test network" }) {
+  return <label className="relative"><span className="sr-only">Network for {category.label}</span><select aria-label="Network selector" defaultValue={value} data-testid={`select-practice-network-${category.id}`} className="h-9 max-w-[112px] appearance-none rounded border border-white/[0.12] bg-[#0c131e] px-2.5 pr-6 text-[10px] font-semibold text-white/70 outline-none focus:border-cyan-200/50"><option>Test network</option><option>Demo chain</option></select><ChevronDown className="pointer-events-none absolute right-2 top-3 h-3 w-3 text-white/35" /></label>;
 }
 
-function SimHeader({ eyebrow, title, detail, icon: Icon = Sparkles, tone = "sky" }) {
-  const toneStyles = {
-    sky: "text-sky-100/60 border-sky-200/20 bg-sky-200/10 text-sky-100/75",
-    cyan: "text-cyan-100/60 border-cyan-200/20 bg-cyan-200/10 text-cyan-100/75",
-    amber: "text-amber-100/60 border-amber-200/20 bg-amber-200/10 text-amber-100/75",
-    violet: "text-violet-100/60 border-violet-200/20 bg-violet-200/10 text-violet-100/75",
-  };
-  return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <p className={`text-[9px] font-bold uppercase tracking-[0.18em] ${toneStyles[tone].split(" ")[0]}`}>{eyebrow}</p>
-        <h4 className="mt-1.5 text-xl font-black tracking-[-0.04em] text-white sm:text-2xl">{title}</h4>
-        {detail && <p className="mt-1.5 max-w-xl text-xs leading-5 text-white/45">{detail}</p>}
-      </div>
-      <span className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border ${toneStyles[tone].split(" ").slice(1).join(" ")}`}>
-        <Icon className="h-4 w-4" />
-      </span>
-    </div>
-  );
+function WalletButton({ category, onClick, testId }) {
+  const [open, setOpen] = useState(false);
+  const show = onClick || (() => setOpen((current) => !current));
+  return <div className="relative"><button type="button" onClick={show} data-testid={testId || `button-practice-wallet-${category.id}`} className="inline-flex min-h-9 items-center gap-1.5 rounded bg-cyan-200 px-2.5 text-[10px] font-extrabold text-[#09201e] transition hover:bg-cyan-100"><WalletCards className="h-3.5 w-3.5" /> Connect wallet</button>{open && <div role="status" className="absolute right-0 top-11 z-20 w-56 border border-amber-200/25 bg-[#171710] p-3 text-[10px] leading-5 text-amber-50/75 shadow-2xl" data-testid={`practice-wallet-notice-${category.id}`}><div className="flex gap-2"><Info className="h-3.5 w-3.5 flex-shrink-0 text-amber-200/80" /><span>Local lesson only. Wallet connection is disabled; no RPC or signature is available.</span></div></div>}</div>;
 }
+
+function AppTitle({ kicker, title, detail }) {
+  return <div><p className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/38">{kicker}</p><h4 className="mt-2 text-xl font-extrabold tracking-[-0.045em] text-white/92 sm:text-2xl">{title}</h4>{detail && <p className="mt-1.5 max-w-xl text-xs leading-5 text-white/45">{detail}</p>}</div>;
+}
+function SimButton({ children, onClick, active = false, tone = "sky", testId, icon: Icon = ArrowRight }) {
+  const tones = { sky: "border-sky-200/25 text-sky-100 hover:bg-sky-200/10", cyan: "border-cyan-200/25 text-cyan-100 hover:bg-cyan-200/10", amber: "border-amber-200/25 text-amber-100 hover:bg-amber-200/10", violet: "border-violet-200/25 text-violet-100 hover:bg-violet-200/10" };
+  return <button type="button" onClick={onClick} data-testid={testId} className={`inline-flex min-h-10 items-center justify-center gap-2 border px-3 text-[10px] font-bold transition ${tones[tone]} ${active ? "bg-white/[0.1]" : "bg-[#0c131e]"}`}><Icon className="h-3.5 w-3.5" />{children}</button>;
+}
+function Metric({ label, value, tone = "white" }) { return <div className="border-l border-white/[0.1] pl-3"><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">{label}</p><p className={`mt-1 text-sm font-extrabold ${tone === "green" ? "text-emerald-200/85" : "text-white/80"}`}>{value}</p></div>; }
+function DetailRow({ label, value, accent = false }) { return <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] py-2.5 text-[11px] last:border-0"><span className="text-white/42">{label}</span><span className={accent ? "font-bold text-amber-100/80" : "text-white/72"}>{value}</span></div>; }
+function TokenButton({ token, onClick, testId }) { return <button type="button" onClick={onClick} data-testid={testId} className="inline-flex min-h-9 items-center gap-2 border border-white/[0.12] bg-[#121a26] px-2.5 text-xs font-bold text-white/80 transition hover:border-cyan-200/45"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-200/20 text-[9px] text-cyan-100">{token.slice(-1)}</span>{token}<ChevronDown className="h-3 w-3 text-white/35" /></button>; }
+function Chart({ color = "cyan" }) { const bars = [30, 42, 35, 58, 48, 70, 61, 84, 77, 92, 81, 96]; return <div className="flex h-28 items-end gap-1 border-b border-white/[0.09] px-2">{bars.map((height, index) => <span key={`${height}-${index}`} className={`flex-1 bg-${color}-200/50`} style={{ height: `${height}%` }} />)}</div>; }
 
 function SocialSimulator({ data, interact }) {
-  const selected = data.simulator?.selectedCard || "source";
-  const cards = [
-    { id: "source", label: "Official source", title: "Read the announcement", meta: "astradrop.example / announcements", icon: Globe2, body: "The project domain, author, and publish date should agree before you follow a task." },
-    { id: "rules", label: "Eligibility", title: "Understand the rules", meta: "Snapshot · 24 MAY 2025", icon: ClipboardIcon, body: "A task can make you eligible to be reviewed. It never proves an allocation." },
-    { id: "risk", label: "Safety check", title: "Spot the red flags", meta: "No seed phrase required", icon: ShieldCheck, body: "Unknown links, urgency, and requests for secrets are reasons to stop." },
-  ];
-  return (
-    <WindowBar category={PRACTICE_CATEGORIES[0]}>
-      <div className="p-4 sm:p-6">
-        <SimHeader eyebrow="ASTRADROP COMMUNITY BOARD" title="A campaign is a trail of evidence." detail="Follow the three cards from source to safety. Each click reveals one word you will meet in a real campaign." icon={Users} />
-        <div className="mt-5 grid gap-3 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-xl border border-sky-200/15 bg-sky-200/[0.05] p-4">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-200/15 text-sky-100"><Users className="h-4 w-4" /></span><div><p className="text-xs font-bold text-white/85">AstraDrop</p><p className="text-[10px] text-white/35">Community round · TEST</p></div></div>
-              <DemoPill>FICTIONAL</DemoPill>
-            </div>
-            <p className="mt-5 text-sm leading-6 text-white/70">“Contribute in public. Verify in private.”</p>
-            <div className="mt-5 grid grid-cols-3 gap-2 border-t border-white/[0.08] pt-3">
-              <Stat label="Snapshot" value="24 MAY" /><Stat label="Tasks" value="03" /><Stat label="Status" value="Open" />
-            </div>
-          </div>
-          <div className="grid gap-2">
-            {cards.map((card) => {
-              const Icon = card.icon;
-              const open = selected === card.id;
-               return (
-                <button type="button" key={card.id} onClick={() => interact("selectedCard", [card.id === "source" ? "source" : card.id === "rules" ? "rules" : "risk"], card.id)} data-testid={`button-practice-social-${card.id}`} className={`rounded-xl border p-3 text-left transition ${open ? "border-sky-200/30 bg-sky-200/[0.10]" : "border-white/[0.09] bg-black/10 hover:bg-white/[0.04]"}`}>
-                  <div className="flex items-center gap-3"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.06] text-sky-100/80"><Icon className="h-4 w-4" /></span><span className="min-w-0 flex-1"><span className="block text-[9px] font-bold uppercase tracking-[0.14em] text-white/35">{card.label}</span><span className="mt-1 block text-xs font-semibold text-white/75">{card.title}</span></span><ChevronDown className={`h-3.5 w-3.5 text-white/30 transition-transform ${open ? "rotate-180" : ""}`} /></div>
-                  {open && <p className="mt-3 border-t border-white/[0.08] pt-3 text-[11px] leading-5 text-white/50">{card.meta} — {card.body}</p>}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-[10px] text-white/35"><BadgeCheck className="h-3.5 w-3.5 text-emerald-200/70" /> Click each card to build your source trail <MoveRight className="h-3 w-3 opacity-40" /> no points, no guaranteed WL</div>
-      </div>
-    </WindowBar>
-  );
-}
-
-function Stat({ label, value }) {
-  return <div><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">{label}</p><p className="mt-1 text-xs font-bold text-white/75">{value}</p></div>;
-}
-
-function ClipboardIcon(props) {
-  return <Tags {...props} />;
+  const tab = data.simulator?.tab || "Tasks";
+  const source = data.simulator?.source || data.simulator?.selectedCard === "source";
+  const taskRows = [{ id: "source", label: "Read official announcement", meta: "astra.example / campaign", status: "Verified source" }, { id: "rules", label: "Review eligibility rules", meta: "Snapshot · 24 May 2025", status: "Rules available" }, { id: "risk", label: "Mark safety concerns", meta: "No secret or seed phrase", status: "Safety check" }];
+  return <ProtocolShell category={PRACTICE_CATEGORIES[0]} name="AstraDrop" mark={<Users className="h-4 w-4" />} nav={["Campaigns", "Tasks", "Eligibility"]}>
+    <div className="border-b border-white/[0.09] px-4 py-4 sm:px-6"><div className="flex flex-wrap items-start justify-between gap-4"><div><DemoPill>FICTIONAL CAMPAIGN</DemoPill><h5 className="mt-3 text-2xl font-extrabold tracking-[-0.05em] text-white">Community round</h5><p className="mt-1 text-xs text-white/42">Published by AstraDrop Labs · source review required</p></div><div className="flex gap-5"><Metric label="Snapshot" value="24 MAY" /><Metric label="Tasks" value="3" /><Metric label="Status" value="Open" tone="green" /></div></div><div className="mt-5 flex gap-5 overflow-x-auto text-[10px] font-bold text-white/42"><button type="button" onClick={() => interact("tab", ["source"], "Overview")} data-testid="button-practice-social-overview" className={`border-b-2 pb-2 ${tab === "Overview" ? "border-sky-200 text-white" : "border-transparent"}`}>Overview</button><button type="button" onClick={() => interact("tab", ["rules"], "Tasks")} data-testid="button-practice-social-tasks" className={`border-b-2 pb-2 ${tab === "Tasks" ? "border-sky-200 text-white" : "border-transparent"}`}>Tasks</button><button type="button" onClick={() => interact("tab", ["risk"], "Eligibility")} data-testid="button-practice-social-eligibility" className={`border-b-2 pb-2 ${tab === "Eligibility" ? "border-sky-200 text-white" : "border-transparent"}`}>Eligibility</button></div></div>
+    <div className="grid gap-0 lg:grid-cols-[1fr_285px]"><div className="p-4 sm:p-6"><div className="flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/35">{tab === "Tasks" ? "Campaign tasks" : tab === "Eligibility" ? "Eligibility timeline" : "Campaign overview"}</p><p className="mt-1 text-xs text-white/42">Every status below is a local teaching state.</p></div><DemoPill>TEST ONLY</DemoPill></div>{tab === "Tasks" && <div className="mt-4 divide-y divide-white/[0.08] border-y border-white/[0.08]">{taskRows.map((task) => <button type="button" key={task.id} onClick={() => interact("selectedCard", [task.id], task.id)} data-testid={`button-practice-social-${task.id}`} className="flex w-full items-center gap-3 py-4 text-left transition hover:bg-white/[0.03]"><span className={`flex h-7 w-7 items-center justify-center border ${data.steps[task.id] ? "border-emerald-200/35 bg-emerald-200/10 text-emerald-100" : "border-white/[0.12] text-white/35"}`}>{data.steps[task.id] ? <Check className="h-3.5 w-3.5" /> : <span className="text-[10px]">{task.id === "source" ? "01" : task.id === "rules" ? "02" : "03"}</span>}</span><span className="min-w-0 flex-1"><span className="block text-xs font-bold text-white/78">{task.label}</span><span className="mt-1 block text-[10px] text-white/35">{task.meta}</span></span><span className="text-[10px] text-sky-100/60">{task.status}</span><ArrowRight className="h-3.5 w-3.5 text-white/25" /></button>)}</div>}{tab === "Eligibility" && <div className="relative mt-5 space-y-5 border-l border-sky-200/25 pl-5">{["Campaign published", "Snapshot window opens", "Review by project team", "Eligibility result"].map((item, index) => <div key={item} className="relative"><span className={`absolute -left-[25px] top-0 flex h-4 w-4 items-center justify-center border ${index < 2 ? "border-emerald-200/45 bg-emerald-200/15" : "border-white/20 bg-[#101722]"}`}>{index < 2 && <Check className="h-2.5 w-2.5 text-emerald-100" />}</span><p className="text-xs font-bold text-white/70">{item}</p><p className="mt-1 text-[10px] text-white/35">{index === 3 ? "Not guaranteed by completing a task." : "Demo campaign milestone"}</p></div>)}</div>}{tab === "Overview" && <div className="mt-5 grid gap-3 sm:grid-cols-2"><div className="border border-white/[0.1] bg-[#0c131e] p-4"><p className="text-[10px] uppercase tracking-[0.14em] text-white/32">Campaign brief</p><p className="mt-3 text-sm leading-6 text-white/62">Contribute in public. Verify the publisher before following a task.</p></div><div className="border border-white/[0.1] bg-[#0c131e] p-4"><p className="text-[10px] uppercase tracking-[0.14em] text-white/32">Current state</p><p className="mt-3 text-sm leading-6 text-white/62">Open task board · local source trail pending.</p></div></div>}</div><aside className="border-t border-white/[0.09] bg-[#0c131e] p-4 lg:border-l lg:border-t-0"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Announcement drawer</p>{source ? <div className="mt-4"><div className="flex items-center gap-2 text-emerald-100/75"><CheckCircle2 className="h-4 w-4" /><span className="text-[10px] font-bold">Source opened locally</span></div><p className="mt-4 text-xs leading-6 text-white/55">The project domain, author, and publish date should agree. A task can make you eligible to be reviewed; it never proves an allocation.</p><div className="mt-4 border-t border-white/[0.08] pt-3 font-mono text-[10px] text-sky-100/60">astra.example/campaign</div></div> : <div className="mt-4 border border-dashed border-white/[0.15] p-3 text-[11px] leading-5 text-white/42">Select a task to open its announcement and evidence.</div>}</aside></div>
+  </ProtocolShell>;
 }
 
 function DexSimulator({ data, interact }) {
-  const quoted = data.simulator?.quoted;
-  const route = data.simulator?.route;
-  return (
-    <WindowBar category={PRACTICE_CATEGORIES[1]}>
-      <div className="p-4 sm:p-6">
-        <SimHeader eyebrow="NOVASWAP / SWAP" title="Preview a quote, not a promise." detail="The large button is deliberately a preview. Read what sits around it: network, route, impact, and minimum received." icon={Waves} tone="cyan" />
-        <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_0.85fr]">
-          <div className="rounded-xl border border-cyan-200/15 bg-cyan-200/[0.04] p-3">
-            <div className="flex items-center justify-between px-1 pb-2"><span className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">You pay</span><span className="text-[10px] text-white/35">Balance 4,200.00 TESTA</span></div>
-            <TokenInput token="TESTA" amount="125.00" />
-            <div className="relative z-10 -my-2 flex justify-center"><button type="button" onClick={() => interact("flipped", [], !data.simulator?.flipped)} data-testid="button-practice-swap-flip" className="flex h-8 w-8 items-center justify-center rounded-lg border border-cyan-200/25 bg-[#111a22] text-cyan-100 transition hover:rotate-180"><RefreshCw className="h-3.5 w-3.5" /></button></div>
-            <div className="flex items-center justify-between px-1 pb-2 pt-2"><span className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">You receive</span><span className="text-[10px] text-white/35">Minimum changes with slippage</span></div>
-            <TokenInput token="TESTB" amount={quoted ? "248.36" : "—"} />
-            <div className="mt-3 grid grid-cols-2 gap-2"><MiniMetric label="Network" value="TESTNET DEMO" /><MiniMetric label="Route" value={route ? "2 hops" : "Not checked"} /></div>
-            <SimButton tone="cyan" onClick={() => interact("quoted", ["network", "quote"])} testId="button-practice-swap-quote" icon={Zap}>{quoted ? "Quote refreshed" : "Generate demo quote"}</SimButton>
-          </div>
-          <div className="space-y-2">
-            <QuoteRow label="Rate" value="1 TESTA = 1.9869 TESTB" />
-            <QuoteRow label="LP fee" value="0.30% · 0.38 TESTA" />
-            <QuoteRow label="Price impact" value={quoted ? "0.42% · low" : "Tap quote to reveal"} accent />
-            <QuoteRow label="Slippage tolerance" value="0.50%" />
-            <QuoteRow label="Minimum received" value={quoted ? "247.12 TESTB" : "—"} />
-            <div className="rounded-xl border border-amber-200/15 bg-amber-200/[0.05] p-3"><div className="flex gap-2"><Info className="h-3.5 w-3.5 flex-shrink-0 text-amber-100/75" /><p className="text-[11px] leading-5 text-amber-50/60">Approval is a separate permission step. It is not the swap itself.</p></div></div>
-            <SimButton tone="cyan" onClick={() => interact("route", ["permission"])} testId="button-practice-swap-route" icon={Compass}>{route ? "Route inspected" : "Inspect route"}</SimButton>
-          </div>
-        </div>
-        {route && <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-cyan-200/15 bg-cyan-200/[0.04] p-3 text-[11px] text-white/60"><span className="rounded-lg bg-white/[0.07] px-2 py-1 font-mono">TESTA</span><MoveRight className="h-3.5 w-3.5 text-cyan-100/60" /><span className="rounded-lg bg-white/[0.07] px-2 py-1 font-mono">DemoPool 0x7A…21</span><MoveRight className="h-3.5 w-3.5 text-cyan-100/60" /><span className="rounded-lg bg-white/[0.07] px-2 py-1 font-mono">TESTB</span><span className="ml-auto text-[10px] text-cyan-100/65">2 hops · TEST</span></div>}
-      </div>
-    </WindowBar>
-  );
+  const quoted = data.simulator?.quoted; const route = data.simulator?.route; const settings = data.simulator?.settings; const flipped = data.simulator?.flipped;
+  const sell = flipped ? "TESTB" : "TESTA"; const buy = flipped ? "TESTA" : "TESTB";
+  return <ProtocolShell category={PRACTICE_CATEGORIES[1]} name="NovaSwap" mark={<Waves className="h-4 w-4" />} nav={["Trade", "Explore", "Pools"]} accent="cyan">
+    <div className="border-b border-white/[0.09] px-4 py-3 sm:px-6"><div className="flex flex-wrap items-center gap-4"><div><p className="text-sm font-extrabold text-white/88">Swap</p><p className="text-[10px] text-white/35">Trade demo assets across the test network</p></div><div className="ml-auto flex items-center gap-2 text-[10px] text-white/40"><Search className="h-3.5 w-3.5" /> Search tokens, pools and wallets <Settings2 className="ml-2 h-4 w-4 text-white/55" /></div></div></div>
+    <div className="grid gap-6 p-4 sm:p-6 lg:grid-cols-[minmax(330px,470px)_1fr] lg:justify-center"><div className="mx-auto w-full max-w-[470px]"><div className="mb-4 flex items-center justify-between"><AppTitle kicker="TRADE / {TEST}" title="Swap tokens" detail="A quote is information that changes with the route and settings." /><button type="button" onClick={() => interact("settings", ["network"], !settings)} data-testid="button-practice-swap-settings" className={`flex h-9 w-9 items-center justify-center border ${settings ? "border-cyan-200/40 bg-cyan-200/10 text-cyan-100" : "border-white/[0.12] text-white/45"}`} aria-label="Open swap settings"><SlidersHorizontal className="h-4 w-4" /></button></div><div className="border border-white/[0.12] bg-[#0c131e] p-3"><SwapRow label="Sell" token={sell} amount="125.00" balance={sell === "TESTA" ? "4,200.00" : "860.00"} onToken={() => interact("flipped", ["network"], !flipped)} testId="button-practice-swap-sell-token" /><div className="relative z-10 -my-2 flex justify-center"><button type="button" onClick={() => interact("flipped", ["network"], !flipped)} data-testid="button-practice-swap-flip" className="flex h-8 w-8 items-center justify-center border border-cyan-200/35 bg-[#121d28] text-cyan-100 transition hover:rotate-180" aria-label="Flip swap direction"><ArrowDown className="h-4 w-4" /></button></div><SwapRow label="Buy" token={buy} amount={quoted ? "248.36" : "—"} balance="—" onToken={() => interact("quoted", ["network"], true)} testId="button-practice-swap-buy-token" /><div className="mt-3 grid grid-cols-2 gap-2"><MiniBox label="Network" value="TESTNET DEMO" /><MiniBox label="Balance" value={`${sell === "TESTA" ? "4,200.00" : "860.00"} ${sell}`} /></div>{settings && <div className="mt-3 flex items-center justify-between border border-cyan-200/15 bg-cyan-200/[0.04] px-3 py-2.5 text-[11px]"><span className="text-white/50">Slippage tolerance</span><button type="button" onClick={() => interact("slippage", ["quote"], data.simulator?.slippage === "1.00%" ? "0.50%" : "1.00%")} data-testid="button-practice-swap-slippage" className="font-bold text-cyan-100">{data.simulator?.slippage || "0.50%"}</button></div>}<button type="button" onClick={() => interact("quoted", ["network", "quote"], true)} data-testid="button-practice-swap-quote" className="mt-3 min-h-11 w-full bg-cyan-200 text-[11px] font-extrabold text-[#081a1a] transition hover:bg-cyan-100">{quoted ? "Refresh quote" : "Get a quote"}</button></div></div><div className="mx-auto w-full max-w-[440px] pt-1"><div className="flex items-center justify-between border-b border-white/[0.1] pb-3"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/38">Quote details</p><DemoPill tone="cyan">LOCAL</DemoPill></div><div className="mt-1"><DetailRow label="Rate" value="1 TESTA = 1.9869 TESTB" /><DetailRow label="LP fee" value="0.30% · 0.38 TESTA" /><DetailRow label="Price impact" value={quoted ? "0.42% · low" : "Reveal with quote"} accent /><DetailRow label="Minimum received" value={quoted ? "247.12 TESTB" : "—"} /><DetailRow label="Route" value={route ? "TESTA → DemoPool → TESTB" : "Not inspected"} /></div><div className="mt-5 border border-amber-200/20 bg-amber-200/[0.05] p-3"><div className="flex gap-2"><Info className="h-3.5 w-3.5 flex-shrink-0 text-amber-100/75" /><p className="text-[11px] leading-5 text-amber-50/60">Approval is a separate permission step. It is not the swap itself.</p></div></div><div className="mt-3 flex flex-wrap gap-2"><SimButton tone="cyan" onClick={() => interact("route", ["permission"], true)} testId="button-practice-swap-route" icon={Compass}>{route ? "Route inspected" : "Inspect route"}</SimButton><WalletButton category={PRACTICE_CATEGORIES[1]} testId="button-practice-swap-connect-wallet" /></div>{route && <div className="mt-4 flex items-center gap-2 border border-cyan-200/15 bg-cyan-200/[0.04] p-3 text-[10px] text-cyan-50/65"><span className="font-mono">TESTA</span><MoveRight className="h-3 w-3" /><span className="font-mono">DemoPool 0x7A…21</span><MoveRight className="h-3 w-3" /><span className="font-mono">TESTB</span></div>}</div></div>
+  </ProtocolShell>;
 }
 
-function TokenInput({ token, amount }) {
-  return <div className="flex items-center gap-3 rounded-xl border border-white/[0.09] bg-[#0a1118] p-3"><div className="flex h-9 w-9 items-center justify-center rounded-full bg-cyan-200/15 text-[10px] font-black text-cyan-100">{token.slice(-1)}</div><div className="min-w-0 flex-1"><p className="text-[9px] uppercase tracking-[0.14em] text-white/30">Token · TEST</p><p className="mt-0.5 text-sm font-bold text-white/85">{token}</p></div><p className="text-lg font-black tracking-[-0.04em] text-white/85">{amount}</p></div>;
-}
-
-function MiniMetric({ label, value }) {
-  return <div className="rounded-lg border border-white/[0.07] bg-white/[0.025] p-2"><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">{label}</p><p className="mt-1 truncate text-[10px] font-bold text-white/65">{value}</p></div>;
-}
-
-function QuoteRow({ label, value, accent = false }) {
-  return <div className="flex items-center justify-between gap-3 border-b border-white/[0.07] py-2.5 text-[11px]"><span className="text-white/40">{label}</span><span className={accent ? "font-bold text-amber-100/75" : "text-white/70"}>{value}</span></div>;
-}
+function SwapRow({ label, token, amount, balance, onToken, testId }) { return <div className="border border-white/[0.1] bg-[#111a26] p-3"><div className="flex items-center justify-between"><span className="text-[10px] text-white/38">{label}</span><span className="text-[10px] text-white/35">Balance {balance}</span></div><div className="mt-3 flex items-center justify-between gap-3"><span className="text-2xl font-medium tracking-[-0.04em] text-white/80">{amount}</span><TokenButton token={token} onClick={onToken} testId={testId} /></div></div>; }
+function MiniBox({ label, value }) { return <div className="border border-white/[0.09] bg-white/[0.025] p-2"><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">{label}</p><p className="mono mt-1 truncate text-[10px] text-white/65">{value}</p></div>; }
 
 function DefiSimulator({ data, interact }) {
-  const active = data.simulator?.tab || data.action || "landing";
-  const surfaces = {
-    landing: { title: "Protocol overview", desc: "Read the map before picking a surface.", stat: "TVL · $8.42M DEMO", cta: "Open protocol map", icon: Layers3 },
-    borrowing: { title: "Borrow against collateral", desc: "Health factor tells you how close a position is to liquidation.", stat: "Health factor · 1.84", cta: "Preview borrow terms", icon: Gauge },
-    lp: { title: "Provide liquidity", desc: "Two assets enter a pool; fees come with impermanent loss risk.", stat: "Pool fee · 0.30%", cta: "Preview LP position", icon: Waves },
-    supply: { title: "Supply to earn", desc: "Depositing is one action; understanding withdrawal is another.", stat: "Supply APY · 4.72%", cta: "Preview supply", icon: Coins },
-  };
-  const surface = surfaces[active];
-  return (
-    <WindowBar category={PRACTICE_CATEGORIES[2]}>
-      <div className="p-4 sm:p-6">
-        <SimHeader eyebrow="NOVA FINANCE · DEFI DESK" title="One protocol, four different decisions." detail="Switch surfaces and watch the vocabulary change. Every number is a TEST/DEMO value." icon={Layers3} />
-        <div className="mt-5 flex gap-1 overflow-x-auto rounded-xl border border-white/[0.08] bg-black/15 p-1">
-          {Object.keys(surfaces).map((key) => <button type="button" key={key} onClick={() => interact("tab", key === "landing" ? ["asset"] : ["asset", "terms"], key)} data-testid={`button-practice-defi-tab-${key}`} className={`min-h-10 flex-1 whitespace-nowrap rounded-lg px-3 text-[10px] font-bold uppercase tracking-[0.12em] transition ${active === key ? "bg-sky-200/15 text-sky-100" : "text-white/35 hover:text-white/65"}`}>{key}</button>)}
-        </div>
-        <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_0.78fr]">
-          <div className="rounded-xl border border-sky-200/15 bg-sky-200/[0.04] p-4">
-            <div className="flex items-start justify-between gap-3"><div><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-sky-100/55">SURFACE · {active.toUpperCase()}</p><h5 className="mt-2 text-lg font-bold text-white/90">{surface.title}</h5><p className="mt-2 max-w-md text-xs leading-5 text-white/50">{surface.desc}</p></div><surface.icon className="h-5 w-5 text-sky-100/70" /></div>
-            <div className="mt-6 flex items-end justify-between border-t border-white/[0.08] pt-4"><div><p className="text-[9px] uppercase tracking-[0.13em] text-white/30">Live metric · fake</p><p className="mt-1 text-xl font-black text-white/85">{surface.stat}</p></div><DemoPill>TEST</DemoPill></div>
-             <SimButton onClick={() => interact("opened", active === "landing" ? ["asset"] : ["asset", "terms"])} testId={`button-practice-defi-open-${active}`} icon={surface.icon}>{surface.cta}</SimButton>
-             <SimButton onClick={() => interact("exitReviewed", ["exit"])} testId="button-practice-defi-exit" icon={ArrowLeft}>Review exit path</SimButton>
-          </div>
-          <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-1">
-            <InfoTile icon={WalletCards} title="Asset" value={active === "lp" ? "TESTA + TESTB" : "TEST USD"} />
-            <InfoTile icon={TrendingDown} title="Risk lens" value={active === "borrowing" ? "Liquidation" : active === "lp" ? "Impermanent loss" : "Smart contract"} />
-            <InfoTile icon={Timer} title="Exit" value={active === "supply" ? "Anytime · demo" : "Read terms first"} />
-          </div>
-        </div>
-      </div>
-    </WindowBar>
-  );
-}
-
-function InfoTile({ icon: Icon, title, value }) {
-  return <div className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-black/10 p-3"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.06] text-sky-100/70"><Icon className="h-3.5 w-3.5" /></span><div><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">{title}</p><p className="mt-1 text-xs font-semibold text-white/65">{value}</p></div></div>;
+  const tab = data.simulator?.tab || "supply"; const selected = data.simulator?.reserve; const surface = tab === "borrow" ? "Borrow" : tab === "lp" ? "LP" : "Supply";
+  const reserves = [["Ethereum", "ETH", "2.15M", "1.44%", "2.05%"], ["Wrapped ETH", "wETH", "1.31M", "< 0.01%", "1.01%"], ["USD Coin", "USDC", "2.31B", "3.65%", "4.36%"], ["Test Dollar", "TUSD", "742.8K", "4.72%", "5.18%"]];
+  return <ProtocolShell category={PRACTICE_CATEGORIES[2]} name="NOVA Finance" mark={<Landmark className="h-4 w-4" />} nav={["Dashboard", "Markets", "Governance", "Savings"]}>
+    <div className="bg-[#202735] px-4 py-5 sm:px-6"><div className="flex flex-wrap items-end gap-6"><div><p className="text-sm font-extrabold text-white/88">Core Instance <span className="ml-1 text-[10px] text-cyan-200/75">V3</span></p><p className="mt-1 text-[10px] text-white/38">Demo market with supply and borrow options</p></div><Metric label="Total market size" value="$24.71B" /><Metric label="Total available" value="$14.19B" /><Metric label="Total borrows" value="$10.00B" /></div></div><div className="p-4 sm:p-6"><div className="flex flex-wrap items-center justify-between gap-3"><div className="flex gap-1 border-b border-white/[0.1]">{["supply", "borrow", "lp"].map((key) => <button type="button" key={key} onClick={() => interact("tab", ["asset"], key)} data-testid={`button-practice-defi-tab-${key}`} className={`min-h-10 border-b-2 px-3 text-[10px] font-bold uppercase tracking-[0.12em] ${tab === key ? "border-cyan-200 text-cyan-100" : "border-transparent text-white/38"}`}>{key === "lp" ? "Liquidity" : key}</button>)}</div><div className="flex items-center gap-2"><button type="button" onClick={() => interact("search", [], !data.simulator?.search)} className="flex h-9 items-center gap-2 border border-white/[0.12] px-2.5 text-[10px] text-white/42" data-testid="button-practice-defi-search"><Search className="h-3.5 w-3.5" />Search reserves</button><DemoPill>DEMO MARKET</DemoPill></div></div><div className="mt-5 border border-white/[0.11] bg-[#111923]"><div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.09] px-4 py-3"><div><p className="text-sm font-bold text-white/82">{surface} assets</p><p className="mt-1 text-[10px] text-white/35">Select a reserve to open the action panel.</p></div><span className="text-[10px] text-white/35">Supply APY · Borrow APY</span></div><div className="hidden grid-cols-[1.6fr_1fr_1fr_90px] gap-3 border-b border-white/[0.08] px-4 py-2 text-[9px] uppercase tracking-[0.12em] text-white/30 sm:grid"><span>Asset</span><span>Total supplied</span><span>APY</span><span /></div><div>{reserves.map((item) => <button type="button" key={item[1]} onClick={() => interact("reserve", ["asset", "terms"], item[1])} data-testid={`button-practice-defi-reserve-${item[1]}`} className={`grid w-full grid-cols-[1fr_auto] gap-3 border-b border-white/[0.07] px-4 py-3 text-left transition hover:bg-white/[0.03] sm:grid-cols-[1.6fr_1fr_1fr_90px] ${selected === item[1] ? "bg-cyan-200/[0.05]" : ""}`}><span><span className="flex items-center gap-2 text-xs font-bold text-white/72"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-cyan-200/15 text-[9px] text-cyan-100">{item[1][0]}</span>{item[0]}</span><span className="ml-8 text-[9px] text-white/30">{item[1]} · TEST</span></span><span className="hidden text-[11px] text-white/60 sm:block">{item[2]}</span><span className="text-right text-[11px] text-emerald-100/70 sm:text-left">{tab === "borrow" ? item[4] : item[3]}</span><span className="text-right text-[10px] text-cyan-100/70 sm:text-left">Details</span></button>)}</div></div>{selected && <div className="mt-4 border border-cyan-200/20 bg-cyan-200/[0.045] p-4"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-cyan-100/60">Reserve detail · {selected}</p><h5 className="mt-2 text-lg font-extrabold text-white/88">{surface} {selected}</h5></div>{tab === "borrow" && <div className="text-right"><p className="text-[9px] uppercase text-white/35">Health factor</p><p className="mt-1 text-lg font-extrabold text-emerald-100/80">1.84</p></div>}</div><div className="mt-4 grid gap-2 sm:grid-cols-3"><MiniBox label="Available" value="14.19B TEST" /><MiniBox label={tab === "borrow" ? "Borrow APY" : "Supply APY"} value={tab === "borrow" ? "2.05%" : "4.72%"} /><MiniBox label="Risk" value={tab === "borrow" ? "Liquidation" : "Smart contract"} /></div><div className="mt-4 flex flex-wrap gap-2"><SimButton tone="cyan" onClick={() => interact("opened", ["exit"], true)} testId={`button-practice-defi-${tab}`} icon={tab === "borrow" ? ArrowDown : Coins}>{tab === "borrow" ? "Preview borrow" : "Preview supply"}</SimButton><span className="self-center text-[10px] text-white/35">No wallet or balance required</span></div></div>}</div>
+  </ProtocolShell>;
 }
 
 function MemeSimulator({ data, interact }) {
-  const launched = data.simulator?.preview;
-  return (
-    <WindowBar category={PRACTICE_CATEGORIES[3]}>
-      <div className="p-4 sm:p-6">
-        <SimHeader eyebrow="LAUNCHPAD / MEME LAB" title="The launch is easy. The questions are not." detail="Read the launch preview like a risk dashboard: supply, curve, holders, and liquidity." icon={Rocket} tone="amber" />
-        <div className="mt-5 grid gap-4 lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="relative overflow-hidden rounded-xl border border-amber-200/20 bg-[#19130d] p-5"><div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-amber-200/10 blur-2xl" /><div className="relative"><DemoPill tone="amber">FICTIONAL TOKEN</DemoPill><div className="mt-8 flex h-20 w-20 items-center justify-center rounded-2xl border border-amber-200/25 bg-amber-200/10 text-3xl font-black text-amber-100">NL</div><h5 className="mt-4 text-2xl font-black tracking-[-0.05em] text-white">NIGHT LEMUR</h5><p className="mt-1 font-mono text-xs text-amber-100/60">$NLEM · TEST</p><button type="button" onClick={() => interact("preview", ["tokenomics", "liquidity"])} data-testid="button-practice-meme-preview" className="mt-6 inline-flex min-h-10 items-center gap-2 rounded-lg bg-amber-200 px-3 text-[11px] font-bold text-[#211507] transition hover:bg-amber-100"><Rocket className="h-3.5 w-3.5" />{launched ? "Preview refreshed" : "Preview launch"}</button></div></div>
-          <div className="rounded-xl border border-white/[0.09] bg-black/15 p-4"><div className="flex items-center justify-between"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Launch parameters</p><span className="text-[10px] text-amber-100/60">BONDING CURVE</span></div><div className="mt-5 h-24 rounded-lg border border-amber-200/10 bg-amber-200/[0.04] p-2"><div className="flex h-full items-end gap-1">{[22, 28, 34, 42, 48, 58, 70, 84, 93].map((height, index) => <div key={height} className="flex-1 rounded-t-sm bg-amber-200/50" style={{ height: `${height}%`, opacity: 0.4 + index / 16 }} />)}</div></div><div className="mt-4 grid grid-cols-2 gap-2"><MiniMetric label="Total supply" value="1,000,000 NLEM" /><MiniMetric label="Curve reserve" value="2.40 TEST" /><MiniMetric label="Top holders" value="41.8% · watch" /><MiniMetric label="Liquidity lock" value={launched ? "Preview only" : "Unknown"} /></div><div className="mt-4 rounded-lg border border-amber-200/15 bg-amber-200/[0.05] p-3 text-[11px] leading-5 text-amber-50/60">A rising curve is not proof of demand. Ask who can mint, remove liquidity, or change fees.</div><SimButton tone="amber" onClick={() => interact("market", ["volatility"])} testId="button-practice-meme-market" icon={BarChart3}>{data.simulator?.market ? "Market inspected" : "Inspect market risk"}</SimButton></div>
-        </div>
-      </div>
-    </WindowBar>
-  );
+  const tab = data.simulator?.tab || "Discover"; const preview = data.simulator?.preview; return <ProtocolShell category={PRACTICE_CATEGORIES[3]} name="Launchroom" mark={<Rocket className="h-4 w-4" />} nav={["Discover", "Create", "Portfolio"]} accent="amber">
+    <div className="border-b border-white/[0.09] px-4 py-4 sm:px-6"><div className="flex items-center justify-between gap-3"><AppTitle kicker="TOKEN LAUNCHPAD / TEST" title="Launchroom" detail="Discover launches or inspect the mechanics behind a new token." /><DemoPill tone="amber">NO DEPLOYMENT</DemoPill></div><div className="mt-4 flex gap-5 text-[10px] font-bold text-white/40"><button type="button" onClick={() => interact("tab", ["tokenomics"], "Discover")} data-testid="button-practice-meme-discover" className={`border-b-2 pb-2 ${tab === "Discover" ? "border-amber-200 text-white" : "border-transparent"}`}>Discover</button><button type="button" onClick={() => interact("tab", ["liquidity"], "Create")} data-testid="button-practice-meme-create" className={`border-b-2 pb-2 ${tab === "Create" ? "border-amber-200 text-white" : "border-transparent"}`}>Create</button></div></div><div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[1fr_1.2fr]">{tab === "Create" ? <div className="border border-white/[0.11] bg-[#0d141d] p-4"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Token identity</p><label className="mt-4 block text-[10px] text-white/40">Name<input aria-label="Token name" className="mt-1 min-h-10 w-full border border-white/[0.12] bg-[#111a24] px-3 text-xs text-white outline-none" defaultValue="Night Lemur" onChange={() => interact("identity", ["tokenomics"], true)} /></label><label className="mt-3 block text-[10px] text-white/40">Symbol<input aria-label="Token symbol" className="mt-1 min-h-10 w-full border border-white/[0.12] bg-[#111a24] px-3 font-mono text-xs text-white outline-none" defaultValue="NLEM" onChange={() => interact("identity", ["tokenomics"], true)} /></label><div className="mt-4 flex items-center justify-between border-t border-white/[0.08] pt-4"><span className="text-xs text-white/55">Preview asset</span><DemoPill tone="amber">NLEM · TEST</DemoPill></div></div> : <div className="border border-amber-200/20 bg-[#1d170f] p-5"><DemoPill tone="amber">LIVE DISCOVERY · DEMO</DemoPill><h5 className="mt-6 text-2xl font-extrabold text-white/90">Night Lemur</h5><p className="mt-1 font-mono text-xs text-amber-100/60">$NLEM · 41.8% top holders</p><div className="mt-8 flex items-end justify-between"><div><p className="text-[9px] uppercase text-white/35">Curve reserve</p><p className="mt-1 text-lg font-bold text-white/80">2.40 TEST</p></div><button type="button" onClick={() => interact("preview", ["tokenomics", "liquidity"], true)} data-testid="button-practice-meme-preview" className="min-h-10 bg-amber-200 px-3 text-[10px] font-extrabold text-[#211507]">{preview ? "Preview refreshed" : "Preview launch"}</button></div></div>}<div className="border border-white/[0.11] bg-[#0d141d] p-4"><div className="flex items-center justify-between"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Bonding curve</p><span className="font-mono text-[10px] text-amber-100/60">PRICE / SUPPLY</span></div><div className="mt-4"><Chart color="amber" /></div><div className="mt-4 grid grid-cols-2 gap-2"><MiniBox label="Total supply" value="1,000,000 NLEM" /><MiniBox label="Initial liquidity" value="2.40 TEST" /><MiniBox label="Top holders" value="41.8% watch" /><MiniBox label="Admin" value="Can change fee" /></div><div className="mt-4 flex flex-wrap gap-2"><SimButton tone="amber" onClick={() => interact("market", ["volatility"], true)} testId="button-practice-meme-market" icon={BarChart3}>{data.simulator?.market ? "Market inspected" : "Inspect market risk"}</SimButton><p className="self-center text-[10px] text-white/35">A rising curve is not proof of demand.</p></div></div></div>
+  </ProtocolShell>;
 }
 
 function BridgeSimulator({ data, interact }) {
-  const inspected = data.simulator?.route;
-  return (
-    <WindowBar category={PRACTICE_CATEGORIES[4]}>
-      <div className="p-4 sm:p-6">
-        <SimHeader eyebrow="PORTAL BRIDGE / ROUTE PLANNER" title="Follow the message across two worlds." detail="A bridge is not a teleport button. Read where the asset starts, what is locked, and what appears at the destination." icon={Network} tone="cyan" />
-        <div className="mt-6 grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
-          <NetworkCard label="SOURCE" network="Sepolia · TEST" token="TEST USD" value="250.00" icon={Globe2} />
-          <div className="flex items-center justify-center gap-2 text-cyan-100/70 md:flex-col"><span className="h-px w-10 bg-cyan-200/30 md:h-10 md:w-px" /><button type="button" onClick={() => interact("route", ["networks", "asset"])} data-testid="button-practice-bridge-route" className="flex h-9 w-9 items-center justify-center rounded-full border border-cyan-200/25 bg-cyan-200/10 transition hover:scale-105"><MoveRight className="h-4 w-4 md:rotate-90" /></button><span className="h-px w-10 bg-cyan-200/30 md:h-10 md:w-px" /></div>
-          <NetworkCard label="DESTINATION" network="Base Sepolia · TEST" token="TEST USD.e" value={inspected ? "249.40" : "—"} icon={Compass} />
-        </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-3"><MiniMetric label="Bridge fee" value="0.60 TEST USD" /><MiniMetric label="Est. finality" value="~4 min · demo" /><MiniMetric label="Representation" value="Wrapped / .e" /></div>
-        {inspected && <div className="mt-4 flex items-start gap-2 rounded-xl border border-cyan-200/15 bg-cyan-200/[0.05] p-3 text-[11px] leading-5 text-cyan-50/65"><BadgeCheck className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" /> Source lock → validator message → destination mint. If a step is delayed, the asset may be pending, not gone.</div>}
-        <div className="mt-4 flex flex-wrap gap-2"><SimButton tone="cyan" onClick={() => interact("message", ["finality"])} testId="button-practice-bridge-message" icon={Code2}>{data.simulator?.message ? "Message inspected" : "Inspect cross-network message"}</SimButton></div>
-      </div>
-    </WindowBar>
-  );
+  const inspected = data.simulator?.route; const message = data.simulator?.message; const source = data.simulator?.source || "Sepolia"; const destination = data.simulator?.destination || "Base Demo";
+  return <ProtocolShell category={PRACTICE_CATEGORIES[4]} name="Portal Bridge" mark={<Network className="h-4 w-4" />} nav={["Transfer", "Routes", "Activity"]} accent="cyan"><div className="p-4 sm:p-6"><div className="flex flex-wrap items-end justify-between gap-4"><AppTitle kicker="CROSS-NETWORK TRANSFER" title="Bridge assets" detail="Review the route before a message leaves its source network." /><DemoPill tone="cyan">SIMULATED</DemoPill></div><div className="mt-5 grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-end"><BridgeSide label="From" network={source} token="TEST USD" onClick={() => interact("source", ["networks"], source === "Sepolia" ? "Demo chain" : "Sepolia")} testId="button-practice-bridge-source" /><div className="flex items-center justify-center pb-3"><button type="button" onClick={() => interact("route", ["networks", "asset"], true)} data-testid="button-practice-bridge-route" className="flex h-10 w-10 items-center justify-center border border-cyan-200/30 bg-cyan-200/10 text-cyan-100"><MoveRight className="h-4 w-4 md:rotate-0" /></button></div><BridgeSide label="To" network={destination} token="TEST USD.e" onClick={() => interact("destination", ["networks"], destination === "Base Demo" ? "Demo chain" : "Base Demo")} testId="button-practice-bridge-destination" /></div><div className="mt-3 flex items-center gap-3 border border-white/[0.1] bg-[#0c131e] px-3 py-2.5"><label className="text-[10px] text-white/38">Amount</label><input aria-label="Bridge amount" defaultValue="250.00" className="min-w-0 flex-1 bg-transparent text-sm font-bold text-white/80 outline-none" onFocus={() => interact("asset", ["asset"], true)} /><span className="text-[10px] text-white/35">TEST USD</span></div><div className="mt-5 grid gap-5 lg:grid-cols-[1fr_240px]"><div className="border border-white/[0.1] bg-[#0c131e] p-4"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Route summary</p><DetailRow label="Bridge fee" value="0.60 TEST USD" /><DetailRow label="Estimated finality" value="~4 minutes" /><DetailRow label="Representation" value="Wrapped / .e" /><div className="mt-4 flex flex-wrap gap-2"><SimButton tone="cyan" onClick={() => interact("message", ["finality"], true)} testId="button-practice-bridge-message" icon={Code2}>{message ? "Message inspected" : "Inspect cross-network message"}</SimButton><button type="button" onClick={() => interact("review", [], true)} data-testid="button-practice-bridge-review" className="min-h-10 border border-white/[0.15] px-3 text-[10px] font-bold text-white/55">Review transfer</button></div></div><div className="border-l border-cyan-200/25 pl-4"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Transfer steps</p>{["Approve", "Lock", "Mint"].map((step, index) => <div key={step} className="relative flex gap-3 py-3"><span className={`mt-0.5 flex h-5 w-5 items-center justify-center border text-[9px] ${index === 0 && inspected ? "border-emerald-200/40 text-emerald-100" : "border-white/[0.15] text-white/35"}`}>{index + 1}</span><span className="text-[11px] text-white/58">{step}<small className="mt-1 block text-[9px] text-white/30">{index === 0 ? "Permission" : index === 1 ? "Source custody" : "Destination representation"}</small></span></div>)}</div></div></div></ProtocolShell>;
 }
-
-function NetworkCard({ label, network, token, value, icon: Icon }) {
-  return <div className="rounded-xl border border-cyan-200/15 bg-cyan-200/[0.04] p-4"><div className="flex items-center justify-between"><span className="text-[9px] font-bold uppercase tracking-[0.16em] text-cyan-100/55">{label}</span><Icon className="h-4 w-4 text-cyan-100/60" /></div><p className="mt-4 text-sm font-bold text-white/85">{network}</p><div className="mt-4 flex items-center justify-between rounded-lg border border-white/[0.08] bg-black/15 p-2.5"><span className="text-[11px] text-white/55">{token}</span><span className="text-sm font-black text-white/80">{value}</span></div></div>;
-}
+function BridgeSide({ label, network, token, onClick, testId }) { return <div className="border border-cyan-200/15 bg-cyan-200/[0.04] p-4"><div className="flex items-center justify-between"><span className="text-[9px] font-bold uppercase tracking-[0.16em] text-cyan-100/55">{label}</span><Globe2 className="h-4 w-4 text-cyan-100/55" /></div><button type="button" onClick={onClick} data-testid={testId} className="mt-4 flex w-full items-center justify-between border border-white/[0.12] bg-[#111a26] px-3 py-2.5 text-left"><span className="text-xs font-bold text-white/72">{network}</span><ChevronDown className="h-3 w-3 text-white/35" /></button><div className="mt-2 flex items-center justify-between border border-white/[0.08] bg-[#0c131e] p-2.5 text-[11px]"><span className="text-white/55">{token}</span><span className="font-bold text-white/75">250.00</span></div></div>; }
 
 function PerpsSimulator({ data, interact }) {
-  const side = data.simulator?.side || data.action || "long";
-  const entered = data.simulator?.entered;
-  return (
-    <WindowBar category={PRACTICE_CATEGORIES[5]}>
-      <div className="p-4 sm:p-6">
-        <SimHeader eyebrow="NIGHTFALL PERPS / TRADE TICKET" title="Liquidation is part of the order." detail="Toggle long or short, then read the margin and liquidation panel before previewing entry." icon={Gauge} tone="amber" />
-        <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_0.92fr]">
-          <div className="rounded-xl border border-amber-200/15 bg-amber-200/[0.04] p-4"><div className="flex items-center justify-between"><div><p className="text-[9px] uppercase tracking-[0.16em] text-white/35">MARKET · TEST-PERP</p><p className="mt-1 text-2xl font-black text-white/90">$2,481.20</p></div><span className="flex items-center gap-1 text-xs font-bold text-emerald-200/75"><TrendingUp className="h-3.5 w-3.5" /> +2.14%</span></div><div className="mt-6 flex h-20 items-end gap-1 border-b border-white/[0.08]">{[28,42,38,52,45,64,57,76,69,88,74,94].map((height, index) => <div key={height + index} className="flex-1 rounded-t-sm bg-amber-200/45" style={{ height: `${height}%` }} />)}</div><div className="mt-4 flex gap-2"><button type="button" onClick={() => interact("side", ["margin"], "long")} data-testid="button-practice-perps-long" className={`min-h-10 flex-1 rounded-lg border text-[11px] font-bold transition ${side === "long" ? "border-emerald-200/30 bg-emerald-200/15 text-emerald-100" : "border-white/[0.1] text-white/40"}`}>Long / Buy</button><button type="button" onClick={() => interact("side", ["margin"], "short")} data-testid="button-practice-perps-short" className={`min-h-10 flex-1 rounded-lg border text-[11px] font-bold transition ${side === "short" ? "border-rose-200/30 bg-rose-200/15 text-rose-100" : "border-white/[0.1] text-white/40"}`}>Short / Sell</button></div></div>
-          <div className="rounded-xl border border-white/[0.09] bg-black/15 p-4"><div className="flex items-center justify-between"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Position preview</p><DemoPill tone="amber">{side.toUpperCase()}</DemoPill></div><div className="mt-4 grid gap-2"><QuoteRow label="Entry / mark" value="$2,481.20" /><QuoteRow label="Margin" value="50.00 TEST" /><QuoteRow label="Leverage" value="5×" /><QuoteRow label="Notional" value="250.00 TEST" /><QuoteRow label="Funding" value="+0.012% / 8h" /></div><div className="mt-4 rounded-lg border border-rose-200/20 bg-rose-200/[0.06] p-3"><div className="flex items-center gap-2 text-rose-100/80"><TrendingDown className="h-3.5 w-3.5" /><p className="text-[10px] font-bold uppercase tracking-[0.12em]">Liquidation price</p></div><p className="mt-1 text-lg font-black text-white/85">{side === "long" ? "$2,009.77" : "$2,952.63"}</p><p className="mt-1 text-[10px] leading-4 text-white/40">Demo estimate — isolated margin</p></div><SimButton tone="amber" onClick={() => interact("entered", ["funding", "liquidation"])} testId="button-practice-perps-preview" icon={Gauge}>{entered ? "Risk review complete" : "Preview risk review"}</SimButton></div>
-        </div>
-      </div>
-    </WindowBar>
-  );
+  const side = data.simulator?.side || "long"; const order = data.simulator?.order || "Limit"; const leverage = data.simulator?.leverage || "5x";
+  return <ProtocolShell category={PRACTICE_CATEGORIES[5]} name="Nightfall" mark={<Gauge className="h-4 w-4" />} nav={["Trade", "Positions", "Markets"]} accent="amber"><div className="border-b border-white/[0.09] px-4 py-4 sm:px-6"><div className="flex flex-wrap items-center gap-5"><div><p className="text-sm font-extrabold text-white/88">TEST-PERP</p><p className="mt-1 text-[10px] text-white/35">Perpetual market · DEMO</p></div><p className="text-xl font-extrabold text-white/85">$2,481.20</p><span className="flex items-center gap-1 text-xs font-bold text-emerald-200/75"><TrendingUp className="h-3.5 w-3.5" /> +2.14%</span><Metric label="Funding / 8h" value="+0.012%" /><Metric label="Open interest" value="8.4M TEST" /></div></div><div className="grid gap-0 lg:grid-cols-[1.25fr_360px]"><div className="border-b border-white/[0.09] p-4 sm:p-6 lg:border-b-0 lg:border-r"><div className="flex items-center justify-between"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Price chart</p><div className="flex gap-2 text-[9px] text-white/35"><span>1m</span><span>1h</span><span>1d</span></div></div><div className="mt-4 border border-white/[0.09] bg-[#0c131e] p-3"><Chart color="amber" /></div><div className="mt-4 flex gap-2"><button type="button" onClick={() => interact("side", ["margin"], "long")} data-testid="button-practice-perps-long" className={`min-h-10 flex-1 border text-[11px] font-bold ${side === "long" ? "border-emerald-200/35 bg-emerald-200/15 text-emerald-100" : "border-white/[0.12] text-white/40"}`}>Long / Buy</button><button type="button" onClick={() => interact("side", ["margin"], "short")} data-testid="button-practice-perps-short" className={`min-h-10 flex-1 border text-[11px] font-bold ${side === "short" ? "border-rose-200/35 bg-rose-200/15 text-rose-100" : "border-white/[0.12] text-white/40"}`}>Short / Sell</button></div></div><div className="bg-[#0c131e] p-4 sm:p-5"><div className="flex gap-4 border-b border-white/[0.1]"><button type="button" onClick={() => interact("order", ["margin"], "Limit")} className={`pb-3 text-[10px] font-bold ${order === "Limit" ? "border-b-2 border-amber-200 text-amber-100" : "text-white/40"}`}>Limit</button><button type="button" onClick={() => interact("order", ["margin"], "Market")} className={`pb-3 text-[10px] font-bold ${order === "Market" ? "border-b-2 border-amber-200 text-amber-100" : "text-white/40"}`}>Market</button></div><label className="mt-4 block text-[10px] text-white/38">Leverage<select aria-label="Leverage selector" value={leverage} onChange={(event) => interact("leverage", ["margin"], event.target.value)} data-testid="select-practice-perps-leverage" className="mt-1 h-10 w-full border border-white/[0.12] bg-[#121a25] px-3 text-xs text-white/75 outline-none"><option>2x</option><option>5x</option><option>10x</option></select></label><label className="mt-3 block text-[10px] text-white/38">Margin<input aria-label="Margin input" defaultValue="50.00" onFocus={() => interact("input", ["margin"], true)} className="mt-1 h-10 w-full border border-white/[0.12] bg-[#121a25] px-3 text-xs text-white/75 outline-none" /></label><div className="mt-4 border-t border-white/[0.09] pt-3"><DetailRow label="Notional" value="250.00 TEST" /><DetailRow label="Entry / mark" value="$2,481.20" /><DetailRow label="Liquidation" value={side === "long" ? "$2,009.77" : "$2,952.63"} accent /></div><div className="mt-4 border border-rose-200/20 bg-rose-200/[0.05] p-3 text-[10px] leading-5 text-rose-50/70"><TrendingDown className="mb-1 h-3.5 w-3.5 text-rose-100/75" />A 5x position can be liquidated before the asset reaches zero.</div><SimButton tone="amber" onClick={() => interact("entered", ["funding", "liquidation"], true)} testId="button-practice-perps-preview" icon={Gauge}>{data.simulator?.entered ? "Risk review complete" : "Review simulated order"}</SimButton></div></div></ProtocolShell>;
 }
 
 function NftSimulator({ data, interact }) {
-  const minted = Number(data.simulator?.minted || 0);
-  return (
-    <WindowBar category={PRACTICE_CATEGORIES[6]}>
-      <div className="p-4 sm:p-6">
-        <SimHeader eyebrow="NIGHT LAB OBJECTS / COLLECTION" title="A mint screen is also a contract screen." detail="Preview the collection, open the metadata card, and see how a token ID would be assigned — locally only." icon={Palette} tone="violet" />
-        <div className="mt-5 grid gap-4 lg:grid-cols-[0.78fr_1fr]">
-          <div className="rounded-xl border border-violet-200/20 bg-gradient-to-br from-violet-300/15 via-sky-300/10 to-amber-200/10 p-3"><div className="flex aspect-square items-center justify-center rounded-lg border border-white/15 bg-[#1d2032]"><div className="relative h-36 w-36 rounded-[34%] border border-violet-100/30 bg-gradient-to-br from-violet-200/40 via-sky-100/20 to-amber-100/30 shadow-2xl"><span className="absolute left-8 top-7 h-8 w-8 rounded-full bg-[#0c121c]/80" /><span className="absolute right-8 top-7 h-8 w-8 rounded-full bg-[#0c121c]/80" /><span className="absolute bottom-8 left-1/2 h-2 w-14 -translate-x-1/2 rounded-full bg-violet-100/55" /></div></div><div className="flex items-center justify-between px-1 pt-3"><div><p className="text-sm font-bold text-white/85">Object #031</p><p className="text-[10px] text-violet-100/60">Night Lab Objects · TEST</p></div><DemoPill tone="violet">ERC-721</DemoPill></div></div>
-          <div className="rounded-xl border border-white/[0.09] bg-black/15 p-4"><div className="flex items-center justify-between"><div><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">MINT PREVIEW</p><p className="mt-1 text-lg font-black text-white/85">0.015 TEST ETH</p></div><p className="text-[10px] text-white/35">0 / 333 claimed</p></div><div className="mt-5 grid grid-cols-2 gap-2"><InfoTile icon={Tags} title="Metadata" value="ipfs://demo…" /><InfoTile icon={ShieldCheck} title="Royalty" value="3.5% · stated" /><InfoTile icon={WalletCards} title="Owner" value={minted ? "Local learner" : "Not assigned"} /><InfoTile icon={ExternalLink} title="Provenance" value="View contract" /></div><div className="mt-4 rounded-lg border border-violet-200/15 bg-violet-200/[0.05] p-3 text-[11px] leading-5 text-violet-50/60">A mint would create a token ID and ownership record. Here it only advances a local preview counter.</div><SimButton tone="violet" onClick={() => interact("minted", ["contract", "ownership"])} testId="button-practice-nft-mint" icon={Plus}>{minted ? `Preview token #${31 + minted}` : "Preview local mint"}</SimButton><SimButton tone="violet" onClick={() => interact("metadata", ["metadata"])} testId="button-practice-nft-metadata" icon={ScanLine}>Inspect metadata</SimButton></div>
-        </div>
-      </div>
-    </WindowBar>
-  );
+  const tab = data.simulator?.tab || "Items"; const minted = Number(data.simulator?.minted || 0);
+  return <ProtocolShell category={PRACTICE_CATEGORIES[6]} name="Night Lab" mark={<Palette className="h-4 w-4" />} nav={["Collections", "Activity", "Create"]} accent="violet"><div className="border-b border-white/[0.09] p-4 sm:p-6"><div className="flex flex-wrap items-end justify-between gap-4"><div className="flex items-end gap-4"><div className="flex h-16 w-16 items-center justify-center border border-violet-200/25 bg-violet-200/15 text-xl font-black text-violet-100">NL</div><div><DemoPill tone="violet">ERC-721 · TEST</DemoPill><h5 className="mt-3 text-2xl font-extrabold text-white/90">Night Lab Objects</h5><p className="mt-1 text-xs text-white/38">333 objects · creator royalty 3.5%</p></div></div><button type="button" onClick={() => interact("metadata", ["metadata"], true)} className="inline-flex min-h-9 items-center gap-2 border border-white/[0.13] px-3 text-[10px] font-bold text-white/55"><ExternalLink className="h-3.5 w-3.5" /> Contract</button></div><div className="mt-5 flex gap-5 text-[10px] font-bold text-white/40">{["Items", "Activity", "About"].map((key) => <button type="button" key={key} onClick={() => interact("tab", [], key)} data-testid={`button-practice-nft-tab-${key.toLowerCase()}`} className={`border-b-2 pb-2 ${tab === key ? "border-violet-200 text-white" : "border-transparent"}`}>{key}</button>)}</div></div><div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[1fr_310px]"><div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{[31, 32, 33, 34, 35, 36].map((id) => <button type="button" key={id} onClick={() => interact("metadata", ["contract"], id)} className="border border-white/[0.1] bg-[#111923] p-2 text-left transition hover:border-violet-200/35"><div className="flex aspect-square items-center justify-center bg-[#20243a]"><div className="h-16 w-16 rounded-[30%] border border-violet-100/30 bg-violet-200/20" /></div><p className="mt-2 text-[10px] font-bold text-white/65">Object #{id}</p><p className="mt-1 text-[9px] text-white/30">Trait metadata</p></button>)}</div><aside className="border border-white/[0.11] bg-[#0d141d] p-4"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Mint panel</p><p className="mt-2 text-lg font-extrabold text-white/85">0.015 TEST ETH</p><div className="mt-4 grid grid-cols-2 gap-2"><MiniBox label="Supply" value="0 / 333" /><MiniBox label="Token standard" value="ERC-721" /><MiniBox label="Metadata" value="ipfs://demo…" /><MiniBox label="Royalty" value="3.5%" /></div><div className="mt-4 border border-violet-200/15 bg-violet-200/[0.05] p-3 text-[10px] leading-5 text-violet-50/60">Minting would assign an ID and ownership record. Here it only advances a local preview.</div><SimButton tone="violet" onClick={() => interact("minted", ["contract", "ownership"], true)} testId="button-practice-nft-mint" icon={Plus}>{minted ? `Preview token #${31 + minted}` : "Preview local mint"}</SimButton><SimButton tone="violet" onClick={() => interact("metadata", ["metadata"], true)} testId="button-practice-nft-metadata" icon={ScanLine}>Inspect metadata</SimButton></aside></div></ProtocolShell>;
 }
 
 function OnchainSimulator({ data, interact }) {
-  const mode = data.simulator?.mode || data.action || "read";
-  const previewed = data.simulator?.preview;
-  return (
-    <WindowBar category={PRACTICE_CATEGORIES[7]}>
-      <div className="p-4 sm:p-6">
-        <SimHeader eyebrow="CONTRACT CONSOLE / DEMO" title="Turn an action into a transaction brief." detail="Read target, function, parameters, and expected event in order. The console never signs or broadcasts." icon={Code2} />
-         <div className="mt-5 grid gap-4 lg:grid-cols-[0.75fr_1.25fr]">
-           <div className="rounded-xl border border-sky-200/15 bg-sky-200/[0.04] p-3"><p className="px-1 text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">FUNCTION TYPE</p><div className="mt-3 grid gap-2"><button type="button" onClick={() => interact("mode", ["target"], "read")} data-testid="button-practice-contract-read" className={`rounded-lg border p-3 text-left ${mode === "read" ? "border-sky-200/30 bg-sky-200/10" : "border-white/[0.08] bg-black/10"}`}><p className="text-xs font-bold text-white/80">Read function</p><p className="mt-1 text-[10px] text-white/40">balanceOf(address)</p></button><button type="button" onClick={() => interact("mode", ["target"], "write")} data-testid="button-practice-contract-write" className={`rounded-lg border p-3 text-left ${mode === "write" ? "border-sky-200/30 bg-sky-200/10" : "border-white/[0.08] bg-black/10"}`}><p className="text-xs font-bold text-white/80">Write function</p><p className="mt-1 text-[10px] text-white/40">claim(uint256 amount)</p></button></div><div className="mt-4 rounded-lg border border-emerald-200/15 bg-emerald-200/[0.05] p-3 text-[10px] leading-5 text-emerald-50/60"><ShieldCheck className="mb-1 h-3.5 w-3.5 text-emerald-100/70" />Read calls do not change state. Write calls ask for permission in a real DApp.</div></div>
-          <div className="rounded-xl border border-white/[0.09] bg-[#090f16] p-4 font-mono"><div className="flex items-center justify-between border-b border-white/[0.08] pb-3"><span className="text-[9px] uppercase tracking-[0.16em] text-white/35">transaction brief · TEST</span><span className="text-[10px] text-sky-100/70">network: demo</span></div><div className="mt-4 space-y-3 text-[11px]"><CodeLine label="target" value="0xDEMO…BEEF" /><CodeLine label="function" value={mode === "read" ? "balanceOf(address)" : "claim(uint256)"} /><CodeLine label="value" value="0 TEST ETH" /><CodeLine label="params" value={mode === "read" ? "0xLEARNER…" : "250 TEST"} /><CodeLine label="permission" value={mode === "read" ? "none · read-only" : "write · review first"} /></div><div className="mt-5 flex flex-wrap gap-2"><SimButton onClick={() => interact("preview", ["parameters"])} testId="button-practice-contract-preview" icon={Play}>{previewed ? "Call preview ready" : "Preview call"}</SimButton><SimButton onClick={() => interact("receipt", ["receipt"])} testId="button-practice-contract-receipt" icon={BadgeCheck}>Show expected event</SimButton></div>{previewed && <div className="mt-4 rounded-lg border border-sky-200/15 bg-sky-200/[0.05] p-3 text-[10px] leading-5 text-sky-50/60">Expected event: <span className="font-bold text-sky-100/80">{mode === "read" ? "Return value · 250" : "Claimed(address,uint256)"}</span>. This is a screen preview, not a receipt.</div>}</div>
-        </div>
-      </div>
-    </WindowBar>
-  );
+  const mode = data.simulator?.mode || "read"; const preview = data.simulator?.preview; const open = data.simulator?.open;
+  return <ProtocolShell category={PRACTICE_CATEGORIES[7]} name="Blockscope" mark={<Code2 className="h-4 w-4" />} nav={["Overview", "Transactions", "Contract"]}><div className="border-b border-white/[0.09] px-4 py-4 sm:px-6"><div className="flex items-center justify-between gap-3"><div><DemoPill>CONTRACT · TEST</DemoPill><h5 className="mt-3 text-xl font-extrabold text-white/88">Demo Token <span className="mono text-xs font-normal text-white/35">0xDEMO…BEEF</span></h5><p className="mt-1 text-[10px] text-white/38">Contract interaction · Test network</p></div><Copy className="h-4 w-4 text-white/35" /></div><div className="mt-5 flex gap-5 text-[10px] font-bold text-white/42"><button type="button" onClick={() => interact("mode", ["target"], "read")} data-testid="button-practice-contract-read" className={`border-b-2 pb-2 ${mode === "read" ? "border-sky-200 text-white" : "border-transparent"}`}>Read Contract</button><button type="button" onClick={() => interact("mode", ["target"], "write")} data-testid="button-practice-contract-write" className={`border-b-2 pb-2 ${mode === "write" ? "border-sky-200 text-white" : "border-transparent"}`}>Write Contract</button></div></div><div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[1fr_340px]"><div><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">{mode === "read" ? "Read functions" : "Write functions"}</p><FunctionRow name={mode === "read" ? "balanceOf" : "claim"} signature={mode === "read" ? "balanceOf(address owner)" : "claim(uint256 amount)"} open={open} onClick={() => interact("open", ["parameters"], !open)} testId="button-practice-contract-function" /><FunctionRow name={mode === "read" ? "totalSupply" : "approve"} signature={mode === "read" ? "totalSupply()" : "approve(address,uint256)"} open={false} onClick={() => interact("openSecond", [], true)} testId="button-practice-contract-function-secondary" /></div><div className="border border-white/[0.11] bg-[#0c131e] p-4 font-mono"><p className="text-[9px] uppercase tracking-[0.16em] text-white/35">Call preview · TEST</p><div className="mt-4 space-y-3"><CodeLine label="target" value="0xDEMO…BEEF" /><CodeLine label="function" value={mode === "read" ? "balanceOf(address)" : "claim(uint256)" } /><CodeLine label="value" value="0 TEST ETH" /><CodeLine label="permission" value={mode === "read" ? "none · read-only" : "write · review first"} /></div><div className="mt-5 flex flex-wrap gap-2"><SimButton onClick={() => interact("preview", ["parameters"], true)} testId="button-practice-contract-preview" icon={PlayIcon}>{preview ? "Call preview ready" : "Preview call"}</SimButton><SimButton onClick={() => interact("receipt", ["receipt"], true)} testId="button-practice-contract-receipt" icon={CheckCircle2}>Expected event</SimButton></div>{preview && <p className="mt-4 border-t border-white/[0.08] pt-3 text-[10px] leading-5 text-sky-50/60">Expected event: <span className="text-sky-100/80">{mode === "read" ? "Return value · 250" : "Claimed(address,uint256)"}</span></p>}</div></div></ProtocolShell>;
 }
-
-function CodeLine({ label, value }) {
-  return <div className="grid grid-cols-[82px_1fr] gap-2"><span className="text-white/30">{label}</span><span className="break-all text-sky-100/70">{value}</span></div>;
-}
+function PlayIcon(props) { return <ArrowRight {...props} />; }
+function FunctionRow({ name, signature, open, onClick, testId }) { return <div className="mt-3 border border-white/[0.1] bg-[#111923]"><button type="button" onClick={onClick} data-testid={testId} className="flex w-full items-center gap-3 px-3 py-3 text-left"><span className="mono text-[10px] text-sky-100/65">{name}</span><span className="mono flex-1 text-[10px] text-white/40">{signature}</span><ChevronDown className={`h-3.5 w-3.5 text-white/35 ${open ? "rotate-180" : ""}`} /></button>{open && <div className="border-t border-white/[0.08] bg-[#0c131e] p-3"><label className="block text-[10px] text-white/38">owner / amount<input className="mt-1 h-9 w-full border border-white/[0.12] bg-[#111a24] px-2 font-mono text-[10px] text-white/70 outline-none" placeholder="0xLEARNER… / 250" onFocus={() => {}} /></label><p className="mt-3 text-[10px] text-white/35">Calldata and expected event appear in the preview.</p></div>}</div>; }
+function CodeLine({ label, value }) { return <div className="grid grid-cols-[72px_1fr] gap-2 text-[10px]"><span className="text-white/30">{label}</span><span className="break-all text-sky-100/70">{value}</span></div>; }
 
 function ContractSimulator({ data, interact }) {
-  const action = data.simulator?.archetype || data.action || "token";
-  const compiled = data.simulator?.compiled;
-  const labels = { token: "Token", stablecoin: "Stablecoin", faucet: "Faucet" };
-  return (
-    <WindowBar category={PRACTICE_CATEGORIES[8]}>
-      <div className="p-4 sm:p-6">
-        <SimHeader eyebrow="CONTRACT BUILDER / BLUEPRINT" title="Build the shape before the source." detail="Choose a contract archetype and read the generated preview. A blueprint is safer than pretending a deploy already happened." icon={FileCode2} tone="violet" />
-        <div className="mt-5 grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
-           <div className="rounded-xl border border-violet-200/15 bg-violet-200/[0.04] p-4"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">ARCHETYPE</p><div className="mt-3 grid gap-2">{Object.entries(labels).map(([key, label]) => <button type="button" key={key} onClick={() => interact("archetype", ["scope"], key)} data-testid={`button-practice-builder-${key}`} className={`flex items-center justify-between rounded-lg border px-3 py-3 text-left text-xs font-bold transition ${action === key ? "border-violet-200/30 bg-violet-200/10 text-violet-100" : "border-white/[0.08] text-white/45 hover:bg-white/[0.04]"}`}>{label}<ArrowRight className="h-3.5 w-3.5 opacity-40" /></button>)}</div><div className="mt-4 rounded-lg border border-violet-200/15 bg-violet-200/[0.05] p-3 text-[10px] leading-5 text-violet-50/60">Builder mode explains <span className="text-violet-100/80">{action === "faucet" ? "cooldown and claim limits" : action === "stablecoin" ? "mint, burn, and the missing peg" : "supply and admin permissions"}</span>.</div></div>
-           <div className="rounded-xl border border-white/[0.09] bg-[#0a0c14] p-4"><div className="flex items-center justify-between border-b border-white/[0.08] pb-3"><span className="font-mono text-[10px] text-violet-100/65">NightLab_{labels[action]}</span><DemoPill tone="violet">SOURCE PREVIEW</DemoPill></div><pre className="mt-4 overflow-x-auto text-[10px] leading-6 text-white/55"><code>{`contract NightLab${labels[action]} {\n  // local blueprint · not deployed\n  ${action === "faucet" ? "uint256 claimCooldown = 24 hours;" : action === "stablecoin" ? "function mint(address to, uint256 amount)" : "uint256 initialSupply = 1_000_000;"}\n  event ${action === "faucet" ? "Claimed(address user)" : action === "stablecoin" ? "Minted(address to)" : "Transfer(address from, address to)"};\n}`}</code></pre><div className="mt-4 flex flex-wrap gap-2"><SimButton tone="violet" onClick={() => interact("compiled", ["state", "tests"])} testId="button-practice-builder-preview" icon={Code2}>{compiled ? "Blueprint checked" : "Check blueprint"}</SimButton></div>{compiled && <p className="mt-3 text-[10px] leading-5 text-emerald-100/60">Scope, state, and test placeholders are visible. No compiler or deployer was called.</p>}</div>
-        </div>
-      </div>
-    </WindowBar>
-  );
+  const archetype = data.simulator?.archetype || "token"; const compiled = data.simulator?.compiled; const names = { token: "Token", stablecoin: "Stablecoin", faucet: "Faucet" };
+  return <ProtocolShell category={PRACTICE_CATEGORIES[8]} name="Remix Local" mark={<FileCode2 className="h-4 w-4" />} nav={["Workspace", "Compiler", "Deploy"]} accent="violet"><div className="flex min-h-[390px] flex-col md:flex-row"><aside className="w-full border-b border-white/[0.09] bg-[#0d141d] p-3 md:w-48 md:border-b-0 md:border-r"><div className="flex items-center gap-2 text-[10px] font-bold text-white/55"><PanelTop className="h-3.5 w-3.5" /> FILE EXPLORER</div><div className="mt-4 space-y-1"><p className="px-2 text-[10px] text-white/30">contracts</p><button type="button" className="flex w-full items-center gap-2 bg-violet-200/10 px-2 py-2 text-left text-[10px] text-violet-100"><FileCode2 className="h-3 w-3" />NightLab.sol</button><p className="px-2 pt-3 text-[10px] text-white/30">templates</p>{Object.entries(names).map(([key, label]) => <button type="button" key={key} onClick={() => interact("archetype", ["scope"], key)} data-testid={`button-practice-builder-${key}`} className={`flex w-full items-center gap-2 px-2 py-2 text-left text-[10px] ${archetype === key ? "text-violet-100" : "text-white/42"}`}><Code2 className="h-3 w-3" />{label}</button>)}</div></aside><main className="min-w-0 flex-1 p-4 sm:p-5"><div className="flex items-center justify-between border-b border-white/[0.09] pb-3"><div><p className="mono text-[10px] text-violet-100/70">NightLab_{names[archetype]}.sol</p><p className="mt-1 text-[9px] text-white/30">local blueprint · unsaved deployment</p></div><DemoPill tone="violet">{compiled ? "CHECKED" : "SOURCE PREVIEW"}</DemoPill></div><pre className="mono mt-4 overflow-x-auto text-[10px] leading-6 text-white/55"><code>{`contract NightLab${names[archetype]} {\n  // local blueprint · not deployed\n  ${archetype === "faucet" ? "uint256 claimCooldown = 24 hours;" : archetype === "stablecoin" ? "function mint(address to, uint256 amount)" : "uint256 initialSupply = 1_000_000;"}\n  event ${archetype === "faucet" ? "Claimed(address user)" : archetype === "stablecoin" ? "Minted(address to)" : "Transfer(address from, address to)"};\n}`}</code></pre><div className="mt-5 flex flex-wrap gap-2"><SimButton tone="violet" onClick={() => interact("compiled", ["state", "tests"], true)} testId="button-practice-builder-preview" icon={Code2}>{compiled ? "Blueprint checked" : "Check blueprint"}</SimButton></div><div className="mt-5 border border-white/[0.11] bg-[#0c131e] p-3"><div className="flex items-center justify-between"><p className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/35">Deploy & run transactions</p><LockKeyhole className="h-3.5 w-3.5 text-white/30" /></div><p className="mt-2 text-[10px] leading-5 text-white/38">Disabled in local practice. A real deploy needs a compiled artifact, wallet, network, gas, and a signed transaction.</p></div></main></div></ProtocolShell>;
 }
 
 function RwaSimulator({ data, interact }) {
-  const tab = data.simulator?.tab || data.action || "treasury";
-  const verified = data.simulator?.verified;
-  const docs = tab === "treasury" ? ["Issuer · Northstar Treasury Ltd.", "Custodian · Harbor Desk", "Reserve attestation · 30 APR 2025"] : tab === "real-estate" ? ["Issuer · Parcel SPV 04", "Legal wrapper · Delaware SPV", "Transfer rule · KYC list"] : ["Issuer · Meridian Metals", "Custody · Vault 7 / Zurich", "Audit trail · serialised bars"];
-  return (
-    <WindowBar category={PRACTICE_CATEGORIES[9]}>
-      <div className="p-4 sm:p-6">
-        <SimHeader eyebrow="RWA DATA ROOM / VERIFICATION" title="Verify the right, not just the token." detail="Open each document layer and ask who is responsible when the screen says “redeem”." icon={ScanLine} tone="amber" />
-        <div className="mt-5 flex gap-1 overflow-x-auto rounded-xl border border-white/[0.08] bg-black/15 p-1">{["treasury", "real-estate", "commodity"].map((key) => <button type="button" key={key} onClick={() => interact("tab", ["issuer"], key)} data-testid={`button-practice-rwa-tab-${key}`} className={`min-h-10 flex-1 whitespace-nowrap rounded-lg px-3 text-[10px] font-bold uppercase tracking-[0.1em] transition ${tab === key ? "bg-amber-200/15 text-amber-100" : "text-white/35 hover:text-white/60"}`}>{key}</button>)}</div>
-        <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.95fr]"><div className="rounded-xl border border-amber-200/15 bg-amber-200/[0.04] p-4"><div className="flex items-start justify-between"><div><DemoPill tone="amber">RIGHTS RECORD · DEMO</DemoPill><h5 className="mt-4 text-xl font-black text-white/90">{tab === "treasury" ? "90-day Treasury Note" : tab === "real-estate" ? "Harbor House SPV" : "Vaulted Silver Batch 07"}</h5><p className="mt-1 text-xs text-white/40">Token reference · RWA-031 · TEST</p></div><CircleDollarSign className="h-5 w-5 text-amber-100/70" /></div><div className="mt-6 grid grid-cols-2 gap-2"><MiniMetric label="Claim value" value="1.00 unit · demo" /><MiniMetric label="Redemption" value="Issuer review" /><MiniMetric label="Jurisdiction" value={tab === "real-estate" ? "US · SPV" : "Demo record"} /><MiniMetric label="Transfer" value="Restricted" /></div><SimButton tone="amber" onClick={() => interact("verified", ["rights", "evidence"])} testId="button-practice-rwa-verify" icon={ScanLine}>{verified ? "Verification pass reviewed" : "Review rights record"}</SimButton></div><div className="rounded-xl border border-white/[0.09] bg-black/15 p-4"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Evidence stack</p><div className="mt-3 space-y-2">{docs.map((doc, index) => <button type="button" key={doc} onClick={() => interact(`doc${index}`, index === 0 ? ["issuer"] : index === 1 ? ["rights"] : ["evidence"])} data-testid={`button-practice-rwa-doc-${index}`} className="flex w-full items-center gap-3 rounded-lg border border-white/[0.08] bg-white/[0.025] p-3 text-left hover:bg-white/[0.05]"><span className={`flex h-7 w-7 items-center justify-center rounded-lg ${data.simulator?.[`doc${index}`] ? "bg-emerald-200/15 text-emerald-100" : "bg-amber-200/10 text-amber-100/70"}`}>{data.simulator?.[`doc${index}`] ? <Check className="h-3.5 w-3.5" /> : <FileCode2 className="h-3.5 w-3.5" />}</span><span className="text-[11px] text-white/60">{doc}</span><ExternalLink className="ml-auto h-3 w-3 text-white/25" /></button>)}</div><p className="mt-4 text-[10px] leading-5 text-amber-50/50">A legal wrapper describes rights. It does not make those rights true without a responsible issuer and evidence.</p></div></div>
-      </div>
-    </WindowBar>
-  );
+  const tab = data.simulator?.tab || "treasury"; const docs = tab === "treasury" ? ["Issuer · Northstar Treasury Ltd.", "Custodian · Harbor Desk", "Reserve attestation · 30 APR 2025"] : tab === "real-estate" ? ["Issuer · Parcel SPV 04", "Legal wrapper · Delaware SPV", "Transfer rule · KYC list"] : ["Issuer · Meridian Metals", "Custody · Vault 7 / Zurich", "Audit trail · serialised bars"];
+  return <ProtocolShell category={PRACTICE_CATEGORIES[9]} name="Northstar RWA" mark={<CircleDollarSign className="h-4 w-4" />} nav={["Portfolio", "Assets", "Documents"]} accent="amber"><div className="border-b border-white/[0.09] px-4 py-4 sm:px-6"><div className="flex flex-wrap items-end justify-between gap-3"><AppTitle kicker="TOKENIZED ASSET PROTOCOL" title="Asset data room" detail="A token is a record. The legal right lives in the issuer, custodian, and wrapper." /><DemoPill tone="amber">DEMO RECORD</DemoPill></div><div className="mt-5 flex gap-2 overflow-x-auto">{["treasury", "real-estate", "commodity"].map((key) => <button type="button" key={key} onClick={() => interact("tab", ["issuer"], key)} data-testid={`button-practice-rwa-tab-${key}`} className={`min-h-9 border px-3 text-[10px] font-bold ${tab === key ? "border-amber-200/35 bg-amber-200/10 text-amber-100" : "border-white/[0.1] text-white/40"}`}>{key}</button>)}</div></div><div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[1fr_1fr]"><div className="border border-amber-200/20 bg-amber-200/[0.045] p-4"><div className="flex items-start justify-between"><div><DemoPill tone="amber">RIGHTS RECORD</DemoPill><h5 className="mt-4 text-xl font-extrabold text-white/88">{tab === "treasury" ? "90-day Treasury Note" : tab === "real-estate" ? "Harbor House SPV" : "Vaulted Silver Batch 07"}</h5><p className="mt-1 text-[10px] text-white/35">RWA-031 · TEST reference</p></div><Landmark className="h-5 w-5 text-amber-100/65" /></div><div className="mt-6 grid grid-cols-2 gap-2"><MiniBox label="Claim value" value="1.00 unit" /><MiniBox label="Redemption" value="Issuer review" /><MiniBox label="Jurisdiction" value={tab === "real-estate" ? "US · SPV" : "Demo record"} /><MiniBox label="Transfer" value="Restricted" /></div><div className="mt-4 flex gap-2"><SimButton tone="amber" onClick={() => interact("holdings", ["rights"], true)} testId="button-practice-rwa-holdings" icon={WalletCards}>View holdings</SimButton><SimButton tone="amber" onClick={() => interact("verified", ["evidence"], true)} testId="button-practice-rwa-verify" icon={ScanLine}>{data.simulator?.verified ? "Evidence reviewed" : "Review rights"}</SimButton></div></div><div className="border border-white/[0.11] bg-[#0d141d] p-4"><div className="flex items-center justify-between"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Evidence & documents</p><SlidersHorizontal className="h-3.5 w-3.5 text-white/30" /></div><div className="mt-3 space-y-2">{docs.map((doc, index) => <button type="button" key={doc} onClick={() => interact(`doc${index}`, index === 0 ? ["issuer"] : index === 1 ? ["rights"] : ["evidence"], true)} data-testid={`button-practice-rwa-doc-${index}`} className="flex w-full items-center gap-3 border border-white/[0.09] bg-white/[0.025] p-3 text-left"><span className={`flex h-7 w-7 items-center justify-center ${data.simulator?.[`doc${index}`] ? "bg-emerald-200/15 text-emerald-100" : "bg-amber-200/10 text-amber-100/70"}`}>{data.simulator?.[`doc${index}`] ? <Check className="h-3.5 w-3.5" /> : <FileCode2 className="h-3.5 w-3.5" />}</span><span className="text-[11px] text-white/60">{doc}</span><ExternalLink className="ml-auto h-3 w-3 text-white/25" /></button>)}</div><p className="mt-4 text-[10px] leading-5 text-amber-50/50">A legal wrapper describes rights. It does not make those rights true without a responsible issuer and evidence.</p></div></div></ProtocolShell>;
 }
 
 function Simulator({ category, data, interact }) {
@@ -718,92 +177,30 @@ function Simulator({ category, data, interact }) {
   return <RwaSimulator data={data} interact={interact} />;
 }
 
- function PracticeFields({ category, data, onUpdate }) {
-  return (
-    <details className="mt-4 rounded-xl border border-white/[0.08] bg-black/10">
-       <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white/40">Konteks tambahan · opsional <ChevronDown className="h-3.5 w-3.5" /></summary>
-      <div className="grid gap-3 border-t border-white/[0.07] p-3 sm:grid-cols-2">
-        <label className="block sm:col-span-2"><span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.12em] text-white/35">Referensi aplikasi / protokol</span><input id={`practice-platform-${category.id}`} type="text" value={data.platform} onChange={(event) => onUpdate({ platform: event.target.value })} placeholder="Latihan umum" data-testid={`input-practice-platform-${category.id}`} className="min-h-10 w-full rounded-lg border border-white/[0.1] bg-black/20 px-3 text-xs text-white outline-none transition placeholder:text-white/20 focus:border-sky-200/45" /><p className="mt-1 text-[10px] text-white/25">Label lokal saja, bukan koneksi atau verifier.</p></label>
-        {category.fields.map((field) => <label key={field.key} className="block"><span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.12em] text-white/35">{field.label}</span><input type="text" value={data.inputs[field.key] || ""} onChange={(event) => onUpdate({ inputs: { ...data.inputs, [field.key]: event.target.value } })} placeholder={field.placeholder} data-testid={`input-practice-${field.key}-${category.id}`} className="min-h-10 w-full rounded-lg border border-white/[0.1] bg-black/20 px-3 text-xs text-white outline-none transition placeholder:text-white/20 focus:border-sky-200/45" /></label>)}
-      </div>
-    </details>
-  );
+function PracticeCategoryRow({ category, active, completed, unlocked, onSelect }) {
+  const style = ACCENT_STYLES[category.accent]; const Icon = category.icon;
+  return <button type="button" onClick={() => unlocked && onSelect(category.id)} disabled={!unlocked} aria-current={active ? "step" : undefined} data-testid={`button-practice-category-${category.id}`} className={`flex min-h-14 w-full items-center gap-3 border-b border-white/[0.07] px-3 py-3 text-left transition last:border-b-0 ${active ? "bg-white/[0.07]" : unlocked ? "hover:bg-white/[0.04]" : "cursor-not-allowed opacity-35"}`}><span className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded text-[10px] font-black ring-1 ${style.icon}`}>{completed ? <Check className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}</span><span className="min-w-0 flex-1"><span className="block text-[10px] font-bold uppercase tracking-[0.12em] text-white/35">{category.index}</span><span className={`mt-0.5 block truncate text-xs font-semibold ${active ? "text-white" : "text-white/65"}`}>{category.label}</span></span>{!unlocked && <LockKeyhole className="h-3.5 w-3.5 text-white/25" />}{completed && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-300/75" />}</button>;
 }
 
-function ActionSelector({ category, selected, onSelect }) {
-  return <div className="mt-4 flex flex-wrap items-center gap-2"><span className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/30">Lens</span>{category.actionOptions.map((option) => <button key={option.id} type="button" onClick={() => onSelect(option.id)} aria-pressed={selected === option.id} data-testid={`button-practice-action-${category.id}-${option.id}`} className={`min-h-9 rounded-lg border px-3 text-[10px] font-bold transition ${selected === option.id ? "border-white/20 bg-white/[0.1] text-white" : "border-white/[0.08] text-white/40 hover:text-white/70"}`}>{option.label}</button>)}</div>;
+function LearningRail({ category, data }) {
+  return <div className="mt-5 border border-white/[0.09] bg-[#0c131e] p-3" data-testid={`learning-rail-${category.id}`}><div className="flex items-center justify-between gap-3"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">What you are learning</p><span className="text-[9px] text-white/30">Interaction trail</span></div><div className="mt-3 grid gap-2 sm:grid-cols-3">{category.steps.map(([id, label], index) => <div key={id} className={`flex items-start gap-2 border-l-2 p-2.5 ${data.steps[id] ? "border-emerald-300/70 bg-emerald-300/[0.045]" : "border-white/15 bg-white/[0.02]"}`}><span className={`mt-0.5 text-[9px] font-bold ${data.steps[id] ? "text-emerald-100" : "text-white/30"}`}>{data.steps[id] ? "OK" : `0${index + 1}`}</span><span className={`text-[10px] leading-4 ${data.steps[id] ? "text-emerald-100/75" : "text-white/48"}`}>{label}</span></div>)}</div><p className="mt-3 text-[10px] leading-5 text-white/28">The app marks this trail when you use the relevant control. Notes never gate completion.</p></div>;
 }
 
-function LearningRail({ category, data, onToggleStep }) {
-  return <fieldset className="mt-5 rounded-xl border border-white/[0.08] bg-black/10 p-3"><legend className="px-1 text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Your learning trail</legend><div className="mt-2 grid gap-2 sm:grid-cols-3">{category.steps.map((step, index) => <label key={step.id} className={`flex cursor-pointer items-start gap-2 rounded-lg border p-2.5 transition ${data.steps[step.id] ? "border-emerald-200/20 bg-emerald-200/[0.06]" : "border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.04]"}`}><input type="checkbox" checked={data.steps[step.id] === true} onChange={() => onToggleStep(step.id)} data-testid={`checkbox-practice-step-${category.id}-${step.id}`} className="mt-0.5 h-3.5 w-3.5 accent-emerald-300" /><span><span className="block text-[9px] font-bold text-white/25">0{index + 1}</span><span className={`mt-1 block text-[10px] leading-4 ${data.steps[step.id] ? "text-emerald-100/80" : "text-white/50"}`}>{step.label}</span></span></label>)}</div><p className="mt-2 text-[10px] text-white/25">Klik tombol di simulator untuk menandai otomatis, atau centang setelah kamu memahami istilahnya.</p></fieldset>;
-}
-
-function PracticePanel({ category, data, onUpdate, onToggleStep, onComplete, canComplete, onPrevious, onNext, hasPrevious, hasNext }) {
-  const style = ACCENT_STYLES[category.accent];
-  const [showContext, setShowContext] = useState(false);
-   const interact = (key, steps = [], value = true) => {
-    const nextSteps = { ...data.steps };
-    steps.forEach((step) => { nextSteps[step] = true; });
-     onUpdate({ simulator: { ...data.simulator, [key]: key === "minted" ? Number(data.simulator?.minted || 0) + 1 : value }, steps: nextSteps });
-  };
-  return (
-    <section className="min-w-0" data-testid={`practice-panel-${category.id}`}>
-      <div className="rounded-2xl border border-white/[0.09] bg-white/[0.025] p-3 sm:p-5">
-        <div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className={`text-[10px] font-bold uppercase tracking-[0.16em] ${style.eyebrow}`}>{category.index} · {category.label}</p><h3 className="mt-2 text-2xl font-black tracking-[-0.05em] text-white sm:text-3xl">{category.title}</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-white/50">{category.explanation}</p></div><span className={`hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ring-1 sm:flex ${style.icon}`}><Target className="h-4 w-4" /></span></div>
-        <div className="mt-4 flex items-start gap-3 rounded-xl border border-amber-200/15 bg-amber-200/[0.035] p-3" data-testid="practice-local-notice"><Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-100/75" /><p className="text-xs leading-5 text-amber-50/60"><strong className="font-bold text-amber-50/85">Simulasi lokal.</strong> Tidak ada wallet, RPC, Sepolia, signature, approval, gas, saldo, atau transaksi nyata.</p></div>
-        <div className="mt-5"><Simulator category={category} data={data} interact={interact} /></div>
-        <ActionSelector category={category} selected={data.action} onSelect={(action) => onUpdate({ action })} />
-        <PracticeFields category={category} data={data} onUpdate={onUpdate} />
-        <LearningRail category={category} data={data} onToggleStep={onToggleStep} />
-        <button type="button" onClick={() => setShowContext((current) => !current)} aria-expanded={showContext} aria-controls={`practice-context-${category.id}`} data-testid={`button-practice-context-${category.id}`} className="mt-3 inline-flex min-h-9 items-center gap-2 text-[10px] font-bold text-white/35 transition hover:text-white/70">Lihat konteks dan risiko <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showContext ? "rotate-180" : ""}`} /></button>
-        {showContext && <p id={`practice-context-${category.id}`} className="mt-2 rounded-xl border border-white/[0.07] bg-black/15 p-3 text-xs leading-6 text-white/45">{category.context}</p>}
-        <label className="mt-3 block"><span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.14em] text-white/30">Catatan untuk nanti</span><textarea value={data.notes} onChange={(event) => onUpdate({ notes: event.target.value })} placeholder="Apa yang ingin kamu cek lagi saat fase testnet?" rows={2} data-testid={`textarea-practice-notes-${category.id}`} className="w-full resize-none rounded-xl border border-white/[0.1] bg-black/20 px-3 py-2.5 text-xs leading-5 text-white outline-none transition placeholder:text-white/20 focus:border-sky-200/45" /></label>
-        <div className={`mt-4 flex flex-col gap-3 rounded-xl border p-3 sm:flex-row sm:items-center sm:justify-between ${style.soft}`}><div className="flex items-start gap-2.5">{data.completed ? <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-200/75" /> : <Save className="mt-0.5 h-4 w-4 flex-shrink-0 text-sky-100/60" />}<p className="text-xs leading-5 text-white/50" aria-live="polite" data-testid={`status-practice-save-${category.id}`}>{data.completed ? "Simulasi selesai dan tersimpan di browser ini." : "Perubahan tersimpan otomatis di browser ini."}</p></div><button type="button" onClick={onComplete} disabled={!canComplete} data-testid={`button-practice-complete-${category.id}`} className={`inline-flex min-h-10 flex-shrink-0 items-center justify-center gap-2 rounded-lg px-4 text-[11px] font-bold transition ${data.completed ? "bg-emerald-300/10 text-emerald-100 ring-1 ring-emerald-200/20 hover:bg-emerald-300/15" : style.button} disabled:cursor-not-allowed disabled:opacity-35`}>{data.completed ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}{data.completed ? "Simulasi selesai" : "Simpan & buka berikutnya"}</button></div>
-         {!canComplete && !data.completed && <p className="mt-2 text-right text-[10px] text-white/25">Ikuti semua langkah di mini-app untuk membuka kategori berikutnya.</p>}
-      </div>
-      <div className="mt-3 flex items-center justify-between gap-3"><button type="button" onClick={onPrevious} disabled={!hasPrevious} data-testid="button-practice-previous" className="inline-flex min-h-10 items-center gap-2 rounded-lg px-2 text-[11px] font-bold text-white/40 transition hover:text-white/75 disabled:invisible"><ArrowLeft className="h-3.5 w-3.5" /> Sebelumnya</button><button type="button" onClick={onNext} disabled={!hasNext || !data.completed} data-testid="button-practice-next" className="inline-flex min-h-10 items-center gap-2 rounded-lg px-2 text-[11px] font-bold text-white/40 transition hover:text-white/75 disabled:invisible">Berikutnya <ArrowRight className="h-3.5 w-3.5" /></button></div>
-    </section>
-  );
+function PracticePanel({ category, data, onUpdate, onComplete, canComplete, onPrevious, onNext, hasPrevious, hasNext }) {
+  const style = ACCENT_STYLES[category.accent]; const [showContext, setShowContext] = useState(false);
+  const interact = (key, steps = [], value = true) => { const nextSteps = { ...data.steps }; steps.forEach((step) => { nextSteps[step] = true; }); const nextValue = key === "minted" ? Number(data.simulator?.minted || 0) + 1 : value; onUpdate({ simulator: { ...data.simulator, [key]: nextValue }, steps: nextSteps }); };
+  return <section className="min-w-0" data-testid={`practice-panel-${category.id}`}><div className="border border-white/[0.1] bg-white/[0.025] p-3 sm:p-5"><div className="flex items-start justify-between gap-4"><div><p className={`text-[10px] font-bold uppercase tracking-[0.16em] ${style.eyebrow}`}>{category.index} · {category.label}</p><h3 className="mt-2 text-2xl font-extrabold tracking-[-0.05em] text-white sm:text-3xl">{category.title}</h3><p className="mt-2 max-w-2xl text-sm leading-6 text-white/48">{category.explanation}</p></div><Target className="hidden h-5 w-5 text-white/30 sm:block" /></div><div className="mt-4 flex items-start gap-3 border border-amber-200/15 bg-amber-200/[0.035] p-3" data-testid="practice-local-notice"><ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-100/75" /><p className="text-xs leading-5 text-amber-50/60"><strong className="font-bold text-amber-50/85">Local DEMO / TEST.</strong> Tidak ada wallet, RPC, Sepolia, signature, approval, gas, saldo, atau transaksi nyata.</p></div><div className="mt-5"><Simulator category={category} data={data} interact={interact} /></div><div className="mt-4 flex flex-wrap items-center gap-2"><span className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/30">Learning lens</span>{category.actionOptions.map((option) => <button type="button" key={option.id} onClick={() => onUpdate({ action: option.id })} aria-pressed={data.action === option.id} data-testid={`button-practice-action-${category.id}-${option.id}`} className={`min-h-9 border px-3 text-[10px] font-bold ${data.action === option.id ? "border-white/25 bg-white/[0.1] text-white" : "border-white/[0.09] text-white/40"}`}>{option.label}</button>)}</div><LearningRail category={category} data={data} /><button type="button" onClick={() => setShowContext((current) => !current)} aria-expanded={showContext} data-testid={`button-practice-context-${category.id}`} className="mt-3 inline-flex min-h-9 items-center gap-2 text-[10px] font-bold text-white/35 hover:text-white/70">Context & risk <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showContext ? "rotate-180" : ""}`} /></button>{showContext && <p className="mt-2 border border-white/[0.08] bg-black/15 p-3 text-xs leading-6 text-white/45">{category.context}</p>}<details className="mt-2 border border-white/[0.08] bg-black/10"><summary className="cursor-pointer px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white/30">Optional note</summary><textarea value={data.notes} onChange={(event) => onUpdate({ notes: event.target.value })} placeholder="Save a question for later" rows={2} data-testid={`textarea-practice-notes-${category.id}`} className="w-full resize-none border-t border-white/[0.08] bg-transparent px-3 py-2 text-xs leading-5 text-white outline-none placeholder:text-white/20" /></details><div className={`mt-4 flex flex-col gap-3 border p-3 sm:flex-row sm:items-center sm:justify-between ${style.soft}`}><div className="flex items-start gap-2.5"><Save className="mt-0.5 h-4 w-4 flex-shrink-0 text-sky-100/60" /><p className="text-xs leading-5 text-white/50" aria-live="polite" data-testid={`status-practice-save-${category.id}`}>{data.completed ? "Simulasi selesai dan tersimpan di browser ini." : "Perubahan tersimpan otomatis di browser ini."}</p></div><button type="button" onClick={onComplete} disabled={!canComplete} data-testid={`button-practice-complete-${category.id}`} className={`inline-flex min-h-10 items-center justify-center gap-2 px-4 text-[11px] font-bold ${data.completed ? "bg-emerald-300/10 text-emerald-100 ring-1 ring-emerald-200/20" : style.button} disabled:cursor-not-allowed disabled:opacity-35`}><Check className="h-3.5 w-3.5" />{data.completed ? "Simulasi selesai" : "Simpan & buka berikutnya"}</button></div>{!canComplete && !data.completed && <p className="mt-2 text-right text-[10px] text-white/25">Gunakan kontrol produk di atas untuk menyelesaikan trail.</p>}</div><div className="mt-3 flex items-center justify-between gap-3"><button type="button" onClick={onPrevious} disabled={!hasPrevious} data-testid="button-practice-previous" className="inline-flex min-h-10 items-center gap-2 px-2 text-[11px] font-bold text-white/40 disabled:invisible"><ArrowLeft className="h-3.5 w-3.5" /> Sebelumnya</button><button type="button" onClick={onNext} disabled={!hasNext || !data.completed} data-testid="button-practice-next" className="inline-flex min-h-10 items-center gap-2 px-2 text-[11px] font-bold text-white/40 disabled:invisible">Berikutnya <ArrowRight className="h-3.5 w-3.5" /></button></div></section>;
 }
 
 export default function ActivePracticeMode() {
-  const [state, setState] = useState(readPracticeState);
-  const [saveTick, setSaveTick] = useState(0);
-  const activeCategory = PRACTICE_CATEGORIES.find((category) => category.id === state.activeCategoryId) || PRACTICE_CATEGORIES[0];
-  const activeIndex = PRACTICE_CATEGORIES.findIndex((category) => category.id === activeCategory.id);
-  const activeData = state.categories[activeCategory.id] || getDefaultCategoryState(activeCategory);
-  const completedCount = useMemo(() => PRACTICE_CATEGORIES.filter((category) => state.categories[category.id]?.completed).length, [state.categories]);
-  const percent = Math.round((completedCount / PRACTICE_CATEGORIES.length) * 100);
-
-  useEffect(() => {
-    try { window.localStorage.setItem(PRACTICE_STORAGE_KEY, JSON.stringify(state)); setSaveTick((current) => current + 1); } catch { /* local memory remains usable */ }
-  }, [state]);
-
-  function updateActiveCategory(patch) {
-    setState((current) => {
-      const currentData = current.categories[activeCategory.id] || getDefaultCategoryState(activeCategory);
-      return { ...current, categories: { ...current.categories, [activeCategory.id]: { ...currentData, ...patch, updatedAt: Date.now() } } };
-    });
-  }
-  function toggleStep(stepId) { updateActiveCategory({ steps: { ...activeData.steps, [stepId]: !activeData.steps[stepId] } }); }
+  const [state, setState] = useState(readPracticeState); const [saveTick, setSaveTick] = useState(0);
+  const activeCategory = PRACTICE_CATEGORIES.find((category) => category.id === state.activeCategoryId) || PRACTICE_CATEGORIES[0]; const activeIndex = PRACTICE_CATEGORIES.findIndex((category) => category.id === activeCategory.id); const activeData = state.categories[activeCategory.id] || getDefaultCategoryState(activeCategory);
+  const completedCount = useMemo(() => PRACTICE_CATEGORIES.filter((category) => state.categories[category.id]?.completed).length, [state.categories]); const percent = Math.round((completedCount / PRACTICE_CATEGORIES.length) * 100);
+  useEffect(() => { try { window.localStorage.setItem(PRACTICE_STORAGE_KEY, JSON.stringify(state)); setSaveTick((current) => current + 1); } catch { /* local memory remains usable */ } }, [state]);
+  function updateActiveCategory(patch) { setState((current) => { const currentData = current.categories[activeCategory.id] || getDefaultCategoryState(activeCategory); return { ...current, categories: { ...current.categories, [activeCategory.id]: { ...currentData, ...patch, updatedAt: Date.now() } } }; }); }
   function isUnlocked(index) { return index === 0 || state.categories[PRACTICE_CATEGORIES[index - 1].id]?.completed === true; }
-  function selectCategory(id) { const index = PRACTICE_CATEGORIES.findIndex((category) => category.id === id); if (index < 0 || !isUnlocked(index)) return; setState((current) => ({ ...current, activeCategoryId: id })); }
-  function completeActive() {
-    const checklistDone = activeCategory.steps.every((step) => activeData.steps[step.id]);
-     if (!checklistDone) return;
-    updateActiveCategory({ completed: true });
-    const nextCategory = PRACTICE_CATEGORIES[activeIndex + 1];
-    if (nextCategory) setState((current) => ({ ...current, activeCategoryId: nextCategory.id }));
-  }
-  function moveBy(offset) { const next = PRACTICE_CATEGORIES[activeIndex + offset]; if (next && isUnlocked(activeIndex + offset)) selectCategory(next.id); }
-   const canComplete = Boolean(activeCategory.steps.every((step) => activeData.steps[step.id]));
-
-  return (
-    <div data-testid="active-practice-mode">
-      <section className="border-b border-white/[0.1] pb-7"><div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-sky-200/65">A guided learning lab</p><h2 className="mt-3 max-w-2xl text-3xl font-black leading-[1.02] tracking-[-0.05em] text-white sm:text-5xl">Klik dulu. Pahami istilahnya.</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-white/50">Sepuluh mini-app fiktif untuk melihat bagaimana Web3 terasa sebelum kamu menyentuh wallet atau testnet.</p></div><div className="min-w-[170px] border-l border-sky-300/20 pl-4"><div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">Lab progress</span><span className="text-sm font-semibold text-sky-100/80" data-testid="text-practice-progress">{completedCount}/{PRACTICE_CATEGORIES.length}</span></div><div className="mt-3 h-1 overflow-hidden bg-white/[0.09]"><div className="h-full bg-sky-200/80 transition-all duration-500" style={{ width: `${percent}%` }} /></div><p className="mt-3 text-xs text-white/40" data-testid="text-practice-progress-label">{percent}% tersimpan di browser ini</p></div></div><div className="mt-5 flex items-start gap-3 rounded-xl border border-sky-200/15 bg-sky-200/[0.035] p-3.5"><ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-sky-100/70" /><p className="text-xs leading-5 text-sky-50/55">Setiap layar bertanda <strong className="text-sky-100/75">DEMO / TEST</strong>. Tidak ada address, token, saldo, signature, gas, atau hasil yang dibuat.</p></div></section>
-      <div className="mt-7 md:hidden"><label htmlFor="practice-category-select" className="mb-2 block text-[10px] font-bold uppercase tracking-[0.14em] text-white/40">Pilih mini-app</label><select id="practice-category-select" value={activeCategory.id} onChange={(event) => selectCategory(event.target.value)} data-testid="select-practice-category" className="min-h-11 w-full rounded-xl border border-white/[0.1] bg-[#111823] px-3 text-sm text-white outline-none focus:border-sky-200/45">{PRACTICE_CATEGORIES.map((category, index) => <option key={category.id} value={category.id} disabled={!isUnlocked(index)}>{category.index} · {category.shortLabel}{isUnlocked(index) ? "" : " · terkunci"}</option>)}</select></div>
-      <div className="mt-7 grid gap-5 md:grid-cols-[220px_minmax(0,1fr)] md:items-start"><aside className="hidden overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] md:block" aria-label="Urutan mini-app latihan"><div className="border-b border-white/[0.08] px-3 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/35">Mini-app trail</p><p className="mt-1 text-[11px] leading-5 text-white/35">Buka satu layar per satu.</p></div>{PRACTICE_CATEGORIES.map((category, index) => <PracticeCategoryRow key={category.id} category={category} active={activeCategory.id === category.id} completed={state.categories[category.id]?.completed === true} unlocked={isUnlocked(index)} onSelect={selectCategory} />)}</aside><PracticePanel category={activeCategory} data={activeData} onUpdate={updateActiveCategory} onToggleStep={toggleStep} onComplete={completeActive} canComplete={canComplete} onPrevious={() => moveBy(-1)} onNext={() => moveBy(1)} hasPrevious={activeIndex > 0} hasNext={activeIndex < PRACTICE_CATEGORIES.length - 1} /></div>
-      <div className="mt-5 flex items-center gap-2 text-[10px] text-white/25" aria-live="polite" data-testid="status-practice-autosave"><Save className="h-3 w-3" /> Autosave lokal aktif {saveTick >= 0 ? "· tersimpan" : ""}</div>
-    </div>
-  );
+  function selectCategory(id) { const index = PRACTICE_CATEGORIES.findIndex((category) => category.id === id); if (index >= 0 && isUnlocked(index)) setState((current) => ({ ...current, activeCategoryId: id })); }
+  function completeActive() { if (!activeData.steps || !activeCategory.steps.every(([id]) => activeData.steps[id])) return; setState((current) => ({ ...current, activeCategoryId: PRACTICE_CATEGORIES[activeIndex + 1]?.id || activeCategory.id, categories: { ...current.categories, [activeCategory.id]: { ...activeData, completed: true, updatedAt: Date.now() } } })); }
+  const moveBy = (offset) => { const next = PRACTICE_CATEGORIES[activeIndex + offset]; if (next && isUnlocked(activeIndex + offset)) selectCategory(next.id); };
+  return <div data-testid="active-practice-mode"><section className="border-b border-white/[0.1] pb-7"><div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-200/65">A local protocol lab</p><h2 className="mt-3 max-w-2xl text-3xl font-extrabold leading-[1.02] tracking-[-0.05em] text-white sm:text-5xl">Use the interface. Read the decision.</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-white/48">Sepuluh mini-app fiktif dengan pola yang kamu temui di DEX, lending desk, bridge, terminal, dan explorer nyata.</p></div><div className="min-w-[170px] border-l border-cyan-300/20 pl-4"><div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">Lab progress</span><span className="text-sm font-semibold text-cyan-100/80" data-testid="text-practice-progress">{completedCount}/{PRACTICE_CATEGORIES.length}</span></div><div className="mt-3 h-1 overflow-hidden bg-white/[0.09]"><div className="h-full bg-cyan-200/80 transition-all duration-500" style={{ width: `${percent}%` }} /></div><p className="mt-3 text-xs text-white/40" data-testid="text-practice-progress-label">{percent}% tersimpan di browser ini</p></div></div><div className="mt-5 flex items-start gap-3 border border-cyan-200/15 bg-cyan-200/[0.035] p-3.5"><ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-cyan-100/70" /><p className="text-xs leading-5 text-cyan-50/55">Every shell says <strong className="text-cyan-100/75">DEMO / TEST</strong>. The point is to learn the product sequence, not to connect or transact.</p></div></section><div className="mt-7 md:hidden"><label htmlFor="practice-category-select" className="mb-2 block text-[10px] font-bold uppercase tracking-[0.14em] text-white/40">Choose mini-app</label><select id="practice-category-select" value={activeCategory.id} onChange={(event) => selectCategory(event.target.value)} data-testid="select-practice-category" className="min-h-11 w-full border border-white/[0.1] bg-[#111823] px-3 text-sm text-white outline-none">{PRACTICE_CATEGORIES.map((category, index) => <option key={category.id} value={category.id} disabled={!isUnlocked(index)}>{category.index} · {category.shortLabel}{isUnlocked(index) ? "" : " · locked"}</option>)}</select></div><div className="mt-7 grid gap-5 md:grid-cols-[220px_minmax(0,1fr)] md:items-start"><aside className="hidden overflow-hidden border border-white/[0.08] bg-white/[0.02] md:block" aria-label="Practice mini-app order"><div className="border-b border-white/[0.08] px-3 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/35">Mini-app trail</p><p className="mt-1 text-[11px] leading-5 text-white/35">One product surface at a time.</p></div>{PRACTICE_CATEGORIES.map((category, index) => <PracticeCategoryRow key={category.id} category={category} active={activeCategory.id === category.id} completed={state.categories[category.id]?.completed === true} unlocked={isUnlocked(index)} onSelect={selectCategory} />)}</aside><PracticePanel category={activeCategory} data={activeData} onUpdate={updateActiveCategory} onComplete={completeActive} canComplete={activeCategory.steps.every(([id]) => activeData.steps[id])} onPrevious={() => moveBy(-1)} onNext={() => moveBy(1)} hasPrevious={activeIndex > 0} hasNext={activeIndex < PRACTICE_CATEGORIES.length - 1} /></div><div className="mt-5 flex items-center gap-2 text-[10px] text-white/25" aria-live="polite" data-testid="status-practice-autosave"><Save className="h-3 w-3" /> Autosave lokal aktif {saveTick >= 0 ? "· tersimpan" : ""}</div></div>;
 }
