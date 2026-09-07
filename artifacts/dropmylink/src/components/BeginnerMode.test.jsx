@@ -44,6 +44,13 @@ describe("BeginnerMode learning path", () => {
     open("web3");
     expect(screen.getByTestId("beginner-drawer-content-web3")).toBeInTheDocument();
     expect(screen.queryByTestId("beginner-drawer-content-crypto")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("beginner-inner-content-web3-0")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("button-beginner-inner-web3-0"));
+    expect(screen.getByTestId("beginner-inner-content-web3-0")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("button-beginner-inner-web3-1"));
+    expect(screen.queryByTestId("beginner-inner-content-web3-0")).not.toBeInTheDocument();
+    expect(screen.getByTestId("beginner-inner-content-web3-1")).toBeInTheDocument();
 
     complete("web3");
     open("crypto");
@@ -69,6 +76,8 @@ describe("BeginnerMode learning path", () => {
     complete("airdrop");
     expect(screen.getByTestId("button-beginner-drawer-lab")).not.toBeDisabled();
     open("lab");
+    expect(screen.queryByTestId("fictional-practice-lab")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("button-beginner-inner-lab-0"));
     expect(screen.getByTestId("fictional-practice-lab")).toBeInTheDocument();
   });
 
@@ -88,13 +97,14 @@ describe("BeginnerMode learning path", () => {
     complete("airdrop");
     open("lab");
 
-    expect(screen.getByTestId("fictional-practice-lab")).toHaveTextContent("AstraDrop");
-    expect(screen.getByTestId("fictional-practice-lab")).toHaveTextContent("fiktif");
-    expect(screen.getByTestId("fictional-practice-lab")).toHaveTextContent("NovaSwap");
+    expect(screen.getByTestId("beginner-drawer-content-lab")).toHaveTextContent("AstraDrop");
+    expect(screen.getByTestId("beginner-drawer-content-lab")).toHaveTextContent("NovaSwap");
     expect(screen.queryByRole("button", { name: /connect wallet/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /transaction/i })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByTestId("button-lab-nova"));
+    fireEvent.click(screen.getByTestId("button-beginner-inner-lab-0"));
+    expect(screen.getByTestId("fictional-practice-lab")).toHaveTextContent("AstraDrop");
+    fireEvent.click(screen.getByTestId("button-beginner-inner-lab-1"));
     expect(screen.getByTestId("fictional-practice-lab")).toHaveTextContent("NovaSwap");
     expect(screen.getByTestId("fictional-practice-lab")).toHaveTextContent("contoh rekaan");
   });

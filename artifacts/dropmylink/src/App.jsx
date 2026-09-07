@@ -68,12 +68,23 @@ async function idbGetAll() {
 
 // ─── DEFAULT DATA (loaded & validated from src/data/*.json via Zod) ──
 const DEF_AIRDROPS = getAirdrops();
+const LAST_TAB_STORAGE_KEY = "hw_last_tab_v1";
+const VALID_TABS = new Set(["intro", "info", "airdrops", "bookmark", "discover"]);
 const DEF_NEWS     = getNews();
 const DEF_QINFO    = getQinfo();
 const DEF_TOOLS    = getTools();
 const DEF_P2P      = getP2P();
 const DEF_CALENDAR = getCalendar();
 const DEF_TICKER   = getTicker();
+
+export function readPersistedTab(storage = window.localStorage) {
+  try {
+    const savedTab = storage.getItem(LAST_TAB_STORAGE_KEY);
+    return VALID_TABS.has(savedTab) ? savedTab : "airdrops";
+  } catch {
+    return "airdrops";
+  }
+}
 
 // ─── CONSTANTS ────────────────────────────────────────────────
 const TAG_COLORS = {
@@ -2588,7 +2599,7 @@ function GlobalSearch({ open, onClose, airdrops, p2p, calendar, tools, onNavigat
 // ─── MAIN APP ─────────────────────────────────────────────────
 export default function App() {
   // Airdrop tetap menjadi landing tab utama, Home tersedia dari navigasi.
-  const [tab, setTab]             = useState("airdrops");
+  const [tab, setTab]             = useState(readPersistedTab);
   const [searchOpen, setSearchOpen]     = useState(false);
   const [navigationTarget, setNavigationTarget] = useState(null);
   const [discoverSection, setDiscoverSection] = useState(null);
@@ -2603,6 +2614,14 @@ export default function App() {
   const [adminOpen, setAdminOpen] = useState(false);
   const [beginnerMode, setBeginnerMode] = useState(false);
   const logoTapsRef = useRef([]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(LAST_TAB_STORAGE_KEY, tab);
+    } catch {
+      // The app continues to use the current tab when browser storage is blocked.
+    }
+  }, [tab]);
 
   // ─── TOOL BOOKMARKS on/off (localStorage) ─────────────────
   const [toolBookmarks, setToolBookmarks] = useState(() => {

@@ -227,99 +227,125 @@ function StepButton({ step, stepIndex, open, completed, unlocked, onClick }) {
   );
 }
 
-function DrawerContent({ step, completed, onComplete, activeLab, onLabChange }) {
+function InnerSectionButton({ section, index, open, style, onClick, stepId }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onClick(index)}
+      aria-expanded={open}
+      aria-controls={`beginner-inner-content-${stepId}-${index}`}
+      data-testid={`button-beginner-inner-${stepId}-${index}`}
+      className={`flex min-h-14 w-full items-center gap-3 px-3 py-3 text-left transition ${
+        open ? "bg-white/[0.045]" : "hover:bg-white/[0.025]"
+      }`}
+    >
+      <span className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-[10px] font-black ring-1 ${style.icon}`}>
+        0{index + 1}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className={`block text-[10px] font-bold uppercase tracking-[0.14em] ${style.eyebrow}`}>{section.label}</span>
+        <span className="mt-1 block text-xs font-semibold text-white/75">{section.title}</span>
+      </span>
+      <ChevronDown className={`h-4 w-4 flex-shrink-0 text-white/30 transition-transform ${open ? "rotate-180" : ""}`} />
+    </button>
+  );
+}
+
+function DrawerContent({ step, completed, onComplete }) {
   const style = ACCENT_STYLES[step.accent];
   const isLab = step.id === "lab";
+  const [openSectionIndex, setOpenSectionIndex] = useState(null);
+  const openSection = openSectionIndex === null ? null : step.sections[openSectionIndex];
   const labCopy = {
-    astra: {
+    "AstraDrop · fiktif": {
       name: "AstraDrop",
       kicker: "Contoh campaign fiktif",
       description:
         "AstraDrop adalah contoh rekaan. Anggap brief publiknya meminta kamu membaca panduan, mencatat tanggal snapshot, dan memeriksa aturan eligibility.",
       checklist: ["Cari sumber yang menerbitkan brief", "Pisahkan task dari hasil", "Berhenti jika link meminta rahasia"],
     },
-    nova: {
+    "NovaSwap · fiktif": {
       name: "NovaSwap",
       kicker: "Contoh exchange fiktif",
       description:
         "NovaSwap adalah contoh rekaan. Anggap layarnya menampilkan quote antara dua aset rekaan agar kamu bisa berlatih membaca network, permission, dan price impact.",
       checklist: ["Cek network yang disebutkan", "Baca permission yang diminta", "Anggap quote sebagai informasi, bukan janji"],
     },
-  }[activeLab];
+  }[openSection?.label];
 
   return (
     <div id={`beginner-drawer-content-${step.id}`} data-testid={`beginner-drawer-content-${step.id}`} className="pb-6 pl-12 pr-1 pt-1">
       <p className="max-w-2xl text-sm leading-7 text-white/60">{step.summary}</p>
-      <div className={`mt-5 grid gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] ${step.id === "airdrop" ? "lg:grid-cols-3" : "lg:grid-cols-3"}`}>
-        {step.sections.map((section) => (
-          <article key={section.label} data-testid={`beginner-section-${step.id}-${section.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} className="bg-[#0d131e] p-4 sm:p-5">
-            <p className={`text-[10px] font-bold uppercase tracking-[0.14em] ${style.eyebrow}`}>{section.label}</p>
-            <h3 className="mt-2 text-base font-semibold tracking-[-0.02em] text-white/90">{section.title}</h3>
-            <p className="mt-2 text-xs leading-6 text-white/45">{section.body}</p>
-            <ul className="mt-4 space-y-2">
-              {section.examples.map((example) => (
-                <li key={example} className="flex items-start gap-2 text-[11px] leading-5 text-white/55">
-                  <span className={`mt-2 h-1 w-1 flex-shrink-0 rounded-full ${style.line}`} />
-                  {example}
-                </li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </div>
-
-      {isLab && (
-        <div className="mt-5 rounded-2xl border border-violet-200/15 bg-violet-200/[0.035] p-4 sm:p-5" data-testid="fictional-practice-lab">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-100/60">Pilih contoh latihan</p>
-              <p className="mt-1 text-xs text-white/40">Keduanya hanya analogi fiktif, bukan campaign aktif.</p>
-            </div>
-            <div className="flex rounded-xl border border-white/[0.09] bg-black/15 p-1">
-              {["astra", "nova"].map((id) => (
-                <button
-                  type="button"
-                  key={id}
-                  onClick={() => onLabChange(id)}
-                  aria-pressed={activeLab === id}
-                  data-testid={`button-lab-${id}`}
-                  className={`rounded-lg px-3 py-2 text-[10px] font-bold transition ${activeLab === id ? "bg-white/[0.12] text-white" : "text-white/40 hover:text-white/70"}`}
-                >
-                  {id === "astra" ? "AstraDrop" : "NovaSwap"}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="mt-4 border-t border-white/[0.08] pt-4">
-            <div className="flex items-start gap-3">
-              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-violet-200/10 text-violet-100 ring-1 ring-violet-200/15">
-                <FlaskConical className="h-4 w-4" />
-              </span>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-100/55">{labCopy.kicker}</p>
-                <h4 className="mt-1 text-lg font-semibold text-white/90">{labCopy.name}</h4>
-              </div>
-            </div>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-white/55">{labCopy.description}</p>
-            <div className="mt-4 grid gap-2 sm:grid-cols-3">
-              {labCopy.checklist.map((item, index) => (
-                <div key={item} className="rounded-xl border border-white/[0.08] bg-black/15 p-3">
-                  <span className="text-[10px] font-bold text-violet-100/50">0{index + 1}</span>
-                  <p className="mt-2 text-[11px] leading-5 text-white/60">{item}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+      <div className="mt-5 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0d131e]">
+        <div className="border-b border-white/[0.08] px-3 py-2.5">
+          <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/30">Materi di dalam bagian ini</p>
+          <p className="mt-1 text-[11px] text-white/40">Buka satu topik kecil agar fokus tetap singkat.</p>
         </div>
-      )}
+        <div className="divide-y divide-white/[0.08]">
+          {step.sections.map((section, index) => {
+            const open = openSectionIndex === index;
+            return (
+              <div key={section.label} data-testid={`beginner-inner-drawer-${step.id}-${index}`}>
+                <InnerSectionButton
+                  section={section}
+                  index={index}
+                  open={open}
+                  style={style}
+                  stepId={step.id}
+                  onClick={(nextIndex) => setOpenSectionIndex((current) => current === nextIndex ? null : nextIndex)}
+                />
+                {open && (
+                  <article
+                    id={`beginner-inner-content-${step.id}-${index}`}
+                    data-testid={`beginner-inner-content-${step.id}-${index}`}
+                    className="border-t border-white/[0.07] bg-black/10 px-3 pb-4 pt-3 sm:px-4"
+                  >
+                    <p className="text-xs leading-6 text-white/50">{section.body}</p>
+                    <ul className="mt-3 grid gap-2 sm:grid-cols-3">
+                      {section.examples.map((example) => (
+                        <li key={example} className="flex items-start gap-2 rounded-xl border border-white/[0.07] bg-white/[0.025] p-2.5 text-[11px] leading-5 text-white/55">
+                          <span className={`mt-2 h-1 w-1 flex-shrink-0 rounded-full ${style.line}`} />
+                          {example}
+                        </li>
+                      ))}
+                    </ul>
+                    {isLab && labCopy && (
+                      <div className="mt-4 rounded-xl border border-violet-200/15 bg-violet-200/[0.035] p-3.5" data-testid="fictional-practice-lab">
+                        <div className="flex items-center gap-2.5">
+                          <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-violet-200/10 text-violet-100 ring-1 ring-violet-200/15">
+                            <FlaskConical className="h-3.5 w-3.5" />
+                          </span>
+                          <div>
+                            <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-violet-100/55">{labCopy.kicker}</p>
+                            <h4 className="mt-0.5 text-base font-semibold text-white/90">{labCopy.name}</h4>
+                          </div>
+                        </div>
+                        <p className="mt-3 text-xs leading-6 text-white/50">{labCopy.description}</p>
+                        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                          {labCopy.checklist.map((item, checklistIndex) => (
+                            <div key={item} className="rounded-lg border border-white/[0.07] bg-black/15 p-2.5">
+                              <span className="text-[9px] font-bold text-violet-100/50">0{checklistIndex + 1}</span>
+                              <p className="mt-1.5 text-[10px] leading-5 text-white/55">{item}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </article>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       <div className={`mt-5 flex flex-col gap-4 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between ${style.soft}`}>
         <div className="flex items-start gap-3">
           <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-300/75" />
           <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-100/65">Tetap offline</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-100/65">Tetap offline</p>
             <p className="mt-1 max-w-xl text-xs leading-5 text-white/45">
-                Ini hanya latihan membaca. Tidak ada wallet connection, token, atau transaksi nyata.
+              Ini hanya latihan membaca. Tidak ada wallet connection, token, atau transaksi nyata.
             </p>
           </div>
         </div>
@@ -330,7 +356,7 @@ function DrawerContent({ step, completed, onComplete, activeLab, onLabChange }) 
           className={`inline-flex min-h-10 flex-shrink-0 items-center justify-center gap-2 rounded-xl px-4 text-xs font-bold transition ${completed ? "bg-emerald-300/10 text-emerald-100 ring-1 ring-emerald-200/20 hover:bg-emerald-300/15" : style.button}`}
         >
           {completed ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
-              {completed ? "Sudah dibaca" : "Tandai selesai dibaca"}
+          {completed ? "Sudah dibaca" : "Tandai selesai dibaca"}
         </button>
       </div>
     </div>
@@ -340,7 +366,6 @@ function DrawerContent({ step, completed, onComplete, activeLab, onLabChange }) 
 function BeginnerMode({ onExit }) {
   const [progress, setProgress] = useState(readLearningState);
   const [openId, setOpenId] = useState(null);
-  const [activeLab, setActiveLab] = useState("astra");
 
   useEffect(() => {
     removeLegacyState();
@@ -405,7 +430,7 @@ function BeginnerMode({ onExit }) {
                 Kenali bahasanya sebelum membaca petanya.
               </h2>
               <p className="mt-5 max-w-xl text-sm leading-7 text-white/50 sm:text-base">
-                Empat bagian singkat membawamu dari sejarah internet ke lab latihan fiktif. Buka satu bagian setiap kali, sesuai urutan.
+                 Empat bagian singkat membawamu dari sejarah internet ke lab latihan fiktif. Buka laci kecil di dalam setiap bagian agar belajar tetap fokus.
               </p>
             </div>
             <div className="border-l border-blue-300/20 pl-4 lg:mb-1">
@@ -428,7 +453,7 @@ function BeginnerMode({ onExit }) {
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/30">Urutan belajar</p>
                 <h3 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-white/90">Buka bagian berikutnya saat siap.</h3>
               </div>
-              <span className="hidden text-[10px] text-white/30 sm:block">Satu laci dalam satu waktu</span>
+               <span className="hidden text-[10px] text-white/30 sm:block">Laci kecil terbuka satu per satu</span>
             </div>
             <div className="border-y border-white/[0.09]">
               {LEARNING_STEPS.map((step, index) => {
@@ -449,8 +474,6 @@ function BeginnerMode({ onExit }) {
                         step={step}
                         completed={completed}
                         onComplete={completeStep}
-                        activeLab={activeLab}
-                        onLabChange={setActiveLab}
                       />
                     )}
                   </div>
