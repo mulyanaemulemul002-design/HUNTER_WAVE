@@ -6,6 +6,7 @@ import {
   Plus, Rocket, Save, ScanLine, Search, Settings2, ShieldCheck, SlidersHorizontal,
   Target, TrendingDown, TrendingUp, Users, WalletCards, Waves,
 } from "lucide-react";
+import CustomDropdown from "./ui/CustomDropdown";
 
 export const PRACTICE_STORAGE_KEY = "hw_beginner_practice_v1";
 
@@ -130,7 +131,8 @@ function ProtocolShell({ category, name, mark, nav = ["Markets", "Activity", "Do
 }
 
 function ChainSelect({ category, value = "Test network" }) {
-  return <label className="relative"><span className="sr-only">Network for {category.label}</span><select aria-label="Network selector" defaultValue={value} data-testid={`select-practice-network-${category.id}`} className="h-9 max-w-[112px] appearance-none rounded border border-white/[0.12] bg-[#0c131e] px-2.5 pr-6 text-[10px] font-semibold text-white/70 outline-none focus:border-cyan-200/50"><option>Test network</option><option>Demo chain</option></select><ChevronDown className="pointer-events-none absolute right-2 top-3 h-3 w-3 text-white/35" /></label>;
+  const [network, setNetwork] = useState(value);
+  return <CustomDropdown label={`Network for ${category.label}`} ariaLabel="Network selector" value={network} onChange={setNetwork} options={["Test network", "Demo chain"]} testId={`select-practice-network-${category.id}`} className="w-[122px]" buttonClassName="h-9 min-h-9 rounded border-white/[0.12] bg-[#0c131e] px-2.5 text-[10px] font-semibold text-white/70" menuClassName="min-w-[150px]" />;
 }
 
 function WalletButton({ category, onClick, testId }) {
@@ -149,10 +151,50 @@ function SimButton({ children, onClick, active = false, tone = "sky", testId, ic
 function Metric({ label, value, tone = "white" }) { return <div className="border-l border-white/[0.1] pl-3"><p className="text-[9px] uppercase tracking-[0.12em] text-white/30">{label}</p><p className={`mt-1 text-sm font-extrabold ${tone === "green" ? "text-emerald-200/85" : "text-white/80"}`}>{value}</p></div>; }
 function DetailRow({ label, value, accent = false }) { return <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] py-2.5 text-[11px] last:border-0"><span className="text-white/42">{label}</span><span className={accent ? "font-bold text-amber-100/80" : "text-white/72"}>{value}</span></div>; }
 function TokenButton({ token, onClick, testId }) { return <button type="button" onClick={onClick} data-testid={testId} className="inline-flex min-h-9 items-center gap-2 border border-white/[0.12] bg-[#121a26] px-2.5 text-xs font-bold text-white/80 transition hover:border-cyan-200/45"><span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-200/20 text-[9px] text-cyan-100">{token.slice(-1)}</span>{token}<ChevronDown className="h-3 w-3 text-white/35" /></button>; }
-function Chart({ color = "cyan" }) { const bars = [30, 42, 35, 58, 48, 70, 61, 84, 77, 92, 81, 96]; return <div className="flex h-28 items-end gap-1 border-b border-white/[0.09] px-2">{bars.map((height, index) => <span key={`${height}-${index}`} className={`flex-1 bg-${color}-200/50`} style={{ height: `${height}%` }} />)}</div>; }
+function Chart({ color = "cyan", live = false, symbol = "TEST-PERP" }) {
+  const [tick, setTick] = useState(0);
+  const palette = { cyan: { stroke: "#a5f3fc", fill: "#67e8f9", glow: "rgba(103,232,249,.28)" }, amber: { stroke: "#fde68a", fill: "#fbbf24", glow: "rgba(251,191,36,.25)" }, violet: { stroke: "#ddd6fe", fill: "#a78bfa", glow: "rgba(167,139,250,.25)" } };
+  const tone = palette[color] || palette.cyan;
+  useEffect(() => {
+    if (!live) return undefined;
+    const timer = window.setInterval(() => setTick((current) => current + 1), 1800);
+    return () => window.clearInterval(timer);
+  }, [live]);
+  const points = Array.from({ length: 28 }, (_, index) => {
+    const wave = Math.sin((index + tick) * 0.55) * 8 + Math.sin((index + tick) * 0.18) * 11;
+    return 52 - wave - (index * 0.45);
+  });
+  const linePoints = points.map((point, index) => `${(index / (points.length - 1)) * 100},${point}`).join(" ");
+  const areaPoints = `0,100 ${linePoints} 100,100`;
+  const price = (2481.2 + Math.sin(tick * 0.55) * 12.4).toFixed(2);
+  return <div className="relative h-48 overflow-hidden border-b border-white/[0.09] bg-[#0a111b] p-3" data-testid={live ? "chart-practice-live" : undefined}>
+    <div className="pointer-events-none absolute inset-0 opacity-30" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)", backgroundSize: "25% 25%" }} />
+    <div className="relative z-10 flex items-start justify-between">
+      <div><p className="font-mono text-[9px] uppercase tracking-[0.16em] text-white/35">{symbol} · 1m</p><p className="mt-1 text-lg font-extrabold text-white/85">${price}</p></div>
+      {live && <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/20 bg-emerald-200/10 px-2 py-1 text-[9px] font-bold text-emerald-100/80"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-300" />LIVE</span>}
+    </div>
+    <svg className="absolute inset-x-3 bottom-3 top-14 h-[calc(100%-62px)] w-[calc(100%-24px)] overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label={`${symbol} live price chart`} role="img">
+      <polygon points={areaPoints} fill={tone.glow} />
+      <polyline points={linePoints} fill="none" stroke={tone.stroke} strokeWidth="1.6" vectorEffect="non-scaling-stroke" />
+      <circle cx="100" cy={points[points.length - 1]} r="2.3" fill={tone.fill} style={{ filter: `drop-shadow(0 0 5px ${tone.fill})` }} />
+    </svg>
+  </div>;
+}
+
+function isPracticeTaskComplete(task, data) {
+  const simulator = data.simulator || {};
+  if (task.id === "swap-volume") return Number.parseFloat(simulator.volume) > 0 && simulator.volumeTouched === true;
+  if (task.id === "perps-volume") return Number.parseFloat(simulator.targetVolume) > 0 && simulator.targetVolumeTouched === true;
+  if (task.id === "perps-side") return simulator.sideSelected === true;
+  if (task.id === "defi-landing") return simulator.landingViewed === true;
+  if (task.id === "defi-borrowing") return simulator.tab === "borrow" && data.steps.terms === true;
+  if (task.steps?.length) return task.steps.every((step) => data.steps[step] === true);
+  return false;
+}
+
 function PracticeTaskList({ category, data, interact, title = "Task checklist" }) {
   const tasks = PRACTICE_TASKS[category.id] || [];
-  const completed = tasks.filter((task) => data.simulator?.tasks?.[task.id]).length;
+  const completed = tasks.filter((task) => isPracticeTaskComplete(task, data)).length;
   return (
     <div className="border border-white/[0.1] bg-[#0c131e] p-4" data-testid={`task-list-${category.id}`}>
       <div className="flex items-center justify-between gap-3">
@@ -164,12 +206,10 @@ function PracticeTaskList({ category, data, interact, title = "Task checklist" }
       </div>
       <div className="mt-3 grid gap-2">
         {tasks.map((task, index) => {
-          const done = data.simulator?.tasks?.[task.id] === true;
+          const done = isPracticeTaskComplete(task, data);
           return (
-            <button
-              type="button"
+            <div
               key={task.id}
-              onClick={() => interact(`task:${task.id}`, task.steps || [], true)}
               data-testid={`button-practice-task-${task.id}`}
               className={`flex items-start gap-3 border p-3 text-left transition ${done ? "border-emerald-200/25 bg-emerald-200/[0.06]" : "border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.045]"}`}
             >
@@ -180,8 +220,8 @@ function PracticeTaskList({ category, data, interact, title = "Task checklist" }
                 <span className={`block text-[11px] font-bold ${done ? "text-emerald-100/85" : "text-white/72"}`}>{task.label}</span>
                 <span className="mt-1 block text-[10px] leading-4 text-white/35">{task.detail}</span>
               </span>
-              <ArrowRight className={`mt-1 h-3.5 w-3.5 flex-shrink-0 ${done ? "text-emerald-200/55" : "text-white/25"}`} />
-            </button>
+              <span className={`mt-1 flex-shrink-0 text-[9px] font-bold ${done ? "text-emerald-200/70" : "text-white/25"}`}>{done ? "DONE" : "WAIT"}</span>
+            </div>
           );
         })}
       </div>
@@ -226,10 +266,22 @@ function SocialSimulator({ data, interact }) {
 
 function DexSimulator({ data, interact }) {
   const quoted = data.simulator?.quoted; const route = data.simulator?.route; const settings = data.simulator?.settings; const flipped = data.simulator?.flipped; const volume = data.simulator?.volume || "250";
+  const [quotePending, setQuotePending] = useState(false);
+  useEffect(() => () => window.clearTimeout(window.__novaSwapQuoteTimer), []);
   const sell = flipped ? "TESTB" : "TESTA"; const buy = flipped ? "TESTA" : "TESTB";
+  function requestQuote() {
+    if (quotePending) return;
+    setQuotePending(true);
+    interact("quoteLoading", ["network"], true);
+    window.clearTimeout(window.__novaSwapQuoteTimer);
+    window.__novaSwapQuoteTimer = window.setTimeout(() => {
+      setQuotePending(false);
+      interact("quoted", ["network", "quote"], true);
+    }, 720);
+  }
   return <ProtocolShell category={PRACTICE_CATEGORIES[1]} name="NovaSwap" mark={<Waves className="h-4 w-4" />} nav={["Trade", "Explore", "Pools"]} accent="cyan">
     <div className="border-b border-white/[0.09] px-4 py-3 sm:px-6"><div className="flex flex-wrap items-center gap-4"><div><p className="text-sm font-extrabold text-white/88">Swap</p><p className="text-[10px] text-white/35">Trade demo assets across the test network</p></div><div className="ml-auto flex items-center gap-2 text-[10px] text-white/40"><Search className="h-3.5 w-3.5" /> Search tokens, pools and wallets <Settings2 className="ml-2 h-4 w-4 text-white/55" /></div></div></div>
-    <div className="grid gap-6 p-4 sm:p-6 lg:grid-cols-[minmax(330px,470px)_1fr] lg:justify-center"><div className="mx-auto w-full max-w-[470px]"><div className="mb-4 flex items-center justify-between"><AppTitle kicker="TRADE / {TEST}" title="Swap tokens" detail="A quote is information that changes with the route and settings." /><button type="button" onClick={() => interact("settings", ["network"], !settings)} data-testid="button-practice-swap-settings" className={`flex h-9 w-9 items-center justify-center border ${settings ? "border-cyan-200/40 bg-cyan-200/10 text-cyan-100" : "border-white/[0.12] text-white/45"}`} aria-label="Open swap settings"><SlidersHorizontal className="h-4 w-4" /></button></div><div className="border border-white/[0.12] bg-[#0c131e] p-3"><SwapRow label="Sell" token={sell} amount="125.00" balance={sell === "TESTA" ? "4,200.00" : "860.00"} onToken={() => interact("flipped", ["network"], !flipped)} testId="button-practice-swap-sell-token" /><div className="relative z-10 -my-2 flex justify-center"><button type="button" onClick={() => interact("flipped", ["network"], !flipped)} data-testid="button-practice-swap-flip" className="flex h-8 w-8 items-center justify-center border border-cyan-200/35 bg-[#121d28] text-cyan-100 transition hover:rotate-180" aria-label="Flip swap direction"><ArrowDown className="h-4 w-4" /></button></div><SwapRow label="Buy" token={buy} amount={quoted ? "248.36" : "—"} balance="—" onToken={() => interact("quoted", ["network"], true)} testId="button-practice-swap-buy-token" /><div className="mt-3 grid grid-cols-2 gap-2"><MiniBox label="Network" value="TESTNET DEMO" /><MiniBox label="Balance" value={`${sell === "TESTA" ? "4,200.00" : "860.00"} ${sell}`} /></div><label className="mt-3 block text-[10px] text-white/40">Target volume<input value={volume} onChange={(event) => interact("volume", ["network"], event.target.value)} data-testid="input-practice-swap-volume" inputMode="decimal" className="mt-1 h-10 w-full border border-white/[0.12] bg-[#111a24] px-3 text-xs text-white outline-none" /><span className="mt-1 block text-[9px] text-white/25">TEST volume · local only</span></label>{settings && <div className="mt-3 flex items-center justify-between border border-cyan-200/15 bg-cyan-200/[0.04] px-3 py-2.5 text-[11px]"><span className="text-white/50">Slippage tolerance</span><button type="button" onClick={() => interact("slippage", ["quote"], data.simulator?.slippage === "1.00%" ? "0.50%" : "1.00%")} data-testid="button-practice-swap-slippage" className="font-bold text-cyan-100">{data.simulator?.slippage || "0.50%"}</button></div>}<button type="button" onClick={() => interact("quoted", ["network", "quote"], true)} data-testid="button-practice-swap-quote" className="mt-3 min-h-11 w-full bg-cyan-200 text-[11px] font-extrabold text-[#081a1a] transition hover:bg-cyan-100">{quoted ? "Refresh quote" : "Get a quote"}</button></div></div><div className="mx-auto w-full max-w-[440px] pt-1"><div className="flex items-center justify-between border-b border-white/[0.1] pb-3"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/38">Quote details</p><DemoPill tone="cyan">LOCAL</DemoPill></div><div className="mt-1"><DetailRow label="Rate" value="1 TESTA = 1.9869 TESTB" /><DetailRow label="LP fee" value="0.30% · 0.38 TESTA" /><DetailRow label="Price impact" value={quoted ? "0.42% · low" : "Reveal with quote"} accent /><DetailRow label="Minimum received" value={quoted ? "247.12 TESTB" : "—"} /><DetailRow label="Route" value={route ? "TESTA → DemoPool → TESTB" : "Not inspected"} /></div><div className="mt-5 border border-amber-200/20 bg-amber-200/[0.05] p-3"><div className="flex gap-2"><Info className="h-3.5 w-3.5 flex-shrink-0 text-amber-100/75" /><p className="text-[11px] leading-5 text-amber-50/60">Approval is a separate permission step. It is not the swap itself.</p></div></div><div className="mt-3 flex flex-wrap gap-2"><SimButton tone="cyan" onClick={() => interact("route", ["permission"], true)} testId="button-practice-swap-route" icon={Compass}>{route ? "Route inspected" : "Inspect route"}</SimButton><WalletButton category={PRACTICE_CATEGORIES[1]} testId="button-practice-swap-connect-wallet" /></div>{route && <div className="mt-4 flex items-center gap-2 border border-cyan-200/15 bg-cyan-200/[0.04] p-3 text-[10px] text-cyan-50/65"><span className="font-mono">TESTA</span><MoveRight className="h-3 w-3" /><span className="font-mono">DemoPool 0x7A…21</span><MoveRight className="h-3 w-3" /><span className="font-mono">TESTB</span></div>}</div></div>
+     <div className="grid gap-6 p-4 sm:p-6 lg:grid-cols-[minmax(330px,470px)_1fr] lg:justify-center"><div className="mx-auto w-full max-w-[470px]"><div className="mb-4 flex items-center justify-between"><AppTitle kicker="TRADE / {TEST}" title="Swap tokens" detail="A quote is information that changes with the route and settings." /><button type="button" onClick={() => interact("settings", ["network"], !settings)} data-testid="button-practice-swap-settings" className={`flex h-9 w-9 items-center justify-center border ${settings ? "border-cyan-200/40 bg-cyan-200/10 text-cyan-100" : "border-white/[0.12] text-white/45"}`} aria-label="Open swap settings"><SlidersHorizontal className="h-4 w-4" /></button></div><div className="border border-white/[0.12] bg-[#0c131e] p-3"><SwapRow label="Sell" token={sell} amount="125.00" balance={sell === "TESTA" ? "4,200.00" : "860.00"} onToken={() => interact("flipped", ["network"], !flipped)} testId="button-practice-swap-sell-token" /><div className="relative z-10 -my-2 flex justify-center"><button type="button" onClick={() => interact("flipped", ["network"], !flipped)} data-testid="button-practice-swap-flip" className="flex h-8 w-8 items-center justify-center border border-cyan-200/35 bg-[#121d28] text-cyan-100 transition hover:rotate-180" aria-label="Flip swap direction"><ArrowDown className="h-4 w-4" /></button></div><SwapRow label="Buy" token={buy} amount={quoted ? "248.36" : "—"} balance="—" onToken={() => requestQuote()} testId="button-practice-swap-buy-token" /><div className="mt-3 grid grid-cols-2 gap-2"><MiniBox label="Network" value="TESTNET DEMO" /><MiniBox label="Balance" value={`${sell === "TESTA" ? "4,200.00" : "860.00"} ${sell}`} /></div><label className="mt-3 block text-[10px] text-white/40">Target volume<input value={volume} onChange={(event) => interact("volume", ["network"], event.target.value)} onBlur={() => interact("volumeTouched", [], true)} data-testid="input-practice-swap-volume" inputMode="decimal" className="mt-1 h-10 w-full border border-white/[0.12] bg-[#111a24] px-3 text-xs text-white outline-none" /><span className="mt-1 block text-[9px] text-white/25">TEST volume · local only</span></label>{settings && <div className="mt-3 flex items-center justify-between border border-cyan-200/15 bg-cyan-200/[0.04] px-3 py-2.5 text-[11px]"><span className="text-white/50">Slippage tolerance</span><button type="button" onClick={() => interact("slippage", ["quote"], data.simulator?.slippage === "1.00%" ? "0.50%" : "1.00%")} data-testid="button-practice-swap-slippage" className="font-bold text-cyan-100">{data.simulator?.slippage || "0.50%"}</button></div>}<button type="button" onClick={requestQuote} disabled={quotePending} data-testid="button-practice-swap-quote" className="mt-3 min-h-11 w-full bg-cyan-200 text-[11px] font-extrabold text-[#081a1a] transition hover:bg-cyan-100 disabled:cursor-wait disabled:opacity-60">{quotePending ? "Routing… simulating RPC" : quoted ? "Refresh quote" : "Get a quote"}</button>{quotePending && <p className="mt-2 text-center text-[10px] text-cyan-100/55">Finding liquidity across DemoPool…</p>}</div></div><div className="mx-auto w-full max-w-[440px] pt-1"><div className="flex items-center justify-between border-b border-white/[0.1] pb-3"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-white/38">Quote details</p><DemoPill tone="cyan">{quotePending ? "ROUTING" : "LOCAL"}</DemoPill></div><div className="mt-1"><DetailRow label="Rate" value="1 TESTA = 1.9869 TESTB" /><DetailRow label="LP fee" value="0.30% · 0.38 TESTA" /><DetailRow label="Price impact" value={quoted ? "0.42% · low" : "Reveal with quote"} accent /><DetailRow label="Minimum received" value={quoted ? "247.12 TESTB" : "—"} /><DetailRow label="Route" value={route ? "TESTA → DemoPool → TESTB" : "Not inspected"} /></div><div className="mt-5 border border-amber-200/20 bg-amber-200/[0.05] p-3"><div className="flex gap-2"><Info className="h-3.5 w-3.5 flex-shrink-0 text-amber-100/75" /><p className="text-[11px] leading-5 text-amber-50/60">Approval is a separate permission step. It is not the swap itself.</p></div></div><div className="mt-3 flex flex-wrap gap-2"><SimButton tone="cyan" onClick={() => interact("route", ["permission"], true)} testId="button-practice-swap-route" icon={Compass}>{route ? "Route inspected" : "Inspect route"}</SimButton><WalletButton category={PRACTICE_CATEGORIES[1]} testId="button-practice-swap-connect-wallet" /></div>{route && <div className="mt-4 flex items-center gap-2 border border-cyan-200/15 bg-cyan-200/[0.04] p-3 text-[10px] text-cyan-50/65"><span className="font-mono">TESTA</span><MoveRight className="h-3 w-3" /><span className="font-mono">DemoPool 0x7A…21</span><MoveRight className="h-3 w-3" /><span className="font-mono">TESTB</span></div>}</div></div>
   </ProtocolShell>;
 }
 
@@ -295,8 +347,8 @@ function PerpsSimulator({ data, interact }) {
     <ProtocolShell category={PRACTICE_CATEGORIES[5]} name="Nightfall" mark={<Gauge className="h-4 w-4" />} nav={["Trade", "Positions", "Markets"]} accent="amber">
       <div className="border-b border-white/[0.09] px-4 py-4 sm:px-6"><div className="flex flex-wrap items-center gap-5"><div><p className="text-sm font-extrabold text-white/88">TEST-PERP</p><p className="mt-1 text-[10px] text-white/35">Perpetual market · DEMO</p></div><p className="text-xl font-extrabold text-white/85">$2,481.20</p><span className="flex items-center gap-1 text-xs font-bold text-emerald-200/75"><TrendingUp className="h-3.5 w-3.5" /> +2.14%</span><Metric label="Funding / 8h" value="+0.012%" /><Metric label="Open interest" value="8.4M TEST" /></div></div>
       <div className="grid gap-0 lg:grid-cols-[1.25fr_360px]">
-        <div className="border-b border-white/[0.09] p-4 sm:p-6 lg:border-b-0 lg:border-r"><div className="flex items-center justify-between"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Price chart</p><div className="flex gap-2 text-[9px] text-white/35"><span>1m</span><span>1h</span><span>1d</span></div></div><div className="mt-4 border border-white/[0.09] bg-[#0c131e] p-3"><Chart color="amber" /></div><div className="mt-4 flex gap-2"><button type="button" onClick={() => interact("side", ["margin"], "long")} data-testid="button-practice-perps-long" className={`min-h-10 flex-1 border text-[11px] font-bold ${side === "long" ? "border-emerald-200/35 bg-emerald-200/15 text-emerald-100" : "border-white/[0.12] text-white/40"}`}>Long / Buy</button><button type="button" onClick={() => interact("side", ["margin"], "short")} data-testid="button-practice-perps-short" className={`min-h-10 flex-1 border text-[11px] font-bold ${side === "short" ? "border-rose-200/35 bg-rose-200/15 text-rose-100" : "border-white/[0.12] text-white/40"}`}>Short / Sell</button></div></div>
-        <div className="bg-[#0c131e] p-4 sm:p-5"><div className="flex gap-4 border-b border-white/[0.1]"><button type="button" onClick={() => interact("order", ["margin"], "Limit")} className={`pb-3 text-[10px] font-bold ${order === "Limit" ? "border-b-2 border-amber-200 text-amber-100" : "text-white/40"}`}>Limit</button><button type="button" onClick={() => interact("order", ["margin"], "Market")} className={`pb-3 text-[10px] font-bold ${order === "Market" ? "border-b-2 border-amber-200 text-amber-100" : "text-white/40"}`}>Market</button></div><label className="mt-4 block text-[10px] text-white/38">Leverage<select aria-label="Leverage selector" value={leverage} onChange={(event) => interact("leverage", ["margin"], event.target.value)} data-testid="select-practice-perps-leverage" className="mt-1 h-10 w-full border border-white/[0.12] bg-[#121a25] px-3 text-xs text-white/75 outline-none"><option>2x</option><option>5x</option><option>10x</option></select></label><label className="mt-3 block text-[10px] text-white/38">Margin<input aria-label="Margin input" defaultValue="50.00" onFocus={() => interact("input", ["margin"], true)} className="mt-1 h-10 w-full border border-white/[0.12] bg-[#121a25] px-3 text-xs text-white/75 outline-none" /></label><label className="mt-3 block text-[10px] text-white/38">Target volume<input value={targetVolume} onChange={(event) => interact("targetVolume", ["margin"], event.target.value)} data-testid="input-practice-perps-volume" inputMode="decimal" className="mt-1 h-10 w-full border border-white/[0.12] bg-[#121a25] px-3 text-xs text-white/75 outline-none" /><span className="mt-1 block text-[9px] text-white/25">TEST notional · local only</span></label><div className="mt-4 border-t border-white/[0.09] pt-3"><DetailRow label="Notional" value={`${targetVolume} TEST`} /><DetailRow label="Entry / mark" value="$2,481.20" /><DetailRow label="Liquidation" value={side === "long" ? "$2,009.77" : "$2,952.63"} accent /></div><div className="mt-4 border border-rose-200/20 bg-rose-200/[0.05] p-3 text-[10px] leading-5 text-rose-50/70"><TrendingDown className="mb-1 h-3.5 w-3.5 text-rose-100/75" />Leverage dapat memicu liquidation sebelum harga mencapai nol.</div><SimButton tone="amber" onClick={() => interact("entered", ["funding", "liquidation"], true)} testId="button-practice-perps-preview" icon={Gauge}>{data.simulator?.entered ? "Risk review complete" : "Review simulated order"}</SimButton></div>
+        <div className="border-b border-white/[0.09] p-4 sm:p-6 lg:border-b-0 lg:border-r"><div className="flex items-center justify-between"><p className="text-[9px] font-bold uppercase tracking-[0.16em] text-white/35">Price chart</p><div className="flex gap-2 text-[9px] text-white/35"><span>1m</span><span>1h</span><span>1d</span></div></div><div className="mt-4 border border-white/[0.09] bg-[#0c131e] p-3"><Chart color="amber" live symbol="TEST-PERP" /></div><div className="mt-4 flex gap-2"><button type="button" onClick={() => { interact("side", ["margin"], "long"); interact("sideSelected", [], true); }} data-testid="button-practice-perps-long" className={`min-h-10 flex-1 border text-[11px] font-bold ${side === "long" ? "border-emerald-200/35 bg-emerald-200/15 text-emerald-100" : "border-white/[0.12] text-white/40"}`}>Long / Buy</button><button type="button" onClick={() => { interact("side", ["margin"], "short"); interact("sideSelected", [], true); }} data-testid="button-practice-perps-short" className={`min-h-10 flex-1 border text-[11px] font-bold ${side === "short" ? "border-rose-200/35 bg-rose-200/15 text-rose-100" : "border-white/[0.12] text-white/40"}`}>Short / Sell</button></div></div>
+        <div className="bg-[#0c131e] p-4 sm:p-5"><div className="flex gap-4 border-b border-white/[0.1]"><button type="button" onClick={() => interact("order", ["margin"], "Limit")} className={`pb-3 text-[10px] font-bold ${order === "Limit" ? "border-b-2 border-amber-200 text-amber-100" : "text-white/40"}`}>Limit</button><button type="button" onClick={() => interact("order", ["margin"], "Market")} className={`pb-3 text-[10px] font-bold ${order === "Market" ? "border-b-2 border-amber-200 text-amber-100" : "text-white/40"}`}>Market</button></div><label className="mt-4 block text-[10px] text-white/38">Leverage<CustomDropdown label="Leverage" ariaLabel="Leverage selector" value={leverage} onChange={(value) => interact("leverage", ["margin"], value)} options={["2x", "5x", "10x"]} testId="select-practice-perps-leverage" buttonClassName="mt-1 h-10 min-h-10 rounded border-white/[0.12] bg-[#121a25] px-3 text-xs text-white/75" /></label><label className="mt-3 block text-[10px] text-white/38">Margin<input aria-label="Margin input" defaultValue="50.00" onFocus={() => interact("input", ["margin"], true)} className="mt-1 h-10 w-full border border-white/[0.12] bg-[#121a25] px-3 text-xs text-white/75 outline-none" /></label><label className="mt-3 block text-[10px] text-white/38">Target volume<input value={targetVolume} onChange={(event) => interact("targetVolume", ["margin"], event.target.value)} onBlur={() => interact("targetVolumeTouched", [], true)} data-testid="input-practice-perps-volume" inputMode="decimal" className="mt-1 h-10 w-full border border-white/[0.12] bg-[#121a25] px-3 text-xs text-white/75 outline-none" /><span className="mt-1 block text-[9px] text-white/25">TEST notional · local only</span></label><div className="mt-4 border-t border-white/[0.09] pt-3"><DetailRow label="Notional" value={`${targetVolume} TEST`} /><DetailRow label="Entry / mark" value="$2,481.20" /><DetailRow label="Liquidation" value={side === "long" ? "$2,009.77" : "$2,952.63"} accent /></div><div className="mt-4 border border-rose-200/20 bg-rose-200/[0.05] p-3 text-[10px] leading-5 text-rose-50/70"><TrendingDown className="mb-1 h-3.5 w-3.5 text-rose-100/75" />Leverage dapat memicu liquidation sebelum harga mencapai nol.</div><SimButton tone="amber" onClick={() => interact("entered", ["funding", "liquidation"], true)} testId="button-practice-perps-preview" icon={Gauge}>{data.simulator?.entered ? "Risk review complete" : "Review simulated order"}</SimButton></div>
       </div>
     </ProtocolShell>
   );
@@ -364,14 +416,58 @@ function PracticePanel({ category, data, onUpdate, onComplete, canComplete, onPr
 }
 
 export default function ActivePracticeMode() {
-  const [state, setState] = useState(readPracticeState); const [saveTick, setSaveTick] = useState(0);
-  const activeCategory = PRACTICE_CATEGORIES.find((category) => category.id === state.activeCategoryId) || PRACTICE_CATEGORIES[0]; const activeIndex = PRACTICE_CATEGORIES.findIndex((category) => category.id === activeCategory.id); const activeData = state.categories[activeCategory.id] || getDefaultCategoryState(activeCategory);
-  const completedCount = useMemo(() => PRACTICE_CATEGORIES.filter((category) => state.categories[category.id]?.completed).length, [state.categories]); const percent = Math.round((completedCount / PRACTICE_CATEGORIES.length) * 100);
-  useEffect(() => { try { window.localStorage.setItem(PRACTICE_STORAGE_KEY, JSON.stringify(state)); setSaveTick((current) => current + 1); } catch { /* local memory remains usable */ } }, [state]);
-  function updateActiveCategory(patch) { setState((current) => { const currentData = current.categories[activeCategory.id] || getDefaultCategoryState(activeCategory); return { ...current, categories: { ...current.categories, [activeCategory.id]: { ...currentData, ...patch, updatedAt: Date.now() } } }; }); }
-  function isUnlocked(index) { return index === 0 || state.categories[PRACTICE_CATEGORIES[index - 1].id]?.completed === true; }
-  function selectCategory(id) { const index = PRACTICE_CATEGORIES.findIndex((category) => category.id === id); if (index >= 0 && isUnlocked(index)) setState((current) => ({ ...current, activeCategoryId: id })); }
-  function completeActive() { if (!activeData.steps || !activeCategory.steps.every(([id]) => activeData.steps[id])) return; setState((current) => ({ ...current, activeCategoryId: PRACTICE_CATEGORIES[activeIndex + 1]?.id || activeCategory.id, categories: { ...current.categories, [activeCategory.id]: { ...activeData, completed: true, updatedAt: Date.now() } } })); }
-  const moveBy = (offset) => { const next = PRACTICE_CATEGORIES[activeIndex + offset]; if (next && isUnlocked(activeIndex + offset)) selectCategory(next.id); };
-  return <div data-testid="active-practice-mode"><section className="border-b border-white/[0.1] pb-7"><div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-200/65">A local protocol lab</p><h2 className="mt-3 max-w-2xl text-3xl font-extrabold leading-[1.02] tracking-[-0.05em] text-white sm:text-5xl">Use the interface. Read the decision.</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-white/48">Sepuluh mini-app fiktif dengan pola yang kamu temui di DEX, lending desk, bridge, terminal, dan explorer nyata.</p></div><div className="min-w-[170px] border-l border-cyan-300/20 pl-4"><div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">Lab progress</span><span className="text-sm font-semibold text-cyan-100/80" data-testid="text-practice-progress">{completedCount}/{PRACTICE_CATEGORIES.length}</span></div><div className="mt-3 h-1 overflow-hidden bg-white/[0.09]"><div className="h-full bg-cyan-200/80 transition-all duration-500" style={{ width: `${percent}%` }} /></div><p className="mt-3 text-xs text-white/40" data-testid="text-practice-progress-label">{percent}% tersimpan di browser ini</p></div></div><div className="mt-5 flex items-start gap-3 border border-cyan-200/15 bg-cyan-200/[0.035] p-3.5"><ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-cyan-100/70" /><p className="text-xs leading-5 text-cyan-50/55">Every shell says <strong className="text-cyan-100/75">DEMO / TEST</strong>. The point is to learn the product sequence, not to connect or transact.</p></div></section><div className="mt-7 md:hidden"><label htmlFor="practice-category-select" className="mb-2 block text-[10px] font-bold uppercase tracking-[0.14em] text-white/40">Choose mini-app</label><select id="practice-category-select" value={activeCategory.id} onChange={(event) => selectCategory(event.target.value)} data-testid="select-practice-category" className="min-h-11 w-full border border-white/[0.1] bg-[#111823] px-3 text-sm text-white outline-none">{PRACTICE_CATEGORIES.map((category, index) => <option key={category.id} value={category.id} disabled={!isUnlocked(index)}>{category.index} · {category.shortLabel}{isUnlocked(index) ? "" : " · locked"}</option>)}</select></div><div className="mt-7 grid gap-5 md:grid-cols-[220px_minmax(0,1fr)] md:items-start"><aside className="hidden overflow-hidden border border-white/[0.08] bg-white/[0.02] md:block" aria-label="Practice mini-app order"><div className="border-b border-white/[0.08] px-3 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/35">Mini-app trail</p><p className="mt-1 text-[11px] leading-5 text-white/35">One product surface at a time.</p></div>{PRACTICE_CATEGORIES.map((category, index) => <PracticeCategoryRow key={category.id} category={category} active={activeCategory.id === category.id} completed={state.categories[category.id]?.completed === true} unlocked={isUnlocked(index)} onSelect={selectCategory} />)}</aside><PracticePanel category={activeCategory} data={activeData} onUpdate={updateActiveCategory} onComplete={completeActive} canComplete={activeCategory.steps.every(([id]) => activeData.steps[id])} onPrevious={() => moveBy(-1)} onNext={() => moveBy(1)} hasPrevious={activeIndex > 0} hasNext={activeIndex < PRACTICE_CATEGORIES.length - 1} /></div><div className="mt-5 flex items-center gap-2 text-[10px] text-white/25" aria-live="polite" data-testid="status-practice-autosave"><Save className="h-3 w-3" /> Autosave lokal aktif {saveTick >= 0 ? "· tersimpan" : ""}</div></div>;
+  const [state, setState] = useState(readPracticeState);
+  const [saveTick, setSaveTick] = useState(0);
+  const activeCategory = PRACTICE_CATEGORIES.find((category) => category.id === state.activeCategoryId) || PRACTICE_CATEGORIES[0];
+  const activeIndex = PRACTICE_CATEGORIES.findIndex((category) => category.id === activeCategory.id);
+  const activeData = state.categories[activeCategory.id] || getDefaultCategoryState(activeCategory);
+  const completedCount = useMemo(() => PRACTICE_CATEGORIES.filter((category) => state.categories[category.id]?.completed).length, [state.categories]);
+  const percent = Math.round((completedCount / PRACTICE_CATEGORIES.length) * 100);
+  const categoryOptions = PRACTICE_CATEGORIES.map((category) => ({ value: category.id, label: `${category.index} · ${category.shortLabel}` }));
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(PRACTICE_STORAGE_KEY, JSON.stringify(state));
+      setSaveTick((current) => current + 1);
+    } catch {
+      // Local memory remains usable when storage is blocked.
+    }
+  }, [state]);
+
+  function updateActiveCategory(patch) {
+    setState((current) => {
+      const currentData = current.categories[activeCategory.id] || getDefaultCategoryState(activeCategory);
+      return { ...current, categories: { ...current.categories, [activeCategory.id]: { ...currentData, ...patch, updatedAt: Date.now() } } };
+    });
+  }
+  function isUnlocked() { return true; }
+  function selectCategory(id) {
+    if (PRACTICE_CATEGORIES.some((category) => category.id === id)) setState((current) => ({ ...current, activeCategoryId: id }));
+  }
+  function completeActive() {
+    if (!activeData.steps || !activeCategory.steps.every(([id]) => activeData.steps[id])) return;
+    setState((current) => ({ ...current, activeCategoryId: PRACTICE_CATEGORIES[activeIndex + 1]?.id || activeCategory.id, categories: { ...current.categories, [activeCategory.id]: { ...activeData, completed: true, updatedAt: Date.now() } } }));
+  }
+  const moveBy = (offset) => {
+    const next = PRACTICE_CATEGORIES[activeIndex + offset];
+    if (next) selectCategory(next.id);
+  };
+
+  return (
+    <div data-testid="active-practice-mode">
+      <section className="border-b border-white/[0.1] pb-7">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-200/65">A local protocol lab</p><h2 className="mt-3 max-w-2xl text-3xl font-extrabold leading-[1.02] tracking-[-0.05em] text-white sm:text-5xl">Use the interface. Read the decision.</h2><p className="mt-4 max-w-2xl text-sm leading-7 text-white/48">Sepuluh mini-app dengan pola yang kamu temui di DEX, lending desk, bridge, terminal, dan explorer nyata.</p></div>
+          <div className="min-w-[170px] border-l border-cyan-300/20 pl-4"><div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-[0.14em] text-white/35">Lab progress</span><span className="text-sm font-semibold text-cyan-100/80" data-testid="text-practice-progress">{completedCount}/{PRACTICE_CATEGORIES.length}</span></div><div className="mt-3 h-1 overflow-hidden bg-white/[0.09]"><div className="h-full bg-cyan-200/80 transition-all duration-500" style={{ width: `${percent}%` }} /></div><p className="mt-3 text-xs text-white/40" data-testid="text-practice-progress-label">{percent}% tersimpan di browser ini</p></div>
+        </div>
+        <div className="mt-5 flex items-start gap-3 border border-cyan-200/15 bg-cyan-200/[0.035] p-3.5"><ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-cyan-100/70" /><p className="text-xs leading-5 text-cyan-50/55"><strong className="text-cyan-100/75">Akses terbuka.</strong> Semua mini-app dapat dibuka kapan saja; penyelesaian tetap mengikuti interaksi dan target yang benar.</p></div>
+      </section>
+      <div className="mt-7 md:hidden"><label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.14em] text-white/40">Choose mini-app</label><CustomDropdown value={activeCategory.id} onChange={selectCategory} options={categoryOptions} ariaLabel="Choose mini-app" testId="select-practice-category" className="w-full" buttonClassName="min-h-11 bg-[#111823] text-sm" /></div>
+      <div className="mt-7 grid gap-5 md:grid-cols-[220px_minmax(0,1fr)] md:items-start">
+        <aside className="hidden overflow-visible border border-white/[0.08] bg-white/[0.02] md:block" aria-label="Practice mini-app order"><div className="border-b border-white/[0.08] px-3 py-3"><p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/35">Mini-app trail</p><p className="mt-1 text-[11px] leading-5 text-white/35">Semua surface terbuka untuk eksplorasi.</p></div>{PRACTICE_CATEGORIES.map((category, index) => <PracticeCategoryRow key={category.id} category={category} active={activeCategory.id === category.id} completed={state.categories[category.id]?.completed === true} unlocked={isUnlocked(index)} onSelect={selectCategory} />)}</aside>
+        <PracticePanel category={activeCategory} data={activeData} onUpdate={updateActiveCategory} onComplete={completeActive} canComplete={activeCategory.steps.every(([id]) => activeData.steps[id])} onPrevious={() => moveBy(-1)} onNext={() => moveBy(1)} hasPrevious={activeIndex > 0} hasNext={activeIndex < PRACTICE_CATEGORIES.length - 1} />
+      </div>
+      <div className="mt-5 flex items-center gap-2 text-[10px] text-white/25" aria-live="polite" data-testid="status-practice-autosave"><Save className="h-3 w-3" /> Autosave lokal aktif {saveTick >= 0 ? "· tersimpan" : ""}</div>
+    </div>
+  );
 }

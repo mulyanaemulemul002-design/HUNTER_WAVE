@@ -24,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import { AirdropSchema, CalendarSchema, ToolSchema } from "../lib/data";
+import CustomDropdown from "./ui/CustomDropdown";
 
 const ADMIN_PASSWORD = "HUNTERWAVE_ADMIN";
 const TOKEN_STORAGE_KEY = "hw_admin_gh_token";
@@ -303,18 +304,18 @@ function AdminTextarea({ className = "", ...props }) {
 }
 
 function AdminSelect({ value, onChange, options, ...props }) {
+  const { "aria-label": ariaLabel, "data-testid": testId, ...buttonProps } = props;
   return (
-    <select
-      {...props}
+    <CustomDropdown
+      {...buttonProps}
       value={value}
-      onChange={onChange}
-      className="w-full appearance-none rounded-xl border border-white/[0.10] bg-[#111827] px-3 py-2.5 text-sm text-white outline-none transition-colors focus:border-blue-400/60 focus:ring-2 focus:ring-blue-500/15"
-    >
-      {options.map((option) => {
-        const item = typeof option === "string" ? { value: option, label: option } : option;
-        return <option key={item.value} value={item.value} className="bg-[#111827]">{item.label}</option>;
-      })}
-    </select>
+      options={options}
+      ariaLabel={ariaLabel}
+      testId={testId}
+      onChange={(nextValue) => onChange?.({ target: { value: nextValue } })}
+      buttonClassName="min-h-[42px] rounded-xl border-white/[0.10] bg-[#111827] px-3 py-2.5 text-sm text-white focus:border-blue-400/60 focus:ring-2 focus:ring-blue-500/15"
+      menuClassName="rounded-xl border-white/[0.12] bg-[#111827]"
+    />
   );
 }
 
@@ -777,8 +778,7 @@ export default function AdminPanel({
                     <AdminField label="Nama" error={formErrors.title} className="sm:col-span-2"><AdminInput value={form.title} onChange={(event) => updateForm("title", event.target.value)} placeholder={activeResource === "tools" ? "Nama tool Web3" : "Nama platform Web3"} /></AdminField>
                     <AdminField label="URL" error={formErrors.url}><AdminInput value={form.url} onChange={(event) => updateForm("url", event.target.value)} placeholder="domain.com" /></AdminField>
                     <AdminField label="Target URL" hint="URL referral atau link tujuan saat tombol dibuka."><AdminInput value={form.targetUrl} onChange={(event) => updateForm("targetUrl", event.target.value)} placeholder="https://..." /></AdminField>
-                    <AdminField label="Kategori" error={formErrors.category} hint={activeResource === "tools" ? "Gunakan kategori Tools agar tampil di sub-tab Tools." : "Kategori selain Tools tampil di sub-tab Platform."}><AdminInput value={form.category} onChange={(event) => updateForm("category", event.target.value)} list="admin-platform-categories" placeholder={activeResource === "tools" ? "Tools" : "Quest Platform"} /></AdminField>
-                    <datalist id="admin-platform-categories">{PLATFORM_CATEGORIES.map((category) => <option key={category} value={category} />)}<option value="Tools" /></datalist>
+                     <AdminField label="Kategori" error={formErrors.category} hint={activeResource === "tools" ? "Gunakan kategori Tools agar tampil di sub-tab Tools." : "Kategori selain Tools tampil di sub-tab Platform."}><AdminSelect value={form.category} onChange={(event) => updateForm("category", event.target.value)} options={[...PLATFORM_CATEGORIES, "Tools"]} /></AdminField>
                     <AdminField label="Icon" hint="Emoji/simbol teks, boleh dikosongkan."><AdminInput value={form.icon} onChange={(event) => updateForm("icon", event.target.value)} placeholder="Contoh: ✦" /></AdminField>
                     <AdminField label="Custom image URL" hint="Boleh dikosongkan."><AdminInput value={form.customImage} onChange={(event) => updateForm("customImage", event.target.value)} placeholder="https://..." /></AdminField>
                     <AdminField label="Deskripsi" className="sm:col-span-2"><AdminTextarea rows={4} value={form.description} onChange={(event) => updateForm("description", event.target.value)} placeholder="Deskripsi singkat platform atau tool" /></AdminField>
