@@ -1,1 +1,2 @@
 - [Frontend test runtime](frontend-test-runtime.md) — keep jsdom on the Node-compatible major used by this workspace.
+- [Workspace dependency linking](workspace-dependency-linking.md) — when declared workspace packages are missing from node_modules, sync with a filtered frozen-lockfile install before debugging code.
